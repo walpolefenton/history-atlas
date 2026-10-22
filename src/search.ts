@@ -1,13 +1,15 @@
-import type { HistoryEvent, Meta } from "./types";
+import type { Drawing, HistoryEvent, Meta } from "./types";
 import { escapeHtml as esc, formatEventDate, formatYear } from "./format";
 
 type Result =
   | { kind: "polity"; name: string; years: number[] }
-  | { kind: "event"; event: HistoryEvent };
+  | { kind: "event"; event: HistoryEvent }
+  | { kind: "drawing"; drawing: Drawing };
 
 export interface SearchHandlers {
   onPolity(name: string, years: number[]): void;
   onEvent(e: HistoryEvent): void;
+  onDrawing(d: Drawing): void;
 }
 
 const MAX_RESULTS = 12;
@@ -15,12 +17,13 @@ const MAX_RESULTS = 12;
 const fold = (s: string) => s.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
 
 /** Accessible combobox over every polity name in the dataset plus the events. */
-export function initSearch(meta: Meta, events: HistoryEvent[], handlers: SearchHandlers) {
+export function initSearch(meta: Meta, events: HistoryEvent[], drawings: Drawing[], handlers: SearchHandlers) {
   const input = document.getElementById("search-input") as HTMLInputElement;
   const list = document.getElementById("search-results") as HTMLUListElement;
   const polities = Object.entries(meta.appearances).map(([name, years]) => ({ name, years, key: fold(name) }));
   const evs = events.map((e) => ({ e, key: fold(e.title) }));
   const eventIds = new Set(events.map((e) => e.id));
+  const draws = drawings.map((d) => ({ d, key: fold(d.name) }));
   let results: Result[] = [];
   let active = -1;
 
@@ -38,12 +41,22 @@ export function initSearch(meta: Meta, events: HistoryEvent[], handlers: SearchH
       .filter((x) => x.s >= 0)
       .sort((a, b) => a.s - b.s || (a.e.source ? 1 : 0) - (b.e.source ? 1 : 0) || (b.e.notability ?? 0) - (a.e.notability ?? 0))
       .map(({ e }): Result => ({ kind: "event", event: e }));
-    // Interleave so a few events surface even when many polities match.
-    return [...ps.slice(0, MAX_RESULTS - Math.min(es.length, 4)), ...es].slice(0, MAX_RESULTS);
+    const ds = draws
+      .map((x) => ({ d: x.d, s: score(x.key) }))
+      .filter((x) => x.s >= 0)
+      .sort((a, b) => a.s - b.s)
+      .map(({ d }): Result => ({ kind: "drawing", drawing: d }));
+    // Interleave so landmarks and events surface even when many polities match.
+    const extras = [...ds.slice(0, 3), ...es];
+    return [...ps.slice(0, MAX_RESULTS - Math.min(extras.length, 5)), ...extras].slice(0, MAX_RESULTS);
   }
 
   function describe(r: Result) {
     if (r.kind === "event") return { title: r.event.title, sub: `Event · ${formatEventDate(r.event)}` };
+    if (r.kind === "drawing") {
+      const d = r.drawing;
+      return { title: d.name, sub: `${d.cat === "landmark" ? "Landmark" : "Curiosity"} · ${d.approx ? "c. " : ""}${formatYear(d.from)}` };
+    }
     const first = r.years[0];
     const last = r.years[r.years.length - 1];
     return { title: r.name, sub: `Territory · ${first === last ? formatYear(first) : `${formatYear(first)} – ${formatYear(last)}`}` };
@@ -78,6 +91,7 @@ export function initSearch(meta: Meta, events: HistoryEvent[], handlers: SearchH
     close();
     input.blur();
     if (r.kind === "event") handlers.onEvent(r.event);
+    else if (r.kind === "drawing") handlers.onDrawing(r.drawing);
     else handlers.onPolity(r.name, r.years);
   }
 

@@ -1,0 +1,206 @@
+// Pen-and-ink drawings for landmarks, curiosities and the hidden Surveyor,
+// after Saul Steinberg: one wiry line weight, a light wash, a slight wobble.
+//
+// Each drawing is SVG markup on a 64x64 grid. Shapes marked fill="WASH" get
+// the theme's wash colour; everything is stroked with the wrapper's ink. A
+// small displacement filter makes the line waver like a real pen.
+
+const D: Record<string, string> = {
+  // --- Landmarks -------------------------------------------------------------
+  pyramid: `<path d="M8 52 L32 13 L56 52 Z" fill="WASH"/><path d="M32 13 L37 52"/>
+    <path d="M15 42 H35 M21 32 H34"/><path d="M3 52 H61"/>
+    <path d="M44 52 L52 40 L60 52"/>`,
+  stepped: `<path d="M9 52 H55 V45 H51 V38 H47 V31 H42 V24 H22 V31 H17 V38 H13 V45 H9 Z" fill="WASH"/>
+    <path d="M29 52 V24 M35 52 V24"/><path d="M25 24 V15 H39 V24"/><path d="M28 15 V12 H36 V15"/><path d="M3 52 H61"/>`,
+  stones: `<path d="M8 52 V29 M15 52 V29 M6 29 H17"/><path d="M25 52 V24 M33 52 V24 M23 24 H35"/>
+    <path d="M44 52 V31 M51 52 V31 M42 31 H53"/><path d="M55 52 L61 47"/><path d="M8 33 H15 M25 28 H33" opacity=".5"/><path d="M2 52 H62"/>`,
+  temple: `<path d="M8 24 L32 11 L56 24 Z" fill="WASH"/><path d="M8 24 H56 V28 H8 Z"/>
+    <path d="M12 28 V48 M20 28 V48 M28 28 V48 M36 28 V48 M44 28 V48 M52 28 V48"/>
+    <path d="M6 48 H58 V52 H6 Z"/><path d="M28 19 Q32 16 36 19"/>`,
+  arena: `<path d="M6 52 V27 Q32 14 58 27 V40 L52 36 V52" fill="WASH"/>
+    <path d="M6 36 Q32 26 52 33 M6 44 H52"/>
+    <path d="M10 52 V47 Q12.5 44 15 47 V52 M19 52 V47 Q21.5 44 24 47 V52 M28 52 V47 Q30.5 44 33 47 V52 M37 52 V47 Q39.5 44 42 47 V52"/>
+    <path d="M11 43 V39 Q13 37 15 39 V43 M20 42 V38 Q22 36 24 38 V42 M29 41 V37 Q31 35 33 37 V41 M38 41 V37 Q40 35 42 37 V41"/>`,
+  dome: `<path d="M14 35 Q32 5 50 35 Z" fill="WASH"/><path d="M11 35 H53 V52 H11 Z"/>
+    <path d="M29 13 V8 H35 V13"/><path d="M27 52 V45 Q32 40 37 45 V52"/><path d="M17 41 V47 M47 41 V47"/><path d="M5 52 H59"/>`,
+  minarets: `<path d="M18 36 Q32 10 46 36 Z" fill="WASH"/><path d="M14 36 H50 V52 H14 Z"/><path d="M30 16 V11 H34 V16"/>
+    <path d="M7 52 V20 M10 52 V20 M7 20 L8.5 13 L10 20"/><path d="M54 52 V20 M57 52 V20 M54 20 L55.5 13 L57 20"/>
+    <path d="M28 52 V46 Q32 42 36 46 V52"/><path d="M3 52 H61"/>`,
+  onion: `<path d="M22 31 Q19 21 32 12 Q45 21 42 31 Z" fill="WASH"/><path d="M32 12 V6"/>
+    <path d="M18 31 H46 V48 H18 Z"/><path d="M28 48 V40 Q32 35 36 40 V48"/>
+    <path d="M8 48 V22 M8 22 L9.5 17 L11 22 V48"/><path d="M53 48 V22 L54.5 17 L56 22 V48"/><path d="M4 48 H60 V52 H4 Z"/>`,
+  stupa: `<path d="M16 42 Q32 14 48 42 Z" fill="WASH"/><path d="M8 52 H56 V47 H52 V42 H12 V47 H8 Z"/>
+    <path d="M28 22 H36 V17 H28 Z"/><path d="M32 17 V5 M29 13 H35 M30 9 H34"/><path d="M22 30 H42" opacity=".5"/>`,
+  towers: `<path d="M26 48 V27 Q32 6 38 27 V48 Z" fill="WASH"/><path d="M12 48 V34 Q17 20 22 34 V48"/><path d="M42 48 V34 Q47 20 52 34 V48"/>
+    <path d="M27 34 H37 M28 22 H36 M13 40 H21 M43 40 H51"/><path d="M5 48 H59 V52 H5 Z"/><path d="M29 52 V48 M35 52 V48"/>`,
+  pagoda: `<path d="M8 42 Q32 35 56 42 M8 42 L6 38 M56 42 L58 38"/><path d="M12 30 Q32 24 52 30 M12 30 L10 26 M52 30 L54 26"/>
+    <path d="M16 18 Q32 13 48 18 M16 18 L14 14 M48 18 L50 14"/>
+    <path d="M18 52 V42 H46 V52 Z M21 41 V31 H43 V41 Z M24 29 V19 H40 V29 Z" fill="WASH"/><path d="M32 13 V5"/><path d="M4 52 H60"/>`,
+  wall: `<path d="M3 44 L13 38 L23 42 L33 32 L43 36 L53 28 L61 30 L61 36 L53 34 L43 42 L33 38 L23 48 L13 44 L3 50 Z" fill="WASH"/>
+    <path d="M30 33 V24 H37 V34"/><path d="M29 24 V22 M33 24 V22 M37 24 V22"/>
+    <path d="M6 42 V40 M10 40 V38 M17 39 V37 M20 40 V38 M45 35 V33 M49 32 V30 M57 28 V26"/><path d="M2 56 Q18 50 32 54 T62 52" opacity=".5"/>`,
+  castle: `<path d="M22 52 V24 H42 V52 Z" fill="WASH"/><path d="M22 24 V20 H26 V24 M30 24 V20 H34 V24 M38 24 V20 H42 V24"/>
+    <path d="M10 52 V32 H18 V52 M46 52 V32 H54 V52"/><path d="M9 32 L14 22 L19 32 M45 32 L50 22 L55 32"/>
+    <path d="M28 52 V44 Q32 40 36 44 V52"/><path d="M32 30 V34"/><path d="M14 22 V17 L18 19 L14 20" /><path d="M4 52 H60"/>`,
+  cathedral: `<path d="M24 52 V30 L32 22 L40 30 V52 Z" fill="WASH"/><path d="M11 52 V17 H24 V52 M40 52 V17 H53 V52"/>
+    <path d="M11 17 V14 M15 17 V14 M19 17 V14 M23 17 V14 M41 17 V14 M45 17 V14 M49 17 V14 M53 17 V14"/>
+    <circle cx="32" cy="36" r="4.5"/><path d="M32 22 V8"/><path d="M28 52 V46 Q32 42 36 46 V52"/>
+    <path d="M14 30 V24 Q17.5 21 21 24 V30 M43 30 V24 Q46.5 21 50 24 V30"/><path d="M4 52 H60"/>`,
+  adobe: `<path d="M8 52 V33 H56 V52 Z" fill="WASH"/><path d="M17 33 V19 Q21 14 25 19 V33 M38 33 V23 Q42 18 46 23 V33"/>
+    <path d="M5 39 H9 M5 45 H9 M55 39 H59 M55 45 H59 M14 30 V27 M30 30 V27 M50 30 V27 M20 24 H17 M25 24 H28 M38 28 H35 M46 28 H49"/>
+    <path d="M28 52 V45 Q31 42 34 45 V52"/><path d="M3 52 H61"/>`,
+  terraces: `<path d="M30 52 L43 12 L58 52 Z" fill="WASH"/><path d="M38 26 L42 28 M46 34 L50 32"/>
+    <path d="M3 50 Q17 46 32 50 M6 44 Q19 40 32 44 M10 38 Q20 35 31 38"/>
+    <path d="M12 38 V33 H18 V38 M12 33 L15 30 L18 33 M22 37 V32 H28 V37 M22 32 L25 29 L28 32"/><path d="M2 54 H62"/>`,
+  head: `<path d="M22 54 V22 Q22 12 31 12 Q39 12 39 19 L41 31 Q37 33 39 37 L37 45 Q35 49 37 54 Z" fill="WASH"/>
+    <path d="M22 11 H38 V6 H22 Z"/><path d="M26 23 Q30 21 35 23"/><path d="M34 30 L36 30"/><path d="M28 43 H35"/><path d="M14 54 H50"/>`,
+  lighthouse: `<path d="M20 36 V22 H44 V36 Z" fill="WASH"/><path d="M14 52 V36 H50 V52 Z"/><path d="M26 22 V13 H38 V22"/>
+    <path d="M32 9 L32 3 M26 10 L22 6 M38 10 L42 6 M24 14 L18 13 M40 14 L46 13"/><path d="M29 52 V46 H35 V52"/><path d="M4 52 Q12 49 20 52 T36 52 T52 52 T62 52"/>`,
+  tower: `<path d="M26 52 V18 H38 V52 Z" fill="WASH"/><path d="M26 18 L32 5 L38 18"/><circle cx="32" cy="24" r="3.5"/>
+    <path d="M32 22 V24 L33.5 25"/><path d="M26 31 H38 M26 40 H38"/><path d="M20 52 V40 H26 M38 40 H44 V52"/><path d="M14 52 H50"/>`,
+  lattice: `<path d="M14 52 Q26 36 29 9 H35 Q38 36 50 52" fill="WASH"/><path d="M22 52 Q32 39 42 52"/>
+    <path d="M20 40 H44 M25 28 H39"/><path d="M17 46 L27 40 M47 46 L37 40 M24 34 L28 28 M40 34 L36 28 M28 24 L32 16 L36 24"/><path d="M32 9 V3"/><path d="M8 52 H56"/>`,
+  statue: `<path d="M23 52 V40 H41 V52 Z"/><path d="M27 40 Q26 28 29 20 H35 Q38 28 37 40 Z" fill="WASH"/>
+    <path d="M35 22 L39 9"/><path d="M37 9 Q39 3 41 9 Z"/><path d="M29 20 L28 15 M32 19 L32 14 M35 20 L36 15"/><path d="M28 26 L24 30"/><path d="M16 52 H48"/>`,
+  skyscraper: `<path d="M18 52 V30 H23 V22 H27 V14 H37 V22 H41 V30 H46 V52 Z" fill="WASH"/><path d="M32 14 V3"/>
+    <path d="M27 30 V48 M32 22 V48 M37 30 V48 M21 34 V48 M43 34 V48"/><path d="M10 52 H54"/>`,
+  sails: `<path d="M8 49 Q13 27 25 22 Q21 36 25 49 Z" fill="WASH"/><path d="M22 49 Q29 20 42 14 Q37 34 41 49 Z" fill="WASH"/>
+    <path d="M38 49 Q45 31 56 28 Q52 40 55 49 Z"/><path d="M4 49 H60 V53 H4 Z"/><path d="M2 58 Q10 55 18 58 T34 58 T50 58 T62 58" opacity=".6"/>`,
+
+  // --- Curiosities -----------------------------------------------------------
+  mammoth: `<path d="M12 40 Q11 20 31 18 Q45 17 49 26 Q54 31 51 40 Z" fill="WASH"/>
+    <path d="M50 30 Q58 38 54 48 Q52 51 50 48"/><path d="M48 37 Q44 47 35 43"/>
+    <path d="M16 40 V52 M22 40 V52 M38 40 V52 M44 40 V51"/><path d="M14 33 L12 37 M19 38 L18 41 M27 39 L26 42 M33 39 L33 42"/><circle cx="45" cy="27" r="0.8"/>
+    <path d="M12 26 Q8 28 9 33"/><path d="M4 53 H60" opacity=".5"/>`,
+  serpent: `<path d="M4 44 Q10 29 16 44 M20 44 Q26 27 32 44 M36 44 Q42 31 48 44"/>
+    <path d="M47 44 Q50 29 57 31 Q61 35 56 38 L51 39" fill="WASH"/><circle cx="55" cy="33.5" r="0.8"/><path d="M58 37 L62 39 M58 37 L61 41"/>
+    <path d="M9 37 L11 34 M25 35 L27 32 M41 37 L43 34"/><path d="M2 49 Q8 46 14 49 T26 49 T38 49 T50 49 T62 49"/>`,
+  longship: `<path d="M8 40 Q32 54 56 40 L54 44 Q32 56 10 44 Z" fill="WASH"/><path d="M56 40 Q62 30 56 25 Q53 29 57 32"/><path d="M8 40 Q2 31 8 27 Q11 31 7 33"/>
+    <path d="M32 47 V11"/><path d="M19 13 H45 V33 H19 Z"/><path d="M25 13 V33 M32 13 V33 M39 13 V33"/>
+    <circle cx="17" cy="43" r="1.5"/><circle cx="24" cy="45" r="1.5"/><circle cx="31" cy="46" r="1.5"/><circle cx="38" cy="45" r="1.5"/><circle cx="45" cy="43" r="1.5"/>
+    <path d="M2 54 Q8 51 14 54 T26 54 T38 54 T50 54 T62 54"/>`,
+  junk: `<path d="M6 41 L12 49 H52 L58 39 Z" fill="WASH"/><path d="M15 41 V14 M33 41 V8 M48 40 V18"/>
+    <path d="M15 16 Q22 15 26 18 V38 H15 M33 10 Q40 9 44 12 V37 H33 M48 20 Q53 19 56 22 V37 H48"/>
+    <path d="M15 24 H26 M15 31 H26 M33 18 H44 M33 26 H44 M48 27 H56"/><path d="M2 54 Q8 51 14 54 T26 54 T38 54 T50 54 T62 54"/>`,
+  camel: `<path d="M12 34 Q16 20 25 28 Q31 16 39 28 Q43 31 46 29 L50 22 Q53 20 55 23 L52 27 L49 35 Q44 39 36 38 H18 Q13 38 12 34 Z" fill="WASH"/>
+    <path d="M18 38 L16 52 M23 38 L24 52 M36 38 L34 52 M42 37 L44 52"/><path d="M12 34 Q8 36 9 42"/><circle cx="52.5" cy="23.5" r="0.7"/>
+    <path d="M24 24 L21 14 L27 14 Z"/><path d="M3 53 Q20 50 34 53 T62 52" opacity=".6"/>`,
+  canoe: `<path d="M30 42 Q18 22 24 7 Q34 21 45 13 Q38 30 34 42 Z" fill="WASH"/><path d="M32 42 L28 18"/>
+    <path d="M6 46 Q32 52 58 46 M10 41 Q32 46 54 41"/><path d="M18 42 V47 M32 44 V49 M46 42 V47"/>
+    <path d="M2 55 Q8 52 14 55 T26 55 T38 55 T50 55 T62 55"/>`,
+  galleon: `<path d="M8 38 L14 49 H50 L58 36 L48 38 H17 Z" fill="WASH"/><path d="M48 38 V32 H58 V36"/>
+    <path d="M24 38 V8 M38 38 V6"/><path d="M15 14 Q24 18 33 14 V28 Q24 32 15 28 Z M29 11 Q38 15 47 11 V27 Q38 31 29 27 Z"/>
+    <path d="M38 6 L44 8 L38 10"/><path d="M14 42 H52" opacity=".6"/><path d="M2 54 Q8 51 14 54 T26 54 T38 54 T50 54 T62 54"/>`,
+  balloon: `<path d="M32 5 Q13 5 15 23 Q17 33 26 40 H38 Q47 33 49 23 Q51 5 32 5 Z" fill="WASH"/>
+    <path d="M32 5 V40 M23 8 Q20 24 27 40 M41 8 Q44 24 37 40"/><path d="M16 22 Q32 27 48 22"/>
+    <path d="M26 40 L28 47 M38 40 L36 47"/><path d="M27 47 H37 V53 H27 Z"/>`,
+  train: `<path d="M14 44 V32 H42 V44 Z M42 44 V24 H54 V44 Z" fill="WASH"/><path d="M18 32 L16 19 H26 L24 32"/>
+    <path d="M14 44 L7 51 H14"/><circle cx="21" cy="47" r="5"/><circle cx="33" cy="47" r="5"/><circle cx="48" cy="46" r="6"/>
+    <path d="M45 28 H51 V34 H45 Z"/><circle cx="19" cy="12" r="3.5"/><circle cx="12" cy="7" r="4.5"/><path d="M2 53 H62"/>`,
+  steamship: `<path d="M3 39 H58 L54 49 H9 Z" fill="WASH"/><path d="M12 39 V33 H50 V39"/>
+    <path d="M17 33 L19 21 H24 L23 33 M26 33 L28 21 H33 L32 33 M35 33 L37 21 H42 L41 33 M44 33 L46 21 H50 L49 33"/>
+    <path d="M14 44 H15 M21 44 H22 M28 44 H29 M35 44 H36 M42 44 H43"/><path d="M2 55 Q8 52 14 55 T26 55 T38 55 T50 55 T62 55"/>`,
+  biplane: `<path d="M8 25 H52 V29 H8 Z M8 37 H52 V41 H8 Z" fill="WASH"/><path d="M14 29 V37 M24 29 V37 M36 29 V37 M46 29 V37"/>
+    <path d="M52 33 H60 M56 27 V39"/><path d="M2 31 H8 M4 28 V35"/><circle cx="31" cy="23" r="2.5"/><path d="M31 25.5 V29"/>`,
+  airship: `<ellipse cx="32" cy="25" rx="26" ry="10" fill="WASH"/><path d="M14 18 Q12 25 14 32 M23 16 Q21 25 23 34 M32 15 V35 M41 16 Q43 25 41 34 M50 18 Q52 25 50 32"/>
+    <path d="M55 21 L62 15 V35 L55 29"/><path d="M26 35 H38 V40 H26 Z"/>`,
+  rocket: `<circle cx="27" cy="27" r="9" fill="WASH"/><path d="M33 33 L60 47 M31 35 L52 56 M35 30 L61 38 M28 36 L40 61"/><path d="M21 23 Q24 20 28 21"/>`,
+  volcano: `<path d="M5 54 L23 26 H41 L59 54 Z" fill="WASH"/><path d="M23 26 Q32 30 41 26"/><path d="M29 28 L26 40 M35 28 L38 44"/>
+    <circle cx="27" cy="18" r="5"/><circle cx="35" cy="14" r="6"/><circle cx="44" cy="9" r="5"/><circle cx="24" cy="9" r="3.5"/>`,
+  elephant: `<path d="M12 40 Q11 22 30 21 Q43 20 46 30 Q52 29 54 38 Q55 49 51 50" fill="WASH"/><path d="M12 40 H44"/>
+    <path d="M16 40 V52 M23 40 V52 M36 40 V52 M43 40 V51"/><path d="M36 26 Q31 31 35 37 Q40 38 41 31"/><path d="M47 37 Q44 42 39 41"/><circle cx="45" cy="29" r="0.8"/>
+    <path d="M24 21 L22 14 H32 L30 21"/><path d="M4 54 L20 46 L30 52 L44 42 L60 52" opacity=".5"/>`,
+  horse: `<path d="M14 36 H44 V26 Q45 17 51 15 L57 19 L52 25 V36 Z" fill="WASH"/><path d="M18 36 V47 M24 36 V47 M38 36 V47 M44 36 V47"/>
+    <path d="M10 47 H50"/><circle cx="16" cy="51" r="3"/><circle cx="44" cy="51" r="3"/><path d="M14 30 H44 M20 26 V36 M30 26 V36"/><path d="M48 15 L46 10 M14 32 Q9 34 10 40"/><circle cx="53" cy="18" r="0.8"/>`,
+  press: `<path d="M14 54 V10 H50 V54"/><path d="M14 16 H50"/><path d="M32 16 V30"/><path d="M20 24 H44"/>
+    <path d="M22 30 H42 V36 H22 Z" fill="WASH"/><path d="M18 42 H46 V46 H18 Z"/><path d="M24 40 L40 40" opacity=".6"/><path d="M8 54 H56"/>`,
+  dodo: `<path d="M14 42 Q10 25 27 24 Q33 17 42 19 Q51 21 49 29 Q46 33 42 31 Q44 40 36 45 Q24 50 14 42 Z" fill="WASH"/>
+    <path d="M49 29 Q53 31 50 34"/><circle cx="43" cy="23" r="0.8"/><path d="M12 33 Q6 31 7 26 M12 36 Q6 37 5 33"/>
+    <path d="M27 46 L25 54 M33 46 L35 54 M22 54 H28 M32 54 H38"/>`,
+  footprints: `<ellipse cx="12" cy="50" rx="2.6" ry="4.5" fill="WASH"/><ellipse cx="20" cy="44" rx="2.6" ry="4.5" fill="WASH"/>
+    <ellipse cx="26" cy="35" rx="2.6" ry="4.5" fill="WASH"/><ellipse cx="34" cy="30" rx="2.6" ry="4.5" fill="WASH"/>
+    <ellipse cx="40" cy="21" rx="2.6" ry="4.5" fill="WASH"/><ellipse cx="48" cy="16" rx="2.6" ry="4.5" fill="WASH"/>
+    <path d="M52 9 L58 4" opacity=".5"/>`,
+  kraken: `<path d="M10 46 Q4 30 14 22 Q20 18 18 26 Q14 34 20 44"/><path d="M26 46 Q24 20 36 12 Q42 10 39 17 Q32 26 34 46" fill="WASH"/>
+    <path d="M44 46 Q46 32 56 30 Q61 30 58 35 Q52 38 52 46"/>
+    <circle cx="15" cy="30" r="1"/><circle cx="31" cy="24" r="1"/><circle cx="32" cy="32" r="1"/><circle cx="51" cy="36" r="1"/>
+    <path d="M2 50 Q8 47 14 50 T26 50 T38 50 T50 50 T62 50"/>`,
+
+  // --- Nature in history --------------------------------------------------------
+  wheat: `<path d="M22 54 Q24 36 27 21 M32 54 V17 M42 54 Q40 36 37 21"/>
+    <path d="M32 17 Q28 12 30 6 Q34 10 32 17 Z M32 23 Q27 20 28 14 Q31 17 32 23 Z M32 23 Q37 20 36 14 Q33 17 32 23 Z M32 29 Q27 26 28 20 Q31 23 32 29 Z M32 29 Q37 26 36 20 Q33 23 32 29 Z" fill="WASH"/>
+    <path d="M27 21 Q23 17 25 11 Q29 15 27 21 Z M37 21 Q41 17 39 11 Q35 15 37 21 Z" fill="WASH"/>
+    <path d="M32 42 Q24 38 20 32 M32 38 Q40 34 44 30"/><path d="M10 54 H54"/>`,
+  rice: `<path d="M16 50 Q20 30 30 20 Q38 16 41 26 M30 50 Q33 32 43 24 Q51 20 52 30 M44 50 Q44 38 50 32"/>
+    <ellipse cx="41" cy="27" rx="1.6" ry="2.4" fill="WASH"/><ellipse cx="40" cy="31" rx="1.6" ry="2.4" fill="WASH"/><ellipse cx="38" cy="34.5" rx="1.6" ry="2.4" fill="WASH"/>
+    <ellipse cx="52" cy="31" rx="1.6" ry="2.4" fill="WASH"/><ellipse cx="51" cy="35" rx="1.6" ry="2.4" fill="WASH"/><ellipse cx="49.5" cy="38.5" rx="1.6" ry="2.4" fill="WASH"/>
+    <path d="M20 40 Q14 36 10 38 M34 40 Q28 34 24 36"/><path d="M2 50 H62 M6 55 H20 M28 55 H44 M50 55 H60" opacity=".7"/>`,
+  maize: `<path d="M32 10 Q42 18 40 40 Q32 46 24 40 Q22 18 32 10 Z" fill="WASH"/>
+    <path d="M27 20 H37 M25 26 H39 M25 32 H39 M26 38 H38 M32 12 V44 M28 14 V42 M36 14 V42" opacity=".7"/>
+    <path d="M24 40 Q14 36 11 21 Q20 30 26 32 M40 40 Q50 36 53 21 Q44 30 38 32"/><path d="M32 44 V56"/><path d="M32 10 Q30 5 33 2"/>`,
+  hippo: `<path d="M8 41 Q7 27 23 26 Q34 24 44 28 Q55 28 57 36 Q57 42 50 42 H14 Q9 42 8 41 Z" fill="WASH"/>
+    <path d="M14 42 V47 M21 42 V47 M43 42 V47 M50 42 V47"/><path d="M46 27 L47 23 L50 27"/><circle cx="50" cy="31" r="0.8"/><circle cx="55.5" cy="35" r="0.6"/>
+    <path d="M2 46 Q8 43 14 46 T26 46 T38 46 T50 46 T62 46"/><path d="M4 46 V34 M7 46 V31 M10 46 V36"/>`,
+  tree: `<path d="M27 56 Q23 44 29 36 Q33 30 27 22 M35 56 Q39 46 35 38 Q32 32 38 24"/>
+    <path d="M29 36 Q20 32 14 34 M34 32 Q44 28 50 30 M27 22 Q23 16 18 16 M38 24 Q42 18 48 16"/>
+    <path d="M9 34 Q7 28 13 27 Q17 24 21 28 Q23 33 17 35 Z M44 30 Q44 24 50 24 Q56 25 55 31 Q52 34 46 33 Z M13 18 Q11 12 17 11 Q23 10 23 16 Q21 20 15 20 Z M44 18 Q44 12 50 12 Q55 13 54 18 Q51 21 46 20 Z" fill="WASH"/>
+    <path d="M6 56 H58"/><path d="M12 56 Q15 52 19 56 M44 56 Q48 51 52 56"/>`,
+  bull: `<path d="M10 38 Q10 24 26 24 H44 Q52 22 54 30 L58 36 Q56 40 52 38 L48 38 Q44 40 40 40 H16 Q11 40 10 38 Z" fill="WASH"/>
+    <path d="M16 40 V52 M22 40 V52 M40 40 V52 M46 39 V52"/><path d="M50 25 Q47 16 55 12 M53 26 Q58 19 62 21"/>
+    <path d="M10 30 Q5 34 6 42"/><circle cx="52" cy="29" r="0.8"/><path d="M4 53 H60" opacity=".5"/>`,
+  moa: `<path d="M17 31 Q17 20 29 20 Q40 22 40 30 Q38 38 28 38 Q20 38 17 31 Z" fill="WASH"/>
+    <path d="M36 22 Q40 12 44 8"/><path d="M44 8 Q48 5 51 9 L46 11"/><circle cx="46" cy="8" r="0.7"/>
+    <path d="M26 38 L24 54 M32 38 L34 54 M20 54 H27 M31 54 H38"/><path d="M22 26 Q28 24 34 28 M20 31 Q27 29 33 33" opacity=".6"/>`,
+  potato: `<path d="M32 30 V8"/><path d="M32 16 Q24 10 20 14 Q24 18 32 18 M32 12 Q40 6 44 10 Q40 14 32 14 M32 23 Q42 19 46 23 Q42 27 32 25" fill="WASH"/>
+    <path d="M4 32 H60"/><path d="M32 32 Q26 38 20 42 M32 32 Q38 40 42 46 M32 32 V43"/>
+    <ellipse cx="17" cy="45" rx="6" ry="4.5" fill="WASH"/><ellipse cx="44" cy="49" rx="6.5" ry="4.5" fill="WASH"/><ellipse cx="31" cy="48" rx="5" ry="4" fill="WASH"/>
+    <circle cx="15" cy="44" r="0.6"/><circle cx="46" cy="48" r="0.6"/>`,
+  tulip: `<path d="M32 56 Q30 40 32 31"/><path d="M31 50 Q20 44 18 30 Q26 38 31 44 M33 46 Q44 42 46 28 Q38 36 33 40"/>
+    <path d="M24 14 Q24 30 32 32 Q40 30 40 14 L36 18 L32 10 L28 18 Z" fill="WASH"/>
+    <circle cx="51" cy="12" r="5"/><path d="M50 9 Q52 8 52 10 V15 M49 12 H53"/>`,
+  frost: `<path d="M8 40 L14 30 L20 40 Z M44 40 L50 30 L56 40 Z" fill="WASH"/><path d="M14 30 V27 L17 28 L14 29 M50 30 V27 L53 28 L50 29"/>
+    <circle cx="32" cy="20" r="3.5"/><path d="M29 16 H35 M30 16 V12 H34 V16"/><path d="M32 23.5 L30 34 M31 27 L24 24 M31 27 L38 30 M30 34 L25 42 M30 34 L37 41"/>
+    <path d="M22 43 H28 M35 42 H41"/><path d="M2 46 H62"/><path d="M10 50 L16 48 M40 52 L48 49" opacity=".6"/>
+    <path d="M52 6 V16 M47.5 8.5 L56.5 13.5 M47.5 13.5 L56.5 8.5"/>`,
+  bird: `<path d="M12 34 Q20 24 34 26 Q42 22 48 24 Q52 26 50 29 L46 30 Q42 36 32 38 Q22 40 12 34 Z" fill="WASH"/>
+    <path d="M12 34 L2 40 M14 36 L4 44"/><path d="M24 30 Q32 26 40 30"/><circle cx="47" cy="26" r="0.8"/><path d="M50 27 L54 27.5"/>
+    <path d="M8 46 H56 M30 38 V46 M34 38 V46"/><path d="M14 12 l3 2 l3 -2 M26 8 l3 2 l3 -2 M40 12 l3 2 l3 -2 M50 6 l3 2 l3 -2 M33 16 l2 1.5 l2 -1.5"/>`,
+  dust: `<path d="M2 54 V20 Q8 10 18 16 Q24 6 34 14 Q40 10 44 18 Q48 24 44 30 Q52 34 48 42 Q54 46 50 54 Z" fill="WASH"/>
+    <path d="M10 26 Q16 22 20 28 M22 20 Q28 16 32 22 M14 38 Q22 34 28 40 M30 32 Q36 28 40 34 M20 48 Q28 44 34 50" opacity=".7"/>
+    <path d="M50 54 V44 L55 39 L60 44 V54"/><path d="M53 54 V49 H57 V54"/><path d="M2 54 H62"/>`,
+  thylacine: `<path d="M10 36 Q12 26 24 26 H42 Q48 22 52 24 L58 28 L54 32 L50 32 Q48 38 42 38 H16 Q11 38 10 36 Z" fill="WASH"/>
+    <path d="M16 38 V50 M22 38 V50 M38 38 V50 M44 37 V50"/><path d="M10 32 L2 30"/><path d="M27 26 V32 M31 26 V33 M35 26 V32 M39 26 V31"/>
+    <path d="M50 24 L52 19 L54 25"/><circle cx="53" cy="26.5" r="0.7"/><path d="M4 51 H60" opacity=".5"/>`,
+  wolf: `<path d="M46 54 V36 H60 V54 Z" opacity=".55"/><path d="M52 36 V18 H57 V36 M52 24 H57 M52 30 H57" opacity=".55"/>
+    <path d="M14 54 Q12 40 18 32 Q20 24 24 18 L26 9 L29 15 L33 13 L32 21 Q34 30 32 40 Q36 48 34 54 Z" fill="WASH"/>
+    <path d="M26 9 L34 3 M29 12 L35 7"/><path d="M14 54 Q6 52 6 44"/><circle cx="28" cy="15" r="0.7"/><path d="M2 54 H62"/>`,
+
+  // --- The Surveyor: a small, long-nosed figure with a telescope ---------------
+  surveyor: `<path d="M24 12 H38 M27 12 V4 H35 V12"/><circle cx="31" cy="17" r="5"/><path d="M35 17 L41 19 L35 20"/>
+    <path d="M27 22 L22 44 H38 L34 22 Z" fill="WASH"/><path d="M33 26 L50 17"/><path d="M48 15 L54 12 L56 16 L50 19 Z"/>
+    <path d="M27 28 L18 34 L14 30"/><path d="M26 44 L23 56 M34 44 L37 56 M20 56 H25 M35 56 H40"/>`,
+};
+
+const FILTER = (seed: number) =>
+  `<filter id="pen" x="-10%" y="-10%" width="120%" height="120%"><feTurbulence type="fractalNoise" baseFrequency="0.07" numOctaves="1" seed="${seed}"/><feDisplacementMap in="SourceGraphic" scale="1.7"/></filter>`;
+
+/** Clay: a lumpier wobble and a soft cast shadow, like a figure on a stop-motion set. */
+const CLAY_FILTER = (seed: number) =>
+  `<filter id="pen" x="-15%" y="-15%" width="135%" height="135%"><feTurbulence type="fractalNoise" baseFrequency="0.045" numOctaves="2" seed="${seed}"/><feDisplacementMap in="SourceGraphic" scale="2.6" result="lumpy"/><feDropShadow in="lumpy" dx="1.4" dy="2" stdDeviation="1" flood-color="#3c2010" flood-opacity="0.35"/></filter>`;
+
+export const DRAWING_KINDS = Object.keys(D);
+
+/**
+ * SVG for a drawing. The halo pass draws the same lines wide in the background
+ * colour first, so the drawing stays legible over any territory.
+ */
+export function drawingSvg(kind: string, ink: string, wash: string, halo: string, seed = 1, clay = false): string {
+  const body = D[kind] ?? D.temple;
+  const haloBody = body.replace(/fill="WASH"/g, 'fill="none"');
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="128" height="128">
+    <defs>${clay ? CLAY_FILTER(seed) : FILTER(seed)}</defs>
+    <g filter="url(#pen)" stroke-linecap="round" stroke-linejoin="round">
+      <g fill="none" stroke="${halo}" stroke-width="${clay ? 7.5 : 6}" opacity="0.85">${haloBody}</g>
+      <g fill="none" stroke="${ink}" stroke-width="${clay ? 3.2 : 2.3}">${body.replace(/fill="WASH"/g, `fill="${wash}"`)}</g>
+    </g></svg>`;
+}

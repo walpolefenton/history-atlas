@@ -1,10 +1,10 @@
 import "./style.css";
-import { AtlasMap } from "./map";
-import { eventsForEra, loadEvents, loadLand, loadMeta, loadWikidataEvents, loadYear } from "./data";
+import { AtlasMap, letteringEra, type YearLayers } from "./map";
+import { drawingsForEra, eventsForEra, loadDrawings, loadEvents, loadLand, loadMeta, loadSurveyor, loadWikidataEvents, loadYear } from "./data";
 import { formatYear } from "./format";
-import { initPanel, renderCompare, renderEvent, renderList, renderOverview, renderPolity, type PanelContext } from "./panel";
+import { initPanel, renderCompare, renderDrawing, renderEvent, renderList, renderOverview, renderPolity, renderSurveyor, type PanelContext } from "./panel";
 import { initSearch } from "./search";
-import type { EventType, HistoryEvent, Meta, Selection, YearData } from "./types";
+import type { Drawing, EventType, HistoryEvent, Meta, Selection, SurveyorSpot, YearData } from "./types";
 import { applyTheme, loadThemeChoice, saveThemeChoice, type ThemeChoice } from "./theme";
 
 const TICK_YEARS = [-10000, -3000, -1000, -1, 500, 1000, 1500, 1800, 1914, 2010];
@@ -19,10 +19,26 @@ const ERAS = [
   { name: "Early modern", from: 1500 },
   { name: "Modern", from: 1800 },
 ];
-const THEME_LABEL: Record<ThemeChoice, string> = { auto: "Auto", night: "Night", survey: "Survey" };
-const THEME_ORDER: ThemeChoice[] = ["night", "survey", "auto"];
+const THEME_LABEL: Record<ThemeChoice, string> = { auto: "Auto", night: "Night", survey: "Survey", clay: "Clay" };
+const THEME_ORDER: ThemeChoice[] = ["night", "survey", "clay", "auto"];
 
 const $ = <T extends HTMLElement>(id: string) => document.getElementById(id) as T;
+
+const FOUND_KEY = "atlas-surveyor-found";
+function loadFound(): Set<number> {
+  try {
+    return new Set(JSON.parse(localStorage.getItem(FOUND_KEY) ?? "[]"));
+  } catch {
+    return new Set();
+  }
+}
+function saveFound(found: Set<number>) {
+  try {
+    localStorage.setItem(FOUND_KEY, JSON.stringify([...found]));
+  } catch {
+    /* progress just won't persist */
+  }
+}
 
 interface Era {
   data: YearData;
@@ -31,6 +47,8 @@ interface Era {
   key: HistoryEvent[];
   /** Imported Wikidata events, most widely covered first. */
   more: HistoryEvent[];
+  drawings: Drawing[];
+  surveyor: SurveyorSpot | null;
 }
 
 class App {
@@ -44,6 +62,8 @@ class App {
   private wdEvents: HistoryEvent[] = [];
   /** Event requested by URL before the Wikidata events had loaded. */
   private pendingEvent: string | null = null;
+  /** Snapshot years in which this viewer has found the Surveyor. */
+  private found = loadFound();
 
   // Compare mode: a second map showing another snapshot, camera-synced.
   private compareIndex: number | null = null;
@@ -55,6 +75,8 @@ class App {
     private curated: HistoryEvent[],
     private atlas: AtlasMap,
     private land: GeoJSON.FeatureCollection,
+    private drawings: Drawing[],
+    private spots: Record<string, SurveyorSpot>,
   ) {}
 
   private get years() {
@@ -84,7 +106,13 @@ class App {
       more: eventsForEra(this.wdEvents, data.year, next)
         .filter(visible)
         .sort((a, b) => (b.notability ?? 0) - (a.notability ?? 0)),
+      drawings: drawingsForEra(this.drawings, data.year, next),
+      surveyor: this.spots[String(data.year)] ?? null,
     };
+  }
+
+  private layers(era: Era): YearLayers {
+    return { data: era.data, featured: era.key, more: era.more, drawings: era.drawings, surveyor: era.surveyor };
   }
 
   private context(): PanelContext {
@@ -95,6 +123,8 @@ class App {
       nextYear: era.next,
       eraEvents: era.key,
       moreEvents: era.more,
+      drawings: era.drawings,
+      surveyor: { spot: era.surveyor, found: this.found.has(this.data.year), count: this.found.size, total: Object.keys(this.spots).length },
       hiddenTypes: this.hiddenTypes,
       compare: this.compareData,
       actions: {
@@ -104,6 +134,8 @@ class App {
         showOverview: () => this.select({ kind: "none" }, true),
         toggleType: (t) => this.toggleType(t),
         setCompareYear: (year) => this.setCompareIndex(this.years.indexOf(year)),
+        selectDrawing: (id) => this.selectDrawing(id, true),
+        showSurveyor: () => this.select({ kind: "surveyor" }, true),
       },
     };
   }
@@ -134,6 +166,8 @@ class App {
     // Thousands separators only for deep prehistory ("10,000"), never for "1914".
     $("ym-num").textContent = Math.abs(year) >= 10000 ? Math.abs(year).toLocaleString("en") : String(Math.abs(year));
     $("ym-era").textContent = year < 0 ? "BCE" : "CE";
+    // The year numeral is set in the same lettering as the map labels.
+    document.body.dataset.lettering = letteringEra(year);
     for (const b of document.querySelectorAll<HTMLElement>(".era")) b.setAttribute("aria-current", String(b.dataset.from !== undefined && eraOf(year) === b.dataset.name));
     document.body.classList.add("loading");
 
@@ -141,7 +175,7 @@ class App {
     if (token !== this.loadToken) return; // a newer request superseded this one
     this.data = data;
     const era = this.era(i, data);
-    await this.atlas.setYear(data, era.key, era.more);
+    await this.atlas.setYear(this.layers(era));
     $("map-a-year").textContent = formatYear(year);
     document.body.classList.remove("loading");
 
@@ -153,7 +187,10 @@ class App {
     } else if (sel.kind === "event") {
       const id = sel.id;
       if (![...era.key, ...era.more].some((e) => e.id === id)) sel = { kind: "none" };
-    }
+    } else if (sel.kind === "drawing") {
+      const id = sel.id;
+      if (!era.drawings.some((d) => d.id === id)) sel = { kind: "none" };
+    } else if (sel.kind === "surveyor") sel = { kind: "none" };
     if (this.compareIndex !== null && sel.kind === "none") sel = { kind: "compare" };
     this.select(sel, false);
 
@@ -163,11 +200,9 @@ class App {
 
   /** Re-applies events and panel after a filter or data change, without reloading borders. */
   private refresh() {
-    const era = this.era(this.index, this.data);
-    this.atlas.setYear(this.data, era.key, era.more);
+    this.atlas.setYear(this.layers(this.era(this.index, this.data)));
     if (this.atlasB && this.compareData && this.compareIndex !== null) {
-      const b = this.era(this.compareIndex, this.compareData);
-      this.atlasB.setYear(this.compareData, b.key, b.more);
+      this.atlasB.setYear(this.layers(this.era(this.compareIndex, this.compareData)));
     }
     this.select(this.selection, false);
   }
@@ -188,6 +223,8 @@ class App {
       this.atlasB = await AtlasMap.create("map-b", this.land, {
         onPolityClick: (name) => this.selectPolity(name, undefined, false),
         onEventClick: (id) => this.selectEvent(id, false),
+        onDrawingClick: (id) => this.selectDrawing(id, false),
+        onSurveyorClick: () => {},
       }, { secondary: true });
       this.atlas.syncWith(this.atlasB);
     }
@@ -213,8 +250,8 @@ class App {
     const data = await loadYear(this.years[i]);
     if (this.compareIndex !== i) return;
     this.compareData = data;
-    const b = this.era(i, data);
-    await this.atlasB.setYear(data, b.key, b.more);
+    // The comparison map carries no Surveyor: one hiding place per year.
+    await this.atlasB.setYear({ ...this.layers(this.era(i, data)), surveyor: null });
     const select = $<HTMLSelectElement>("compare-year");
     select.value = String(this.years[i]);
     const keepPolity = this.selection.kind === "polity" ? this.selection : null;
@@ -233,6 +270,11 @@ class App {
       else renderOverview(ctx, focusPanel);
     } else if (sel.kind === "list") renderList(ctx, focusPanel);
     else if (sel.kind === "compare" && this.compareData) renderCompare(ctx, focusPanel);
+    else if (sel.kind === "drawing") {
+      const d = this.drawings.find((x) => x.id === sel.id);
+      if (d) renderDrawing(ctx, d, focusPanel);
+      else renderOverview(ctx, focusPanel);
+    } else if (sel.kind === "surveyor") renderSurveyor(ctx, focusPanel);
     else renderOverview(ctx, focusPanel);
 
     const polity = sel.kind === "polity" ? sel.name : null;
@@ -278,6 +320,30 @@ class App {
       this.select({ kind: "event", id }, true);
     }
     if (fly) this.atlas.flyToPoint(e.lon, e.lat);
+  }
+
+  async selectDrawing(id: string, fly: boolean) {
+    const d = this.drawings.find((x) => x.id === id);
+    if (!d) return;
+    if (!this.era(this.index, this.data).drawings.some((x) => x.id === id)) {
+      // Jump to the snapshot whose era contains the year it was built.
+      let i = 0;
+      while (i + 1 < this.years.length && this.years[i + 1] <= d.from) i++;
+      await this.setIndex(i, { kind: "drawing", id });
+    } else {
+      this.select({ kind: "drawing", id }, true);
+    }
+    // Fly in far enough for the drawing's tier to be visible.
+    if (fly) this.atlas.flyToPoint(d.lon, d.lat, d.tier === 3 ? 4.2 : d.tier === 2 ? 3.4 : 3);
+  }
+
+  /** The viewer clicked the hidden Surveyor. */
+  foundSurveyor() {
+    if (!this.found.has(this.data.year)) {
+      this.found.add(this.data.year);
+      saveFound(this.found);
+    }
+    this.select({ kind: "surveyor" }, true);
   }
 
   // --- Controls --------------------------------------------------------------
@@ -415,6 +481,7 @@ function toHash(year: number, sel: Selection, compare: number | null) {
   if (sel.kind === "polity") q.set("p", sel.name);
   if (sel.kind === "event") q.set("e", sel.id);
   if (sel.kind === "list") q.set("v", "list");
+  if (sel.kind === "drawing") q.set("d", sel.id);
   return "#" + q.toString();
 }
 
@@ -428,25 +495,32 @@ function parseHash(hash: string): { year?: number; compare?: number; selection: 
     ? { kind: "polity", name: q.get("p")! }
     : q.get("e")
       ? { kind: "event", id: q.get("e")! }
-      : q.get("v") === "list"
-        ? { kind: "list" }
-        : { kind: "none" };
+      : q.get("d")
+        ? { kind: "drawing", id: q.get("d")! }
+        : q.get("v") === "list"
+          ? { kind: "list" }
+          : { kind: "none" };
   return { year: num("y"), compare: num("c"), selection };
 }
 
 async function boot() {
   applyTheme(loadThemeChoice());
   try {
-    const [meta, curated, land] = await Promise.all([loadMeta(), loadEvents(), loadLand()]);
+    const [meta, curated, land, drawings, spots] = await Promise.all([loadMeta(), loadEvents(), loadLand(), loadDrawings(), loadSurveyor()]);
     let app: App;
     const atlas = await AtlasMap.create("map", land, {
       onPolityClick: (name) => app.selectPolity(name, undefined, false),
       onEventClick: (id) => app.selectEvent(id, false),
+      onDrawingClick: (id) => app.selectDrawing(id, false),
+      onSurveyorClick: () => app.foundSurveyor(),
     });
-    app = new App(meta, curated, atlas, land);
-    const search = initSearch(meta, curated, {
+    app = new App(meta, curated, atlas, land, drawings, spots);
+    // Handy for testing in development; not present in production builds.
+    if (import.meta.env.DEV) Object.assign(window, { __atlas: atlas, __app: app });
+    const search = initSearch(meta, curated, drawings, {
       onPolity: (name, years) => app.selectPolity(name, nearest(years, Number(new URLSearchParams(location.hash.slice(1)).get("y") ?? 1914)), true),
       onEvent: (e) => app.selectEvent(e.id, true),
+      onDrawing: (d) => app.selectDrawing(d.id, true),
     });
     await app.start();
     // The full event set is large; load it after the first map is on screen.

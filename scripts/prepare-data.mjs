@@ -56,17 +56,37 @@ function labelPoint(geom) {
   return [round(p[0]), round(p[1])];
 }
 
-// Stable colour index per sovereign, so colonies share their ruler's colour and
-// a power keeps its colour across eras. The app maps indexes to theme palettes.
-const PALETTE_SIZE = 12;
-function colorIndex(key) {
+// Colour index per sovereign: the palette family comes from the cultural
+// region of the power's heartland, the shade within it from a stable hash.
+// Colonies share their ruler's colour, and a power keeps it across eras.
+// The app maps indexes to theme palettes (src/theme.ts, REGION_FAMILIES).
+const SHADES = 4;
+const REGIONS = ["europe", "mena", "steppe", "eastAsia", "southAsia", "seAsiaOceania", "africa", "americas"];
+
+function hash(key) {
   let h = 2166136261;
   for (let i = 0; i < key.length; i++) {
     h ^= key.charCodeAt(i);
     h = Math.imul(h, 16777619);
   }
-  return (h >>> 0) % PALETTE_SIZE;
+  return h >>> 0;
 }
+
+/** Broad cultural region for a point. Coarse by design: it only picks a colour family. */
+function regionOf([lon, lat]) {
+  if (lon < -30) return "americas";
+  if ((lat >= 36 && lon < 26) || (lat >= 42 && lon < 45)) return "europe";
+  if (lat >= 42 && lon >= 45) return lon >= 110 && lat < 54 ? "eastAsia" : "steppe";
+  if (lat >= 12 && lon >= -20 && lon < 63) return "mena";
+  if (lat >= 36 && lon >= 63 && lon < 100) return "steppe";
+  if (lon >= 60 && lon < 92 && lat >= 5) return "southAsia";
+  if (lon >= 100 && lat >= 18) return "eastAsia";
+  if (lon >= 92) return "seAsiaOceania";
+  if (lat < 12 && lon >= -20 && lon < 60) return "africa";
+  return lat >= 42 ? "steppe" : "mena";
+}
+
+const colorIndex = (sovereign, heartland) => REGIONS.indexOf(regionOf(heartland)) * SHADES + (hash(sovereign) % SHADES);
 
 const norm = (s) =>
   (s ?? "")
@@ -182,24 +202,42 @@ for (const { year, filename } of index.years.sort((a, b) => a.year - b.year)) {
   const labels = [];
   const capitals = [];
 
-  for (const f of raw.features) {
+  // Each power's heartland: its capital if known, else the middle of its own
+  // territory, else of its largest holding. (Russia's middle is in Siberia;
+  // its capital puts it in Europe.)
+  const info = raw.features.map((f) =>
+    f.properties.NAME && f.geometry
+      ? { km2: Math.round(area(f.geometry) / 1e6), lp: labelPoint(f.geometry), capital: findCapital(f.properties.NAME, year, f.geometry) }
+      : null,
+  );
+  const heartland = new Map();
+  raw.features.forEach((f, i) => {
+    if (!info[i]?.lp) return;
+    const sovereign = f.properties.SUBJECTO || f.properties.NAME;
+    const own = f.properties.NAME === sovereign;
+    const best = heartland.get(sovereign);
+    const lp = info[i].capital ? info[i].capital.point : info[i].lp;
+    if (!best || (own && !best.own) || (own === best.own && info[i].km2 > best.km2)) heartland.set(sovereign, { own, km2: info[i].km2, lp });
+  });
+
+  for (const [i, f] of raw.features.entries()) {
     const name = f.properties.NAME;
     if (!name || !f.geometry) continue;
     const sovereign = f.properties.SUBJECTO || name;
-    const km2 = Math.round(area(f.geometry) / 1e6);
-    const capital = findCapital(name, year, f.geometry);
+    const km2 = info[i].km2;
+    const capital = info[i].capital;
     const props = {
       name,
       sovereign,
       partOf: f.properties.PARTOF || null,
       precision: f.properties.BORDERPRECISION ?? null,
-      ci: colorIndex(sovereign),
+      ci: colorIndex(sovereign, heartland.get(sovereign)?.lp ?? info[i].lp ?? [0, 0]),
       km2,
       qid: capital?.qid ?? null,
     };
     borders.push({ type: "Feature", properties: props, geometry: { type: f.geometry.type, coordinates: roundCoords(f.geometry.coordinates) } });
 
-    const lp = labelPoint(f.geometry);
+    const lp = info[i].lp;
     if (lp) labels.push({ type: "Feature", properties: { name, km2 }, geometry: { type: "Point", coordinates: lp } });
 
     if (capital) {

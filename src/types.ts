@@ -56,9 +56,43 @@ export interface HistoryEvent {
   notability?: number;
 }
 
+/** A landmark or curiosity drawn on the map (public/data/drawings.json). */
+export interface Drawing {
+  id: string;
+  name: string;
+  /** Which pen drawing to use (src/drawings.ts). */
+  kind: string;
+  cat: "landmark" | "curiosity" | "nature";
+  lat: number;
+  lon: number;
+  /** Years it existed; to is null if it still stands. */
+  from: number;
+  to: number | null;
+  approx?: boolean;
+  /** 1 visible from afar, 2 at regional zoom, 3 only up close. */
+  tier: 1 | 2 | 3;
+  /** The caption: dry, short, true. */
+  quip: string;
+  /** The plain fact behind the caption. */
+  note: string;
+  wiki: string;
+}
+
+/** Where the Surveyor hides in one snapshot (public/data/surveyor.json). */
+export interface SurveyorSpot {
+  lat: number;
+  lon: number;
+  hint: string;
+  place: string;
+  note: string;
+  wiki: string;
+}
+
 export type Selection =
   | { kind: "none" }
   | { kind: "polity"; name: string }
   | { kind: "event"; id: string }
   | { kind: "list" }
-  | { kind: "compare" };
+  | { kind: "compare" }
+  | { kind: "drawing"; id: string }
+  | { kind: "surveyor" };

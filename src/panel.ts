@@ -1,13 +1,14 @@
-import type { EventType, HistoryEvent, Meta, YearData } from "./types";
+import type { Drawing, EventType, HistoryEvent, Meta, SurveyorSpot, YearData } from "./types";
 import { EVENT_TYPES, PRECISION_LABEL, escapeHtml as esc, formatArea, formatEventDate, formatYear } from "./format";
 import { eventArticle, polityArticle, type WikiSummary } from "./wiki";
 import { eventIconSvg } from "./icons";
+import { drawingSvg } from "./drawings";
 import { currentTheme } from "./theme";
 
 /** The same pictogram the map uses for this event type, in the current theme. */
 function marker(type: EventType) {
   const t = currentTheme();
-  return `<span class="marker" aria-hidden="true">${eventIconSvg(type, t.events[type], t.ring)}</span>`;
+  return `<span class="marker" aria-hidden="true">${eventIconSvg(type, t.events[type], t.ring, t.clay)}</span>`;
 }
 
 export interface PanelContext {
@@ -22,6 +23,9 @@ export interface PanelContext {
   hiddenTypes: Set<EventType>;
   /** The second snapshot, when compare mode is on. */
   compare: YearData | null;
+  /** Landmarks and curiosities that existed during this era. */
+  drawings: Drawing[];
+  surveyor: { spot: SurveyorSpot | null; found: boolean; count: number; total: number };
   actions: {
     selectPolity(name: string, year?: number): void;
     selectEvent(id: string): void;
@@ -29,6 +33,8 @@ export interface PanelContext {
     showOverview(): void;
     toggleType(type: EventType): void;
     setCompareYear(year: number): void;
+    selectDrawing(id: string): void;
+    showSurveyor(): void;
   };
 }
 
@@ -49,6 +55,12 @@ export function initPanel() {
     else if (action === "overview") current.actions.showOverview();
     else if (action === "type") current.actions.toggleType(type as EventType);
     else if (action === "compare-year") current.actions.setCompareYear(Number(year));
+    else if (action === "drawing") current.actions.selectDrawing(id!);
+    else if (action === "drawing-surveyor") current.actions.showSurveyor();
+    else if (action === "hint") {
+      const hint = current.surveyor.spot?.hint;
+      if (hint) el.outerHTML = `<p class="small hint">Try looking around ${esc(hint)}, zoomed well in.</p>`;
+    }
     else if (action === "more-events") {
       for (const li of panel().querySelectorAll<HTMLElement>(".event-list .extra")) li.hidden = false;
       el.remove();
@@ -145,6 +157,7 @@ export function renderOverview(ctx: PanelContext, focus = false) {
       }
     </section>
     ${more}
+    ${lookCloser(ctx)}
     <section>
       <h3>Reading the map</h3>
       <p class="muted small">Territories ruled by the same power share a colour. Dashed outlines mark approximate borders. Large markers are key events; small ones are other recorded events, and more appear as you zoom in. The tower marks a capital. Select anything to learn more.</p>
@@ -409,4 +422,109 @@ export function renderCompare(ctx: PanelContext, focus = false) {
     <p class="small caveat">Territories are matched by name. A renamed state shows up as one that disappeared and one that appeared, and areas are approximate.</p>`,
     focus,
   );
+}
+
+// --- Drawings and the Surveyor ---------------------------------------------------
+
+/** The pen drawing as an inline image, in the current theme. */
+function drawingImg(kind: string, cls = "drawing-thumb") {
+  const t = currentTheme();
+  const svg = drawingSvg(kind, t.label, t.wash, t.ring, 3, t.clay);
+  return `<img class="${cls}" alt="" src="data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}" />`;
+}
+
+function lookCloser(ctx: PanelContext) {
+  const landmarks = ctx.drawings.filter((d) => d.cat === "landmark");
+  const nature = ctx.drawings.filter((d) => d.cat === "nature");
+  const curiosities = ctx.drawings.filter((d) => d.cat === "curiosity").length;
+  const list = (items: Drawing[]) =>
+    `<ul class="drawing-list">${items
+      .map((d) => `<li><button type="button" class="drawing-row" data-action="drawing" data-id="${esc(d.id)}">${drawingImg(d.kind)}<span>${esc(d.name)}</span></button></li>`)
+      .join("")}</ul>`;
+  const s = ctx.surveyor;
+  const surveyorLine = !s.spot
+    ? ""
+    : s.found
+      ? `<p class="small">You found the Surveyor here, at ${esc(s.spot.place)}. <button type="button" class="link" data-action="drawing-surveyor">See what they found</button></p>`
+      : `<p class="small">The Surveyor is hiding somewhere on this map. <button type="button" class="link" data-action="hint">Give me a hint</button></p>`;
+  return `<section>
+    <h3>Look closer</h3>
+    <p class="small muted">Drawings appear as you zoom in.${
+      curiosities ? ` ${curiosities} curiosit${curiosities === 1 ? "y is" : "ies are"} hidden somewhere on this map, unlisted.` : ""
+    }</p>
+    ${surveyorLine}
+    <p class="small muted">Surveyor found in ${s.count} of ${s.total} eras.</p>
+    ${landmarks.length ? `<h4>Landmarks standing</h4>${list(landmarks)}` : ""}
+    ${nature.length ? `<h4>Nature in this era</h4>${list(nature)}` : ""}
+  </section>`;
+}
+
+/** Ray-casting point-in-polygon, for "where was this, in this year?". */
+function inside([x, y]: [number, number], geom: GeoJSON.Polygon | GeoJSON.MultiPolygon) {
+  const polys = geom.type === "Polygon" ? [geom.coordinates] : geom.coordinates;
+  return polys.some((rings) => {
+    let hit = false;
+    for (const ring of rings) {
+      for (let i = 0, j = ring.length - 1; i < ring.length; j = i++) {
+        const [xi, yi] = ring[i];
+        const [xj, yj] = ring[j];
+        if (yi > y !== yj > y && x < ((xj - xi) * (y - yi)) / (yj - yi) + xi) hit = !hit;
+      }
+    }
+    return hit;
+  });
+}
+
+function territoryAt(ctx: PanelContext, lon: number, lat: number) {
+  return ctx.data.borders.features.find((f) => inside([lon, lat], f.geometry))?.properties ?? null;
+}
+
+export function renderDrawing(ctx: PanelContext, d: Drawing, focus = false) {
+  const where = territoryAt(ctx, d.lon, d.lat);
+  const built = `${d.approx ? "c. " : ""}${formatYear(d.from)}`;
+  const span = d.to === null ? `Since ${built}` : d.to === d.from ? built : `${built} – ${formatYear(d.to)}`;
+  render(
+    ctx,
+    `${backButton}
+    <figure class="drawing-hero">${drawingImg(d.kind, "drawing-large")}
+      <figcaption>${esc(d.quip)}</figcaption></figure>
+    <h2>${esc(d.name)}</h2>
+    <p class="lede">${span}</p>
+    <p>${esc(d.note)}</p>
+    ${
+      where
+        ? `<p class="small muted">In ${formatYear(ctx.data.year)} this lay in <button type="button" class="link" data-action="polity" data-name="${esc(where.name)}">${esc(where.name)}</button>${
+            where.sovereign !== where.name ? `, ruled by ${esc(where.sovereign)}` : ""
+          }.</p>`
+        : ""
+    }
+    <section aria-live="polite" id="wiki"><p class="muted">Loading Wikipedia summary…</p></section>`,
+    focus,
+  );
+  eventArticle(d.wiki).then((w) => {
+    if (current?.data !== ctx.data) return;
+    fillWiki(w, null);
+  });
+}
+
+export function renderSurveyor(ctx: PanelContext, focus = false) {
+  const spot = ctx.surveyor.spot;
+  if (!spot) return renderOverview(ctx, focus);
+  const { count, total } = ctx.surveyor;
+  render(
+    ctx,
+    `${backButton}
+    <figure class="drawing-hero">${drawingImg("surveyor", "drawing-large")}
+      <figcaption>Found. ${count === total ? "That was the last one, every era found." : `${count} of ${total} eras so far.`}</figcaption></figure>
+    <h2>${esc(spot.place)}</h2>
+    <p class="lede">${formatYear(ctx.data.year)}</p>
+    <p>${esc(spot.note)}</p>
+    <p class="small muted">The Surveyor hides somewhere different in every era. Move along the timeline to keep looking.</p>
+    <section aria-live="polite" id="wiki"><p class="muted">Loading Wikipedia summary…</p></section>`,
+    focus,
+  );
+  eventArticle(spot.wiki).then((w) => {
+    if (current?.data !== ctx.data) return;
+    fillWiki(w, null);
+  });
 }

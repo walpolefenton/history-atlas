@@ -1,6 +1,6 @@
 # History Atlas
 
-An interactive atlas of world history: borders, capitals and events from prehistory to today. Move through 54 snapshots of the world map, select any territory to see who ruled it, its capital and its Wikipedia summary, follow nearly 4,000 wars, battles, treaties, revolutions and disasters, and compare any two years side by side.
+An interactive atlas of world history: borders, capitals, events, landmarks and natural history from prehistory to today. Move through 54 snapshots of the world map, select any territory to see who ruled it, its capital and its Wikipedia summary, follow nearly 4,000 wars, battles, treaties, revolutions and disasters, and compare any two years side by side.
 
 ## Running it
 
@@ -33,7 +33,9 @@ npm run prepare:data     # writes public/data/, including physical geography
 - **Events:** key events (hand-written) show as large dots, other events from Wikidata as small ones. Use **Show event types** in the overview to filter both.
 - **Compare:** press **Compare** to see two years side by side, with a list of territories that appeared, disappeared, changed ruler or changed size.
 - **Search:** press `/` and search any territory name across all eras, or any event.
-- **Map style:** the last button in the toolbar switches between Night, Survey and Auto (which follows your system's light or dark setting).
+- **Map style:** the last button in the toolbar cycles through Night (a globe in space), Survey (a lithograph atlas), Clay (sculpted relief, after stop-motion animation) and Auto (Night or Survey, following your system).
+- **Look closer:** pen-and-ink drawings of landmarks, curiosities and moments in natural history appear as you zoom in, each with a short caption, the facts and a Wikipedia summary. Map lettering changes with the era: Roman capitals for antiquity, early printing type to 1800, a modern serif after.
+- **Find the Surveyor:** a small figure hides somewhere different in every era. The overview offers a hint and counts how many you've found (stored in your browser only).
 - **Sharing:** the URL holds the year and selection, e.g. `#y=1914&p=Ottoman+Empire`, `#y=1939&e=ww2` or `#y=1914&c=1920` for a comparison.
 
 ## Project layout
@@ -52,6 +54,9 @@ npm run prepare:data     # writes public/data/, including physical geography
 | `public/data/meta.json` | Snapshot list and which years each territory appears in |
 | `public/data/events.json` | Key events (hand-edited) |
 | `public/data/wd-events.json` | Generated Wikidata events |
+| `public/data/drawings.json` | Landmarks, curiosities and natural history (hand-edited) |
+| `public/data/surveyor.json` | The Surveyor's hiding place in each era (hand-edited) |
+| `src/drawings.ts` | The pen-and-ink drawings, as SVG |
 | `src/map.ts` | MapLibre map, layers and interaction |
 | `src/panel.ts` | Overview, territory, event and list views |
 | `src/search.ts` | Accessible search combobox |
@@ -73,7 +78,9 @@ Add an entry to `public/data/events.json`:
 - **Borders** come from historical-basemaps, which its authors describe as a work in progress. Its `BORDERPRECISION` value is shown in the app, and approximate borders are drawn dashed.
 - **Capitals** are matched to territories by name (via Wikidata labels, alternative names and curated aliases), then checked by date and location. About 20% of territory snapshots have one. Many territories are cultural regions with no capital. Matching is strict for modern states, so a few colonial-era capitals are missing rather than wrong. To improve coverage, add entries to `data-src/aliases.json`.
 - **Wikipedia summaries** are found through Wikidata where possible. Otherwise the exact title is tried, then a search. Matches found by search are labelled as possibly imperfect.
-- **Key events** are a set of about 100, hand-written and still being reviewed.
+- **Key events**, drawings and Surveyor notes are hand-written and still being reviewed. Each links to its Wikipedia article.
+- **Colours** come from a coarse cultural-region model (by the location of each power's capital or heartland). They are a visual aid, not a claim about identity.
+- **The Green Sahara** is shown for snapshots between 9000 and 3500 BCE, with simplified desert outlines.
 - **Wikidata events** are items with an English Wikipedia article covered by at least 12 language editions. Their dates and locations are as recorded in Wikidata, and some are approximate or wrong.
 - **Compare** matches territories by name, so a renamed state appears as one that disappeared plus one that appeared. The data also sometimes records the same colony under different rulers between snapshots.
 
@@ -83,7 +90,9 @@ This project is licensed under the GPL-3.0-or-later, the same licence as its bor
 
 - Borders: [aourednik/historical-basemaps](https://github.com/aourednik/historical-basemaps), GPL-3.0
 - Coastlines and physical geography: [Natural Earth](https://www.naturalearthdata.com/), public domain
-- Map labels: [Spectral](https://github.com/productiontype/Spectral) by Production Type, SIL Open Font License; interface fonts Bodoni Moda and Instrument Sans from Google Fonts
+- Interface fonts: Bodoni Moda and Instrument Sans from Google Fonts
 - Capitals and events: [Wikidata](https://www.wikidata.org/), CC0
 - Summaries: [Wikipedia](https://en.wikipedia.org/), CC BY-SA, loaded live
+- Shaded relief: [Mapzen terrain tiles](https://registry.opendata.aws/terrain-tiles/) on AWS Open Data (SRTM, GMTED, ETOPO1 and others), loaded live
+- Map lettering: Cinzel, IM Fell English and Spectral, SIL Open Font License
 - Map rendering: [MapLibre GL JS](https://maplibre.org/), BSD-3-Clause

@@ -59,6 +59,44 @@
   --backdrop-size: auto, auto, 100% 100%;
 }
 
+:root[data-theme="clay"] {
+  color-scheme: light;
+  --bg: #e6d8c0;
+  --surface: rgba(244, 234, 216, 0.93);
+  --surface-solid: #f4ead8;
+  --raised: rgba(255, 250, 240, 0.55);
+  --text: #2e2018;
+  --muted: #6e5a48;
+  --line: rgba(80, 50, 25, 0.18);
+  --line-soft: rgba(80, 50, 25, 0.09);
+  --accent: #c8611c;
+  --accent-ink: #fff8ee;
+  --accent-soft: rgba(224, 120, 42, 0.14);
+  --focus: #2f73c9;
+  --up: #3a8a45;
+  --down: #c2412b;
+  /* Clay surfaces: a lit top edge and a soft cast shadow. */
+  --shadow: inset 0 1px 0 rgba(255, 252, 245, 0.8), 0 3px 0 rgba(110, 70, 35, 0.12), 0 16px 34px rgba(90, 55, 25, 0.2);
+  --r-lg: 26px;
+  --r-md: 14px;
+  --r-sm: 9px;
+  /* A modelling-board backdrop: warm putty with a faint thumbprint grain. */
+  --backdrop:
+    repeating-radial-gradient(circle at 30% 40%, rgba(120, 80, 40, 0.035) 0 2px, transparent 2px 7px),
+    radial-gradient(ellipse 70% 80% at 42% 50%, #f1e5cf 0%, #e6d8c0 60%, #d9c7a8 100%);
+  --backdrop-size: 100% 100%, 100% 100%;
+}
+:root[data-theme="clay"] .tool[aria-pressed="true"],
+:root[data-theme="clay"] .chip.current,
+:root[data-theme="clay"] #btn-play {
+  box-shadow: inset 0 2px 3px rgba(90, 50, 20, 0.25), inset 0 -1px 0 rgba(255, 250, 240, 0.5);
+}
+:root[data-theme="clay"] .icon-btn,
+:root[data-theme="clay"] .search input {
+  background: var(--surface-solid);
+  box-shadow: inset 0 1px 0 rgba(255, 252, 245, 0.9), 0 2px 0 rgba(110, 70, 35, 0.14);
+}
+
 :root {
   --font-ui: "Instrument Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
   --font-display: "Bodoni Moda", "Didot", "Bodoni 72", Georgia, serif;
@@ -562,6 +600,44 @@ body.comparing #pane-b {
 }
 body.comparing .maplibregl-map .maplibregl-ctrl-top-right { right: 0; }
 
+/* --- Drawings, the Surveyor -------------------------------------------------------- */
+
+.panel h4 { margin: 14px 0 4px; font-size: 13px; font-weight: 500; }
+.drawing-list { list-style: none; margin: 8px 0 0; padding: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 2px 8px; }
+.drawing-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 4px 6px;
+  border: 0;
+  border-radius: var(--r-sm);
+  background: none;
+  font-size: 13px;
+  text-align: left;
+  cursor: pointer;
+}
+.drawing-row:hover { background: var(--accent-soft); }
+.drawing-thumb { width: 34px; height: 34px; flex: none; }
+
+/* The drawing sits above its caption, like a cartoon above its line. */
+.drawing-hero { margin: 4px 0 14px; text-align: center; }
+.drawing-large { width: 150px; height: 150px; display: block; margin: 0 auto; }
+.drawing-hero figcaption {
+  margin-top: 6px;
+  font: italic 400 16px/1.45 var(--font-display);
+  color: var(--text);
+  text-wrap: balance;
+}
+.hint { padding: 6px 10px; border-left: 2px solid var(--accent); background: var(--accent-soft); border-radius: 0 var(--r-sm) var(--r-sm) 0; }
+
+/* The year numeral follows the map's lettering era. */
+body[data-lettering="ancient"] #ym-num { font-family: "Cinzel", var(--font-display); font-weight: 400; letter-spacing: 0.02em; }
+body[data-lettering="printed"] #ym-num { font-family: "IM Fell English", var(--font-display); }
+
+@font-face { font-family: "Cinzel"; src: url("/fonts/Cinzel.ttf") format("truetype"); font-display: swap; }
+@font-face { font-family: "IM Fell English"; src: url("/fonts/IMFellEnglish-Regular.ttf") format("truetype"); font-display: swap; }
+
 /* --- Small screens: panel becomes a bottom sheet ------------------------------------- */
 
 @media (max-width: 800px) {
@@ -578,6 +654,7 @@ body.comparing .maplibregl-map .maplibregl-ctrl-top-right { right: 0; }
     padding: 16px 18px;
   }
   .year-mark { top: 10px; left: 16px; }
+  .drawing-large { width: 96px; height: 96px; }
   #ym-num { font-size: 48px; }
   .maplibregl-map .maplibregl-ctrl-top-right { right: 0; }
   .maplibregl-map .maplibregl-ctrl-bottom-left { display: none; }

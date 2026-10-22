@@ -4,33 +4,65 @@ import "maplibre-gl/dist/maplibre-gl.css";
 // MapLibre finds its worker relative to its own module, which breaks once
 // bundled; point it at the emitted worker file explicitly.
 import workerUrl from "maplibre-gl/dist/maplibre-gl-worker.mjs?url";
-import type { EventType, HistoryEvent, YearData } from "./types";
+import type { Drawing, EventType, HistoryEvent, SurveyorSpot, YearData } from "./types";
 import { currentTheme, type MapTheme } from "./theme";
 import { capitalIconSvg, eventIconSvg, svgToImage } from "./icons";
+import { DRAWING_KINDS, drawingSvg } from "./drawings";
 
 maplibregl.setWorkerUrl(workerUrl);
 
 const EMPTY: GeoJSON.FeatureCollection = { type: "FeatureCollection", features: [] };
-// Labels render from self-hosted font files (see scripts/fetch-fonts.mjs).
-// The glyph server only fills in characters those files lack.
+
+// --- Lettering ------------------------------------------------------------------
+// Labels render from self-hosted font files (scripts/fetch-fonts.mjs); the glyph
+// server only fills in characters those files lack. The lettering follows the
+// history of type: inscriptional capitals for the ancient world, early printing
+// type until 1800, a contemporary serif after.
 const GLYPHS = "https://demotiles.maplibre.org/font/{fontstack}/{range}.pbf";
 const FONT_URL = new URL(import.meta.env.BASE_URL + "fonts/", location.href).href;
 const FONT_FACES = {
   "Spectral Regular": FONT_URL + "Spectral-Regular.ttf",
   "Spectral Italic": FONT_URL + "Spectral-Italic.ttf",
   "Spectral Medium": FONT_URL + "Spectral-Medium.ttf",
+  Cinzel: FONT_URL + "Cinzel.ttf",
+  "IM Fell": FONT_URL + "IMFellEnglish-Regular.ttf",
+  "IM Fell Italic": FONT_URL + "IMFellEnglish-Italic.ttf",
 };
-const SERIF = ["Spectral Regular"];
-const SERIF_ITALIC = ["Spectral Italic"];
-const SERIF_MEDIUM = ["Spectral Medium"];
+
+export type LetteringEra = "ancient" | "printed" | "modern";
+interface Lettering {
+  regular: string[];
+  major: string[];
+  italic: string[];
+}
+const LETTERING: Record<LetteringEra, Lettering> = {
+  ancient: { regular: ["Cinzel"], major: ["Cinzel"], italic: ["IM Fell Italic"] },
+  printed: { regular: ["IM Fell"], major: ["IM Fell"], italic: ["IM Fell Italic"] },
+  modern: { regular: ["Spectral Regular"], major: ["Spectral Medium"], italic: ["Spectral Italic"] },
+};
+export const letteringEra = (year: number): LetteringEra => (year < 500 ? "ancient" : year < 1800 ? "printed" : "modern");
+
 /** Territories at least this large get spaced capital-letter labels, like a printed atlas. */
 const MAJOR_KM2 = 1_500_000;
+/** Territories smaller than this are only labelled once you zoom in. */
+const MINOR_KM2 = 250_000;
 const EVENT_TYPES: EventType[] = ["conflict", "diplomacy", "political", "culture", "exploration", "crisis"];
 const TERRAIN_KINDS = ["desert", "mountains", "plateau", "tundra", "wetland"] as const;
+/** Zoom at which each drawing tier appears: 1 from afar, 3 only up close. */
+const TIER_MINZOOM = { 1: 1.4, 2: 2.6, 3: 3.4 } as const;
+const SURVEYOR_MINZOOM = 3.6;
+/** Snapshots that fall in the African Humid Period, when the Sahara was green. */
+const isGreenSahara = (year: number) => year >= -9000 && year <= -3500;
+const SAVANNA = { night: "#2b4230", survey: "#d9e6bf", clay: "#a9b86a" };
+/** Open elevation tiles (Mapzen terrain on AWS Open Data), used for shaded relief. */
+const RELIEF_TILES = "https://s3.amazonaws.com/elevation-tiles-prod/terrarium/{z}/{x}/{y}.png";
+const CROSSFADE_MS = 750;
 
 export interface MapHandlers {
   onPolityClick(name: string): void;
   onEventClick(id: string): void;
+  onDrawingClick(id: string): void;
+  onSurveyorClick(): void;
 }
 
 export interface MapOptions {
@@ -59,35 +91,98 @@ function patternSvg(kind: string, t: MapTheme): string {
       return svg(`<path d="M4 10 H12 M20 26 H28" stroke="${ink}0.32)" stroke-width="1.4" stroke-linecap="round"/>`);
     case "tundra":
       return svg(`<path d="M3 8 H9 M18 8 H24 M10 20 H16 M25 20 H31" stroke="${ink}0.26)" stroke-width="1.2" stroke-linecap="round"/>`);
+    case "clay": // fingerprint ridges pressed into the clay
+      return svg(`<path d="M3 20 Q9 12 16 18 Q22 24 29 16 M2 27 Q9 19 17 25 Q23 30 30 23 M4 12 Q10 5 17 11 Q23 16 29 9" fill="none" stroke="${ink}0.09)" stroke-width="1.1" stroke-linecap="round"/>`);
     default: // wetland: tufts of reeds
       return svg(`<path d="M6 14 V10 M8 14 V8 M10 14 V10 M22 29 V25 M24 29 V23 M26 29 V25" stroke="${ink}0.34)" stroke-width="1.2" stroke-linecap="round"/>`);
   }
 }
 
 async function themeImages(t: MapTheme): Promise<Record<string, HTMLImageElement>> {
-  const entries: [string, string][] = [
-    ...EVENT_TYPES.map((k) => [`event-${k}`, eventIconSvg(k, t.events[k], t.ring)] as [string, string]),
-    ["capital", capitalIconSvg(t.capital, t.ring)],
-    ["pat-land", patternSvg("land", t)],
-    ...TERRAIN_KINDS.map((k) => [`pat-${k}`, patternSvg(k, t)] as [string, string]),
+  const entries: [string, string, number][] = [
+    ...EVENT_TYPES.map((k): [string, string, number] => [`event-${k}`, eventIconSvg(k, t.events[k], t.ring, t.clay), 64]),
+    ["capital", capitalIconSvg(t.capital, t.ring, t.clay), 64],
+    ["pat-clay", patternSvg("clay", t), 32],
+    ["pat-land", patternSvg("land", t), 32],
+    ...TERRAIN_KINDS.map((k): [string, string, number] => [`pat-${k}`, patternSvg(k, t), 32]),
+    ...DRAWING_KINDS.map((k, i): [string, string, number] => [`draw-${k}`, drawingSvg(k, t.label, t.wash, t.ring, i + 1, t.clay), 128]),
   ];
-  const imgs = await Promise.all(entries.map(([, svg]) => svgToImage(svg, svg.includes('width="32"') ? 32 : 64)));
+  const imgs = await Promise.all(entries.map(([, svg, size]) => svgToImage(svg, size)));
   return Object.fromEntries(entries.map(([name], i) => [name, imgs[i]]));
 }
 
 // --- Style --------------------------------------------------------------------
 
 const paletteExpr = (t: MapTheme) => ["match", ["get", "ci"], ...t.palette.flatMap((c, i) => [i, c]), t.palette[0]];
+/** Fades a layer in between two zooms, so textures don't turn to noise when zoomed out. */
+const fadeIn = (from: number, to: number, max = 1) =>
+  ["interpolate", ["linear"], ["zoom"], from, 0, to, max] as maplibregl.ExpressionSpecification;
 
 const TERRAIN_TINT: Record<string, Record<(typeof TERRAIN_KINDS)[number], string>> = {
   night: { desert: "#3a3326", mountains: "#2c2a2a", plateau: "#2d2b24", tundra: "#22303a", wetland: "#1f3029" },
   survey: { desert: "#efe2bf", mountains: "#e3d9c6", plateau: "#ebe3cc", tundra: "#e4eaea", wetland: "#dfe8d6" },
+  clay: { desert: "#e6c98f", mountains: "#c9b08a", plateau: "#d6bd92", tundra: "#d7d3c4", wetland: "#b9bf8c" },
 };
 
-function styleFor(land: GeoJSON.FeatureCollection, t: MapTheme, themeName: string): maplibregl.StyleSpecification {
+function reliefLayer(t: MapTheme): maplibregl.LayerSpecification {
+  return {
+    id: "relief",
+    type: "hillshade",
+    source: "relief",
+    paint: {
+      "hillshade-exaggeration": t.relief.exaggeration,
+      "hillshade-shadow-color": t.relief.shadow,
+      "hillshade-highlight-color": t.relief.highlight,
+      "hillshade-accent-color": t.relief.accent,
+      "hillshade-illumination-anchor": "map",
+    },
+  };
+}
+
+function terrainColor(tint: Record<string, string>, t: MapTheme, themeName: string, green: boolean): maplibregl.ExpressionSpecification {
+  const normal = ["match", ["get", "kind"], ...TERRAIN_KINDS.flatMap((k) => [k, tint[k]]), t.land];
+  if (!green) return normal as maplibregl.ExpressionSpecification;
+  return ["case", ["has", "green"], SAVANNA[themeName as keyof typeof SAVANNA] ?? SAVANNA.night, normal] as unknown as maplibregl.ExpressionSpecification;
+}
+
+/** Green-Sahara deserts swap their stipple for grass tufts. */
+const terrainPattern = (green: boolean) =>
+  (green
+    ? ["case", ["has", "green"], "pat-wetland", ["concat", "pat-", ["get", "kind"]]]
+    : ["concat", "pat-", ["get", "kind"]]) as maplibregl.ExpressionSpecification;
+
+function styleFor(land: GeoJSON.FeatureCollection, t: MapTheme, themeName: string, era: LetteringEra): maplibregl.StyleSpecification {
   const tint = TERRAIN_TINT[themeName] ?? TERRAIN_TINT.night;
+  const fonts = LETTERING[era];
   const physical = (layer: string) => ["==", ["get", "layer"], layer] as maplibregl.FilterSpecification;
-  const zoomSize = (a: number, b: number) => ["interpolate", ["linear"], ["zoom"], 1, a, 6, b];
+
+  const drawingLayer = (tier: 1 | 2 | 3): maplibregl.LayerSpecification => ({
+    id: `drawings-${tier}`,
+    type: "symbol",
+    source: "drawings",
+    minzoom: TIER_MINZOOM[tier],
+    filter: ["==", ["get", "tier"], tier],
+    layout: {
+      "icon-image": ["concat", "draw-", ["get", "kind"]],
+      "icon-size": ["interpolate", ["linear"], ["zoom"], 1.4, 0.36, 4, 0.52, 7, 0.85],
+      "icon-allow-overlap": true,
+      "icon-ignore-placement": true,
+      "icon-anchor": "bottom",
+      "text-field": ["step", ["zoom"], "", 4.6, ["get", "name"]],
+      "text-font": fonts.italic,
+      "text-size": 11,
+      "text-anchor": "top",
+      "text-offset": [0, 0.2],
+      "text-max-width": 9,
+      "text-optional": true,
+    },
+    paint: {
+      "icon-opacity": fadeIn(TIER_MINZOOM[tier], TIER_MINZOOM[tier] + 0.4),
+      "text-color": t.label,
+      "text-halo-color": t.halo,
+      "text-halo-width": 1.2,
+    },
+  });
 
   return {
     version: 8,
@@ -102,6 +197,17 @@ function styleFor(land: GeoJSON.FeatureCollection, t: MapTheme, themeName: strin
       labels: { type: "geojson", data: EMPTY },
       capitals: { type: "geojson", data: EMPTY },
       events: { type: "geojson", data: EMPTY },
+      drawings: { type: "geojson", data: EMPTY },
+      surveyor: { type: "geojson", data: EMPTY },
+      "borders-prev": { type: "geojson", data: EMPTY },
+      relief: {
+        type: "raster-dem",
+        tiles: [RELIEF_TILES],
+        encoding: "terrarium",
+        tileSize: 256,
+        maxzoom: 10,
+        attribution: 'Relief: <a href="https://registry.opendata.aws/terrain-tiles/">Mapzen terrain tiles</a>',
+      },
     },
     layers: [
       { id: "ocean", type: "background", paint: { "background-color": t.ocean } },
@@ -120,35 +226,38 @@ function styleFor(land: GeoJSON.FeatureCollection, t: MapTheme, themeName: strin
         }))
         .reverse(),
       { id: "land", type: "fill", source: "land", paint: { "fill-color": t.land } },
-      { id: "land-texture", type: "fill", source: "land", paint: { "fill-pattern": "pat-land" } },
+      { id: "land-texture", type: "fill", source: "land", paint: { "fill-pattern": "pat-land", "fill-opacity": fadeIn(2, 3.5) } },
       {
         id: "terrain-tint",
         type: "fill",
         source: "physical",
         filter: physical("terrain"),
-        paint: { "fill-color": ["match", ["get", "kind"], ...TERRAIN_KINDS.flatMap((k) => [k, tint[k]]), t.land], "fill-opacity": 0.9 },
+        paint: { "fill-color": terrainColor(tint, t, themeName, false), "fill-opacity": 0.9 },
       },
       {
         id: "terrain-texture",
         type: "fill",
         source: "physical",
         filter: physical("terrain"),
-        paint: { "fill-pattern": ["concat", "pat-", ["get", "kind"]] },
+        paint: { "fill-pattern": terrainPattern(false), "fill-opacity": fadeIn(1.8, 3.2) },
       },
-      { id: "ice", type: "fill", source: "physical", filter: physical("ice"), paint: { "fill-color": themeName === "survey" ? "#ffffff" : "#c9d6df", "fill-opacity": themeName === "survey" ? 0.9 : 0.35 } },
+      { id: "ice", type: "fill", source: "physical", filter: physical("ice"), paint: { "fill-color": themeName === "night" ? "#c9d6df" : "#ffffff", "fill-opacity": themeName === "night" ? 0.35 : 0.9 } },
       { id: "lakes", type: "fill", source: "physical", filter: physical("lake"), paint: { "fill-color": t.ocean } },
       {
         id: "rivers",
         type: "line",
         source: "physical",
         filter: physical("river"),
-        minzoom: 1.5,
+        minzoom: 1.8,
         paint: {
           "line-color": t.coast.color,
-          "line-opacity": themeName === "survey" ? 0.7 : 0.45,
+          "line-opacity": fadeIn(1.8, 3, themeName === "survey" ? 0.75 : 0.5),
           "line-width": ["interpolate", ["linear"], ["zoom"], 2, ["case", ["<=", ["get", "rank"], 3], 0.8, 0.4], 6, ["case", ["<=", ["get", "rank"], 3], 2, 1]],
         },
       },
+      // Relief sits under the territories in Night and Survey, a quiet texture;
+      // in Clay it sits on top, so every territory looks modelled by hand.
+      ...(t.clay ? [] : [reliefLayer(t)]),
       {
         id: "polity-fill",
         type: "fill",
@@ -158,6 +267,27 @@ function styleFor(land: GeoJSON.FeatureCollection, t: MapTheme, themeName: strin
           "fill-opacity": ["case", ["==", ["get", "precision"], 1], t.fillOpacityApprox, t.fillOpacity],
         },
       },
+      {
+        // The previous year's territories, faded out over the new ones when
+        // the year changes, so borders seem to melt into their next shape.
+        id: "polity-fill-prev",
+        type: "fill",
+        source: "borders-prev",
+        paint: {
+          "fill-color": paletteExpr(t) as maplibregl.ExpressionSpecification,
+          "fill-opacity": 0,
+          "fill-opacity-transition": { duration: CROSSFADE_MS, delay: 0 },
+        },
+      },
+      ...(t.clay
+        ? [
+            { id: "clay-grain", type: "fill" as const, source: "borders", paint: { "fill-pattern": "pat-clay", "fill-opacity": fadeIn(2.5, 4) } },
+            reliefLayer(t),
+            // Two offset lines either side of each border read as a pressed seam.
+            { id: "clay-seam-light", type: "line" as const, source: "borders", paint: { "line-color": "rgba(255, 244, 222, 0.55)", "line-width": 1.2, "line-offset": -1.1, "line-blur": 0.6 } },
+            { id: "clay-seam-dark", type: "line" as const, source: "borders", paint: { "line-color": "rgba(60, 32, 14, 0.35)", "line-width": 1.4, "line-offset": 1.2, "line-blur": 0.8 } },
+          ]
+        : []),
       {
         id: "polity-line",
         type: "line",
@@ -190,51 +320,80 @@ function styleFor(land: GeoJSON.FeatureCollection, t: MapTheme, themeName: strin
         filter: ["==", ["get", "name"], ""],
         paint: { "line-color": t.accent, "line-width": 2 },
       },
+      // --- Drawings: never hidden by labels, never hiding them. ---
+      drawingLayer(1),
+      drawingLayer(2),
+      drawingLayer(3),
+      {
+        id: "surveyor",
+        type: "symbol",
+        source: "surveyor",
+        minzoom: SURVEYOR_MINZOOM,
+        layout: {
+          "icon-image": "draw-surveyor",
+          "icon-size": ["interpolate", ["linear"], ["zoom"], SURVEYOR_MINZOOM, 0.3, 7, 0.55],
+          "icon-allow-overlap": true,
+          "icon-ignore-placement": true,
+          "icon-anchor": "bottom",
+        },
+      },
       // --- Labels and markers. Placement priority runs top layer first. ---
       {
         id: "sea-label",
         type: "symbol",
         source: "physical",
-        filter: ["all", physical("sea-label"), ["<=", ["get", "minzoom"], 3]],
+        filter: ["all", physical("sea-label"), ["==", ["get", "kind"], "ocean"]],
         layout: {
           "text-field": ["get", "name"],
-          "text-font": SERIF_ITALIC,
-          "text-size": ["interpolate", ["linear"], ["zoom"], 1, ["match", ["get", "kind"], "ocean", 13, 9.5], 5, ["match", ["get", "kind"], "ocean", 20, 14]],
-          "text-letter-spacing": ["match", ["get", "kind"], "ocean", 0.4, 0.15],
+          "text-font": fonts.italic,
+          "text-size": ["interpolate", ["linear"], ["zoom"], 1, 13, 5, 20],
+          "text-letter-spacing": 0.4,
           "text-max-width": 8,
         },
         paint: { "text-color": t.coast.color, "text-opacity": themeName === "survey" ? 0.95 : 0.7, "text-halo-color": t.ocean, "text-halo-width": 1 },
       },
       {
+        id: "sea-label-minor",
+        type: "symbol",
+        source: "physical",
+        minzoom: 2.4,
+        filter: ["all", physical("sea-label"), ["!=", ["get", "kind"], "ocean"], ["<=", ["get", "minzoom"], 4]],
+        layout: {
+          "text-field": ["get", "name"],
+          "text-font": fonts.italic,
+          "text-size": ["interpolate", ["linear"], ["zoom"], 2.4, 10, 6, 14],
+          "text-letter-spacing": 0.15,
+          "text-max-width": 8,
+        },
+        paint: { "text-color": t.coast.color, "text-opacity": fadeIn(2.4, 3, themeName === "survey" ? 0.95 : 0.7), "text-halo-color": t.ocean, "text-halo-width": 1 },
+      },
+      {
         id: "land-label",
         type: "symbol",
         source: "physical",
-        minzoom: 1.8,
+        minzoom: 2.8,
         filter: ["all", physical("land-label"), ["<=", ["get", "minzoom"], 4]],
         layout: {
           "text-field": ["get", "name"],
-          "text-font": SERIF_ITALIC,
-          "text-size": zoomSize(8.5, 13),
+          "text-font": fonts.italic,
+          "text-size": ["interpolate", ["linear"], ["zoom"], 2.8, 9, 6, 13],
           "text-transform": "uppercase",
           "text-letter-spacing": 0.22,
           "text-max-width": 9,
           "symbol-sort-key": ["get", "rank"],
         },
-        paint: { "text-color": t.labelMuted, "text-opacity": 0.75, "text-halo-color": t.halo, "text-halo-width": 1 },
+        paint: { "text-color": t.labelMuted, "text-opacity": fadeIn(2.8, 3.3, 0.75), "text-halo-color": t.halo, "text-halo-width": 1 },
       },
       {
-        id: "polity-label",
+        id: "polity-label-small",
         type: "symbol",
         source: "labels",
-        filter: ["<", ["get", "km2"], MAJOR_KM2],
+        minzoom: 3,
+        filter: ["<", ["get", "km2"], MINOR_KM2],
         layout: {
           "text-field": ["get", "name"],
-          "text-font": SERIF,
-          "text-size": [
-            "interpolate", ["linear"], ["zoom"],
-            1, ["step", ["get", "km2"], 8, 300000, 9.5],
-            5, ["step", ["get", "km2"], 11, 300000, 13.5],
-          ],
+          "text-font": fonts.regular,
+          "text-size": ["interpolate", ["linear"], ["zoom"], 3, 9.5, 6, 12],
           "text-max-width": 7,
           "symbol-sort-key": ["-", 0, ["get", "km2"]],
           "text-padding": 3,
@@ -242,17 +401,32 @@ function styleFor(land: GeoJSON.FeatureCollection, t: MapTheme, themeName: strin
         paint: { "text-color": t.label, "text-halo-color": t.halo, "text-halo-width": 1.3 },
       },
       {
+        id: "polity-label",
+        type: "symbol",
+        source: "labels",
+        filter: ["all", [">=", ["get", "km2"], MINOR_KM2], ["<", ["get", "km2"], MAJOR_KM2]],
+        layout: {
+          "text-field": ["get", "name"],
+          "text-font": fonts.regular,
+          "text-size": ["interpolate", ["linear"], ["zoom"], 1, 9.5, 5, 13.5],
+          "text-max-width": 7,
+          "symbol-sort-key": ["-", 0, ["get", "km2"]],
+          "text-padding": 4,
+        },
+        paint: { "text-color": t.label, "text-halo-color": t.halo, "text-halo-width": 1.3 },
+      },
+      {
         id: "capitals",
         type: "symbol",
         source: "capitals",
-        minzoom: 2.4,
+        minzoom: 3,
         layout: {
           "icon-image": "capital",
-          "icon-size": ["interpolate", ["linear"], ["zoom"], 2.4, 0.36, 6, 0.6],
+          "icon-size": ["interpolate", ["linear"], ["zoom"], 3, 0.4, 6, 0.6],
           "icon-padding": 1,
           "symbol-sort-key": ["-", 0, ["get", "rank"]],
-          "text-field": ["step", ["zoom"], "", 3.6, ["get", "name"]],
-          "text-font": SERIF_ITALIC,
+          "text-field": ["step", ["zoom"], "", 3.8, ["get", "name"]],
+          "text-font": fonts.italic,
           "text-size": 11,
           "text-offset": [0, 0.9],
           "text-anchor": "top",
@@ -261,15 +435,30 @@ function styleFor(land: GeoJSON.FeatureCollection, t: MapTheme, themeName: strin
         paint: { "text-color": t.label, "text-halo-color": t.halo, "text-halo-width": 1.2 },
       },
       {
-        id: "events",
+        // Imported events only appear once you zoom in; collisions keep the
+        // most widely covered ones.
+        id: "events-more",
         type: "symbol",
         source: "events",
+        minzoom: 2.8,
+        filter: ["!", ["get", "featured"]],
         layout: {
           "icon-image": ["concat", "event-", ["get", "type"]],
-          // Key events larger; collisions hide less notable ones until you zoom in.
-          "icon-size": ["interpolate", ["linear"], ["zoom"], 1, ["case", ["get", "featured"], 0.42, 0.27], 6, ["case", ["get", "featured"], 0.72, 0.52]],
-          "symbol-sort-key": ["case", ["get", "featured"], -1e6, ["-", 0, ["get", "notability"]]],
-          "icon-padding": 2,
+          "icon-size": ["interpolate", ["linear"], ["zoom"], 2.8, 0.36, 6, 0.52],
+          "symbol-sort-key": ["-", 0, ["get", "notability"]],
+          "icon-padding": 3,
+        },
+        paint: { "icon-opacity": fadeIn(2.8, 3.2) },
+      },
+      {
+        id: "events-key",
+        type: "symbol",
+        source: "events",
+        filter: ["get", "featured"],
+        layout: {
+          "icon-image": ["concat", "event-", ["get", "type"]],
+          "icon-size": ["interpolate", ["linear"], ["zoom"], 1, 0.48, 6, 0.74],
+          "icon-allow-overlap": true,
         },
       },
       {
@@ -278,7 +467,7 @@ function styleFor(land: GeoJSON.FeatureCollection, t: MapTheme, themeName: strin
         source: "events",
         filter: ["==", ["get", "id"], ""],
         paint: {
-          "circle-radius": ["interpolate", ["linear"], ["zoom"], 1, 11, 6, 17],
+          "circle-radius": ["interpolate", ["linear"], ["zoom"], 1, 13, 6, 18],
           "circle-color": "transparent",
           "circle-stroke-color": t.accent,
           "circle-stroke-width": 2.5,
@@ -292,7 +481,7 @@ function styleFor(land: GeoJSON.FeatureCollection, t: MapTheme, themeName: strin
         filter: [">=", ["get", "km2"], MAJOR_KM2],
         layout: {
           "text-field": ["get", "name"],
-          "text-font": SERIF_MEDIUM,
+          "text-font": fonts.major,
           "text-transform": "uppercase",
           "text-letter-spacing": 0.18,
           "text-size": ["interpolate", ["linear"], ["zoom"], 1, ["step", ["get", "km2"], 10, 5000000, 12], 5, ["step", ["get", "km2"], 16, 5000000, 20]],
@@ -305,7 +494,31 @@ function styleFor(land: GeoJSON.FeatureCollection, t: MapTheme, themeName: strin
   } as maplibregl.StyleSpecification;
 }
 
+/** Layers whose text font follows the lettering era, and which face each uses. */
+const FONT_ROLES: Record<string, keyof Lettering> = {
+  "sea-label": "italic",
+  "sea-label-minor": "italic",
+  "land-label": "italic",
+  "polity-label-small": "regular",
+  "polity-label": "regular",
+  capitals: "italic",
+  "drawings-1": "italic",
+  "drawings-2": "italic",
+  "drawings-3": "italic",
+  "polity-label-major": "major",
+};
+
+const INTERACTIVE = ["surveyor", "drawings-3", "drawings-2", "drawings-1", "events-key", "events-more", "capitals", "polity-fill"];
+
 // --- Map ----------------------------------------------------------------------
+
+export interface YearLayers {
+  data: YearData;
+  featured: HistoryEvent[];
+  more: HistoryEvent[];
+  drawings: Drawing[];
+  surveyor: SurveyorSpot | null;
+}
 
 export class AtlasMap {
   readonly map: maplibregl.Map;
@@ -313,9 +526,13 @@ export class AtlasMap {
   private tooltip = document.getElementById("tooltip")!;
   private readonly secondary: boolean;
   private images: Record<string, HTMLImageElement>;
-  private lastData: { data: YearData; featured: HistoryEvent[]; more: HistoryEvent[] } | null = null;
+  private last: YearLayers | null = null;
+  private era: LetteringEra = "modern";
   private selection: { polity: string | null; event: string | null } = { polity: null, event: null };
   private globe = true;
+  private green = false;
+  /** Borders currently on screen, for the cross-fade to the next year. */
+  private shown: YearData | null = null;
 
   static async create(container: string, land: GeoJSON.FeatureCollection, handlers: MapHandlers, options: MapOptions = {}) {
     return new AtlasMap(container, land, handlers, options, await themeImages(currentTheme()));
@@ -339,7 +556,7 @@ export class AtlasMap {
       maxZoom: 9,
       attributionControl: false,
       fadeDuration: reduceMotion ? 0 : 200,
-      style: styleFor(land, currentTheme(), document.documentElement.dataset.theme ?? "night"),
+      style: styleFor(land, currentTheme(), document.documentElement.dataset.theme ?? "night", this.era),
     });
     // Images are pre-rendered, so they can be supplied synchronously on demand.
     this.map.setMissingStyleImageResolver((id: string) => {
@@ -373,10 +590,12 @@ export class AtlasMap {
     const t = currentTheme();
     this.images = await themeImages(t);
     for (const id of Object.keys(this.images)) if (this.map.hasImage(id)) this.map.removeImage(id);
-    this.map.setStyle(styleFor(this.land, t, document.documentElement.dataset.theme ?? "night"), { diff: false });
+    this.map.setStyle(styleFor(this.land, t, document.documentElement.dataset.theme ?? "night", this.era), { diff: false });
+    this.green = false; // the new style starts with the ordinary desert colours
+    this.shown = null;
     this.map.once("style.load", () => {
       if (!this.globe) this.map.setProjection({ type: "mercator" });
-      if (this.lastData) this.setYear(this.lastData.data, this.lastData.featured, this.lastData.more);
+      if (this.last) this.setYear(this.last);
       this.highlight(this.selection.polity, this.selection.event);
     });
   }
@@ -413,8 +632,14 @@ export class AtlasMap {
 
   private bindInteractions() {
     const m = this.map;
-    const interactive = ["events", "capitals", "polity-fill"];
-    const query = (point: maplibregl.Point) => m.queryRenderedFeatures(point, { layers: interactive.filter((id) => m.getLayer(id)) })[0];
+    // Pick by INTERACTIVE priority, not draw order, so small hidden things win
+    // over the territory or marker they sit on. A little padding makes the
+    // Surveyor and drawings easier to hit.
+    const query = (point: maplibregl.Point) => {
+      const box: [maplibregl.PointLike, maplibregl.PointLike] = [[point.x - 4, point.y - 4], [point.x + 4, point.y + 4]];
+      const hits = m.queryRenderedFeatures(box, { layers: INTERACTIVE.filter((id) => m.getLayer(id)) });
+      return hits.sort((x, y) => INTERACTIVE.indexOf(x.layer.id) - INTERACTIVE.indexOf(y.layer.id))[0];
+    };
 
     m.on("mousemove", (e: maplibregl.MapMouseEvent) => {
       const f = query(e.point);
@@ -431,18 +656,24 @@ export class AtlasMap {
     m.on("click", (e: maplibregl.MapMouseEvent) => {
       const f = query(e.point);
       if (!f) return;
-      if (f.layer.id === "events") this.handlers.onEventClick(f.properties.id);
-      else if (f.layer.id === "capitals") this.handlers.onPolityClick(f.properties.of);
+      const id = f.layer.id;
+      if (id === "surveyor") this.handlers.onSurveyorClick();
+      else if (id.startsWith("drawings-")) this.handlers.onDrawingClick(f.properties.id);
+      else if (id.startsWith("events-")) this.handlers.onEventClick(f.properties.id);
+      else if (id === "capitals") this.handlers.onPolityClick(f.properties.of);
       else this.handlers.onPolityClick(f.properties.name);
     });
   }
 
   private showTooltip(f: MapGeoJSONFeature, point: maplibregl.Point) {
     const p = f.properties;
+    const id = f.layer.id;
     let text: string;
     let hover = "";
-    if (f.layer.id === "events") text = p.title;
-    else if (f.layer.id === "capitals") {
+    if (id === "surveyor") text = "You found the Surveyor!\nClick to see what they're looking at";
+    else if (id.startsWith("drawings-")) text = `${p.name}\n${p.quip}`;
+    else if (id.startsWith("events-")) text = p.title;
+    else if (id === "capitals") {
       text = `${p.name}\nCapital of ${p.of}`;
       hover = p.of;
     } else {
@@ -452,22 +683,67 @@ export class AtlasMap {
     this.map.setFilter("polity-hover", ["==", ["get", "name"], hover]);
     this.tooltip.textContent = text;
     this.tooltip.hidden = false;
-    this.tooltip.style.transform = `translate(${point.x + 14}px, ${point.y + 14}px)`;
+    // Keep the tooltip on screen near the right edge.
+    const flip = point.x > window.innerWidth - 300;
+    this.tooltip.style.transform = `translate(${flip ? point.x - 280 : point.x + 14}px, ${point.y + 14}px)`;
   }
 
-  async setYear(data: YearData, featured: HistoryEvent[], more: HistoryEvent[]) {
-    this.lastData = { data, featured, more };
+  async setYear(layers: YearLayers) {
+    this.last = layers;
     await this.ready;
-    (this.map.getSource("borders") as GeoJSONSource).setData(data.borders);
-    (this.map.getSource("labels") as GeoJSONSource).setData(data.labels);
-    (this.map.getSource("capitals") as GeoJSONSource).setData(data.capitals);
-    (this.map.getSource("events") as GeoJSONSource).setData({
+    const { data, featured, more, drawings, surveyor } = layers;
+
+    const era = letteringEra(data.year);
+    if (era !== this.era) {
+      this.era = era;
+      for (const [layer, role] of Object.entries(FONT_ROLES)) {
+        if (this.map.getLayer(layer)) this.map.setLayoutProperty(layer, "text-font", LETTERING[era][role]);
+      }
+    }
+
+    const green = isGreenSahara(data.year);
+    if (green !== this.green) {
+      this.green = green;
+      const themeName = document.documentElement.dataset.theme ?? "night";
+      this.map.setPaintProperty("terrain-tint", "fill-color", terrainColor(TERRAIN_TINT[themeName] ?? TERRAIN_TINT.night, currentTheme(), themeName, green));
+      this.map.setPaintProperty("terrain-texture", "fill-pattern", terrainPattern(green));
+    }
+
+    const src = (id: string) => this.map.getSource(id) as GeoJSONSource;
+    const previous = this.shown;
+    this.shown = data;
+    if (previous && previous !== data && !matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      // Show last year's map on top at full strength, then let it dissolve.
+      src("borders-prev").setData(previous.borders);
+      this.map.setPaintProperty("polity-fill-prev", "fill-opacity-transition", { duration: 0, delay: 0 });
+      this.map.setPaintProperty("polity-fill-prev", "fill-opacity", currentTheme().fillOpacity);
+      requestAnimationFrame(() => {
+        this.map.setPaintProperty("polity-fill-prev", "fill-opacity-transition", { duration: CROSSFADE_MS, delay: 60 });
+        this.map.setPaintProperty("polity-fill-prev", "fill-opacity", 0);
+      });
+    }
+    src("borders").setData(data.borders);
+    src("labels").setData(data.labels);
+    src("capitals").setData(data.capitals);
+    src("events").setData({
       type: "FeatureCollection",
       features: [...more, ...featured].map((e) => ({
         type: "Feature",
         properties: { id: e.id, title: e.title, type: e.type, featured: !e.source, notability: e.notability ?? 0 },
         geometry: { type: "Point", coordinates: [e.lon, e.lat] },
       })),
+    });
+    src("drawings").setData({
+      type: "FeatureCollection",
+      features: drawings.map((d) => ({
+        type: "Feature",
+        properties: { id: d.id, name: d.name, kind: d.kind, tier: d.tier, quip: d.quip },
+        geometry: { type: "Point", coordinates: [d.lon, d.lat] },
+      })),
+    });
+    src("surveyor").setData({
+      type: "FeatureCollection",
+      features: surveyor ? [{ type: "Feature", properties: {}, geometry: { type: "Point", coordinates: [surveyor.lon, surveyor.lat] } }] : [],
     });
   }
 
@@ -494,8 +770,8 @@ export class AtlasMap {
     this.map.fitBounds([[w, s], [e, n]], { padding, maxZoom: 6, ...this.motion });
   }
 
-  flyToPoint(lon: number, lat: number) {
-    this.map.flyTo({ center: [lon, lat], zoom: Math.max(this.map.getZoom(), 3.5), ...this.motion });
+  flyToPoint(lon: number, lat: number, zoom = 3.5) {
+    this.map.flyTo({ center: [lon, lat], zoom: Math.max(this.map.getZoom(), zoom), ...this.motion });
   }
 
   setGlobe(globe: boolean) {

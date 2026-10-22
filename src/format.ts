@@ -1,7 +1,8 @@
 import type { EventType, HistoryEvent } from "./types";
 
 export function formatYear(y: number): string {
-  if (y < 0) return `${(-y).toLocaleString("en")} BCE`;
+  // Thousands separators only from 10,000 up, so "5000 BCE" reads like a year.
+  if (y < 0) return `${-y >= 10000 ? (-y).toLocaleString("en") : -y} BCE`;
   return `${y} CE`;
 }
 

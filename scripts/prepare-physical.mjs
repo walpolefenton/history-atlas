@@ -41,10 +41,15 @@ const features = [];
 const point = (props, coords) => features.push({ type: "Feature", properties: props, geometry: { type: "Point", coordinates: coords } });
 const shape = (props, geom) => features.push({ type: "Feature", properties: props, geometry: { type: geom.type, coordinates: roundCoords(geom.coordinates) } });
 
+// The Sahara and its sub-deserts were grassland with lakes during the African
+// Humid Period (about 9000-3500 BCE); the app tints them green in those eras.
+const GREEN_SAHARA_EXCLUDE = new Set(["KALAHARI DESERT", "NAMIB DESERT"]);
+
 for (const f of await read("ne_50m_geography_regions_polys")) {
   const p = f.properties;
   const kind = TERRAIN[p.FEATURECLA];
-  if (kind) shape({ layer: "terrain", kind }, f.geometry);
+  const green = kind === "desert" && p.REGION === "Africa" && !GREEN_SAHARA_EXCLUDE.has(p.NAME);
+  if (kind) shape({ layer: "terrain", kind, ...(green ? { green: true } : {}) }, f.geometry);
   if (LABELLED.has(p.FEATURECLA) && p.NAME) {
     point({ layer: "land-label", name: p.NAME_EN || p.NAME, kind: kind ?? "region", minzoom: p.MIN_LABEL ?? 3, rank: p.SCALERANK ?? 5 }, labelPoint(f.geometry));
   }

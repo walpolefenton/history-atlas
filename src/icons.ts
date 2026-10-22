@@ -26,7 +26,19 @@ const GLYPHS: Record<EventType, string> = {
   crisis: `<path d="M32 13 C41 23 45 30 43 38 C41.5 45 37 49.5 32 49.5 C25.5 49.5 21 44.5 21 38.5 C21 32 26 29 27.5 22.5 C31 26.5 32 30 31 33.5 C35.5 30 35 21.5 32 13 Z" fill="#fff"/>`,
 };
 
-export function eventIconSvg(type: EventType, color: string, ring: string) {
+/** A moulded-clay finish: a soft highlight, a shadow beneath, a slightly uneven edge. */
+const CLAY_DEFS = `<defs>
+  <radialGradient id="sheen" cx="0.36" cy="0.3" r="0.75"><stop offset="0" stop-color="#fff" stop-opacity="0.55"/><stop offset="0.45" stop-color="#fff" stop-opacity="0.08"/><stop offset="1" stop-color="#000" stop-opacity="0.28"/></radialGradient>
+  <filter id="lump" x="-15%" y="-15%" width="130%" height="130%"><feTurbulence type="fractalNoise" baseFrequency="0.05" numOctaves="2" seed="7"/><feDisplacementMap in="SourceGraphic" scale="2.2"/></filter>
+</defs>`;
+
+export function eventIconSvg(type: EventType, color: string, ring: string, clay = false) {
+  if (clay) {
+    return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">${CLAY_DEFS}
+      <ellipse cx="33" cy="36" rx="27" ry="25" fill="#3c2010" opacity="0.28"/>
+      <g filter="url(#lump)"><ellipse cx="32" cy="32" rx="28.5" ry="27.5" fill="${color}" stroke="${ring}" stroke-width="2.5"/>
+      <ellipse cx="32" cy="32" rx="28.5" ry="27.5" fill="url(#sheen)"/>${GLYPHS[type]}</g></svg>`;
+  }
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
     <circle cx="32" cy="32" r="29" fill="${color}" stroke="${ring}" stroke-width="3"/>
     ${GLYPHS[type]}</svg>`;
@@ -35,7 +47,13 @@ export function eventIconSvg(type: EventType, color: string, ring: string) {
 const TOWER =
   "M21 52 V29 H18 V18 H24 V22 H29 V18 H35 V22 H40 V18 H46 V29 H43 V52 Z M29 52 V44 A3 3 0 0 1 35 44 V52 Z";
 
-export function capitalIconSvg(color: string, ring: string) {
+export function capitalIconSvg(color: string, ring: string, clay = false) {
+  if (clay) {
+    return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">${CLAY_DEFS}
+      <path d="${TOWER}" fill="#3c2010" opacity="0.28" transform="translate(2 3)"/>
+      <g filter="url(#lump)"><path d="${TOWER}" fill="${color}" fill-rule="evenodd" stroke="${ring}" stroke-width="4" stroke-linejoin="round" paint-order="stroke"/>
+      <path d="${TOWER}" fill="url(#sheen)" fill-rule="evenodd"/></g></svg>`;
+  }
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
     <path d="${TOWER}" fill="${color}" fill-rule="evenodd" stroke="${ring}" stroke-width="5" stroke-linejoin="round" paint-order="stroke"/></svg>`;
 }
