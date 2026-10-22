@@ -445,6 +445,15 @@ function modernize(layers: maplibregl.LayerSpecification[], t: MapTheme): maplib
       case "capitals":
         layer.layout["icon-image"] = "capital";
         layer.layout["icon-size"] = ["interpolate", ["linear"], ["zoom"], 3, 0.42, 7, 0.6];
+        // A capital is named in upright type beside its symbol, like the cities but stronger.
+        layer.layout["text-field"] = ["step", ["zoom"], "", 3.4, ["get", "name"]];
+        layer.layout["text-size"] = ["interpolate", ["linear"], ["zoom"], 3.4, 11, 7, 14];
+        delete layer.layout["text-anchor"];
+        delete layer.layout["text-offset"];
+        layer.layout["text-variable-anchor"] = ["left", "right", "top", "bottom"];
+        layer.layout["text-radial-offset"] = 0.7;
+        layer.layout["text-optional"] = false;
+        layer.layout["icon-optional"] = false;
         break;
       case "cities-1":
       case "cities-2":
@@ -452,16 +461,20 @@ function modernize(layers: maplibregl.LayerSpecification[], t: MapTheme): maplib
         layer.layout["icon-image"] = "dot-city";
         layer.layout["icon-size"] = ["interpolate", ["linear"], ["zoom"], 2.2, 0.55, 7, 0.8];
         layer.layout["icon-anchor"] = "center";
-        layer.layout["text-anchor"] = "left";
-        layer.layout["text-offset"] = ["literal", [0.6, 0]];
+        delete layer.layout["text-anchor"];
+        delete layer.layout["text-offset"];
+        layer.layout["text-variable-anchor"] = ["left", "right", "top", "bottom"];
+        layer.layout["text-radial-offset"] = 0.55;
+        layer.layout["text-justify"] = "auto";
         break;
       case "events-more":
         // Lesser events wait until you're closer, and keep their distance, so
         // the map never turns to confetti; the best covered win any collision.
         layer.minzoom = 3.8;
         layer.layout["icon-image"] = ["concat", "dot-", ["get", "type"]];
-        layer.layout["icon-size"] = ["interpolate", ["linear"], ["zoom"], 3.8, 0.42, 7, 0.55];
-        layer.layout["icon-padding"] = 9;
+        layer.layout["icon-size"] = ["interpolate", ["linear"], ["zoom"], 3.8, 0.34, 7, 0.5];
+        // Generous spacing: a sampling of the best-covered events, never a rash of dots.
+        layer.layout["icon-padding"] = 14;
         layer.paint["icon-opacity"] = fadeIn(3.8, 4.3, 0.9);
         break;
       case "events-key":
@@ -1061,7 +1074,8 @@ function styleFor(land: GeoJSON.FeatureCollection, t: MapTheme, themeName: strin
           "icon-padding": 1,
           "symbol-sort-key": ["-", 0, ["get", "rank"]],
           "text-field": ["step", ["zoom"], "", 3.8, ["get", "name"]],
-          "text-font": fonts.italic,
+          // Capitals in upright type, the convention of reference atlases.
+          "text-font": fonts.regular,
           "text-size": 11,
           "text-offset": [0, 0.9],
           "text-anchor": "top",
@@ -1094,6 +1108,7 @@ function styleFor(land: GeoJSON.FeatureCollection, t: MapTheme, themeName: strin
           "icon-image": ["concat", "event-", ["get", "type"]],
           "icon-size": ["interpolate", ["linear"], ["zoom"], 1, 0.48, 6, 0.74],
           "icon-allow-overlap": true,
+          "icon-ignore-placement": true,
         },
       },
       {
@@ -1130,8 +1145,24 @@ function styleFor(land: GeoJSON.FeatureCollection, t: MapTheme, themeName: strin
 }
 
 /** The style for a theme: the illustrated map, or the modern Atlas made from it. */
+/**
+ * Lesser events are drawn beneath the place labels. Symbols are placed from
+ * the top layer down, so labels claim their space first and the dots fill in
+ * around them, spaced from one another.
+ */
+function eventsBeneathLabels(layers: maplibregl.LayerSpecification[]) {
+  const i = layers.findIndex((l) => l.id === "events-more");
+  const at = layers.findIndex((l) => l.id === "land-label");
+  if (i < 0 || at < 0 || i < at) return layers;
+  const out = layers.slice();
+  const [ev] = out.splice(i, 1);
+  out.splice(at, 0, ev);
+  return out;
+}
+
 function themedStyle(land: GeoJSON.FeatureCollection, t: MapTheme, themeName: string, era: LetteringEra): maplibregl.StyleSpecification {
   const style = styleFor(land, t, themeName, era);
+  style.layers = eventsBeneathLabels(style.layers);
   return t.modern ? { ...style, layers: modernize(style.layers, t) } : style;
 }
 
@@ -1146,7 +1177,7 @@ const FONT_ROLES: Record<string, keyof Lettering> = {
   "cities-2": "regular",
   "cities-3": "regular",
   "polity-label": "regular",
-  capitals: "italic",
+  capitals: "regular",
   "drawings-1": "italic",
   "drawings-2": "italic",
   "drawings-3": "italic",
