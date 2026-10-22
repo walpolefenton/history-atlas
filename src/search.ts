@@ -55,7 +55,8 @@ export function initSearch(meta: Meta, events: HistoryEvent[], drawings: Drawing
     if (r.kind === "event") return { title: r.event.title, sub: `Event · ${formatEventDate(r.event)}` };
     if (r.kind === "drawing") {
       const d = r.drawing;
-      return { title: d.name, sub: `${d.cat === "landmark" ? "Landmark" : "Curiosity"} · ${d.approx ? "c. " : ""}${formatYear(d.from)}` };
+      const label = { landmark: "Landmark", curiosity: "Curiosity", nature: "Nature", culture: "Culture" }[d.cat];
+      return { title: d.name, sub: `${label} · ${d.approx ? "c. " : ""}${formatYear(d.from)}` };
     }
     const first = r.years[0];
     const last = r.years[r.years.length - 1];

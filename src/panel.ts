@@ -437,6 +437,7 @@ function drawingImg(kind: string, cls = "drawing-thumb") {
 function lookCloser(ctx: PanelContext) {
   const landmarks = ctx.drawings.filter((d) => d.cat === "landmark");
   const nature = ctx.drawings.filter((d) => d.cat === "nature");
+  const culture = ctx.drawings.filter((d) => d.cat === "culture");
   const curiosities = ctx.drawings.filter((d) => d.cat === "curiosity").length;
   const list = (items: Drawing[]) =>
     `<ul class="drawing-list">${items
@@ -456,6 +457,7 @@ function lookCloser(ctx: PanelContext) {
     ${surveyorLine}
     <p class="small muted">Surveyor found in ${s.count} of ${s.total} eras.</p>
     ${landmarks.length ? `<h4>Landmarks standing</h4>${list(landmarks)}` : ""}
+    ${culture.length ? `<h4>Places and their culture</h4>${list(culture)}` : ""}
     ${nature.length ? `<h4>Nature in this era</h4>${list(nature)}` : ""}
   </section>`;
 }

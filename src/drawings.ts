@@ -194,6 +194,34 @@ const D: Record<string, string> = {
   bridge: `<path d="M16 50 V12 M48 50 V12"/><path d="M14 12 H18 M46 12 H50"/><path d="M2 40 Q16 12 16 12 Q32 34 48 12 Q48 12 62 40"/>
     <path d="M2 40 H62 V44 H2 Z" fill="WASH"/><path d="M22 40 V24 M28 40 V29 M36 40 V29 M42 40 V24 M8 40 V30 M56 40 V30" opacity=".6"/><path d="M2 54 Q10 51 18 54 T34 54 T50 54 T62 54" opacity=".6"/>`,
 
+  // --- Culture of places ------------------------------------------------------------------
+  derrick: `<path d="M22 56 L30 8 H34 L42 56 Z" fill="WASH"/><path d="M24 44 H40 M26 32 H38 M28 20 H36 M24 44 L38 32 M40 44 L26 32 M26 32 L36 20 M38 32 L28 20"/>
+    <path d="M32 8 V3"/><path d="M14 56 H50"/><path d="M33 3 Q40 -2 44 4 Q48 0 50 6" opacity=".6"/>`,
+  trumpet: `<path d="M8 30 H40 Q52 22 58 18 V42 Q52 38 40 30" fill="WASH"/><path d="M8 27 V33"/><path d="M20 30 V22 H32 V30 M24 22 V18 M28 22 V18"/>
+    <path d="M16 36 Q24 40 34 36"/><path d="M46 46 L48 50 M52 44 L56 48 M42 50 L43 54" opacity=".6"/>`,
+  filmcamera: `<path d="M12 28 H44 V48 H12 Z" fill="WASH"/><circle cx="20" cy="18" r="8"/><circle cx="38" cy="18" r="8"/><circle cx="20" cy="18" r="2"/><circle cx="38" cy="18" r="2"/>
+    <path d="M44 34 L56 28 V48 L44 42"/><path d="M22 48 L16 58 M28 48 V58 M34 48 L40 58"/>`,
+  launch: `<path d="M28 44 V16 Q32 4 36 16 V44 Z" fill="WASH"/><path d="M28 34 L22 44 H28 M36 34 L42 44 H36"/><path d="M28 24 H36"/>
+    <path d="M26 46 Q24 54 20 58 M32 46 V60 M38 46 Q40 54 44 58" opacity=".7"/><circle cx="14" cy="56" r="4"/><circle cx="50" cy="56" r="4"/>`,
+  car: `<path d="M8 40 V32 H20 L24 20 H40 L44 32 H56 V40 Z" fill="WASH"/><path d="M26 22 V32 M38 22 V32 M24 20 H40"/><circle cx="18" cy="42" r="6"/><circle cx="46" cy="42" r="6"/>
+    <circle cx="18" cy="42" r="1.5"/><circle cx="46" cy="42" r="1.5"/><path d="M4 50 H60" opacity=".5"/>`,
+  guitar: `<path d="M24 34 Q14 36 14 46 Q16 56 26 56 Q34 56 36 50 Q42 48 42 42 Q42 34 34 34 Q32 30 28 32 Z" fill="WASH"/><circle cx="28" cy="46" r="3.5"/>
+    <path d="M32 36 L52 10 M50 8 L56 12 L54 14"/><path d="M22 52 H32" />`,
+  windmill: `<path d="M24 56 L27 28 H37 L40 56 Z" fill="WASH"/><path d="M27 28 L32 22 L37 28"/><circle cx="32" cy="24" r="2"/>
+    <path d="M32 24 L14 8 L10 12 L30 26 M32 24 L50 8 L54 12 L34 26 M32 24 L16 42 L12 38 M32 24 L48 40 L52 36"/><path d="M30 56 V48 H34 V56"/><path d="M8 56 H58"/>`,
+  torii: `<path d="M6 14 Q32 20 58 14 L56 20 Q32 24 8 20 Z" fill="WASH"/><path d="M12 26 H52"/><path d="M18 20 V56 M46 20 V56 M32 20 V26"/><path d="M14 56 H22 M42 56 H50"/>
+    <path d="M2 58 Q16 55 32 58 T62 58" opacity=".5"/>`,
+  vase: `<path d="M26 8 H38 V14 Q38 18 44 24 Q52 34 46 46 Q42 54 32 56 Q22 54 18 46 Q12 34 20 24 Q26 18 26 14 Z" fill="WASH"/>
+    <path d="M22 30 Q32 26 42 30 M20 40 Q32 44 44 40"/><path d="M28 34 Q32 30 36 34 Q32 38 28 34" /><path d="M24 56 H40"/>`,
+  beaver: `<path d="M12 40 Q10 28 24 26 Q36 24 44 30 Q50 30 52 36 Q52 42 46 42 H16 Q12 42 12 40 Z" fill="WASH"/><path d="M12 38 Q2 40 4 48 Q8 52 14 44"/>
+    <path d="M48 32 L49 29"/><circle cx="48" cy="34" r="0.8"/><path d="M50 40 V43 M18 42 V46 M24 42 V46 M40 42 V46"/><path d="M2 50 Q10 47 18 50 T34 50 T50 50 T62 50" opacity=".6"/>`,
+  bell: `<path d="M20 44 Q20 24 32 20 Q44 24 44 44 Z" fill="WASH"/><path d="M16 44 H48 V48 H16 Z"/><path d="M32 20 V14 M26 14 H38"/><circle cx="32" cy="52" r="3"/>
+    <path d="M34 26 L32 32 L35 36 L33 42"/>`,
+  cow: `<path d="M10 38 Q10 26 22 26 H44 Q50 22 54 28 L56 34 L52 36 Q50 40 44 40 H16 Q10 40 10 38 Z" fill="WASH"/><path d="M16 40 V52 M22 40 V52 M40 40 V52 M45 40 V52"/>
+    <path d="M50 24 L48 20 M54 25 L57 22"/><path d="M24 30 Q28 26 32 30 Q28 34 24 30 M36 32 Q39 29 42 33" /><path d="M10 32 Q5 36 7 42"/><path d="M30 40 Q30 44 33 44" />`,
+  cowboy: `<path d="M10 38 Q12 30 22 30 H36 Q40 24 46 22 L50 26 L44 32 Q42 38 36 40 H14 Q10 40 10 38 Z" fill="WASH"/><path d="M15 40 L10 52 M20 40 L22 52 M34 40 L30 52 M38 39 L44 50"/>
+    <path d="M20 10 Q28 6 36 10 M22 10 Q28 2 34 10"/><circle cx="28" cy="14" r="3.5"/><path d="M28 18 L27 30 M27 22 L38 18 Q44 14 42 24 Q40 30 46 32"/><path d="M10 34 Q4 34 3 42"/>`,
+
   // Farmland: a patchwork of furrowed plots, laid around villages.
   fields: `<path d="M4 40 L22 30 L40 36 L22 48 Z M24 29 L44 20 L60 27 L42 35 Z M42 37 L60 29 L62 40 L46 48 Z" fill="WASH"/>
     <path d="M8 40 L24 32 M12 42 L28 34 M16 44 L32 37 M28 27 L46 23 M32 29 L50 25 M36 31 L54 27 M46 40 L60 33 M48 43 L61 37" opacity=".6"/>`,

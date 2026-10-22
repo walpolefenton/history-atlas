@@ -66,7 +66,7 @@ export interface Drawing {
   name: string;
   /** Which pen drawing to use (src/drawings.ts). */
   kind: string;
-  cat: "landmark" | "curiosity" | "nature";
+  cat: "landmark" | "curiosity" | "nature" | "culture";
   lat: number;
   lon: number;
   /** Years it existed; to is null if it still stands. */
