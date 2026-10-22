@@ -409,7 +409,8 @@ body.comparing .year-mark { display: none; }
 .legend li { display: flex; align-items: center; gap: 8px; }
 
 .territory-list li { padding: 3px 0; }
-.sovereign-group h3 { display: flex; justify-content: space-between; gap: 8px; font-size: 15px; color: var(--text); font-weight: 500; }
+.sovereign-group h3 { display: flex; align-items: center; gap: 0; font-size: 15px; color: var(--text); font-weight: 500; }
+.sovereign-group h3 > .muted { margin-left: auto; padding-left: 10px; white-space: nowrap; }
 
 .chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px; }
 .chip {
@@ -737,6 +738,9 @@ body[data-lettering="printed"] #ym-num { font-family: "IM Fell English", var(--f
 .hist-bar:hover { opacity: 0.7; }
 .hist-bar.current { fill: var(--accent); opacity: 1; }
 .hist figcaption { display: flex; justify-content: space-between; gap: 8px; margin-top: 6px; }
+
+/* The colour a power has on the map, beside its name in lists. */
+.swatch { display: inline-block; flex: none; width: 12px; height: 12px; margin-right: 8px; border-radius: 3px; vertical-align: -1px; box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.12); }
 
 .share-row { display: flex; flex-wrap: wrap; gap: 8px; }
 .share-row .tool { border: 1px solid var(--line); }

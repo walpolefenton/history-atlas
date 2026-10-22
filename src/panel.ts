@@ -446,11 +446,12 @@ function fillWiki(w: WikiSummary | null, caveat: string | null) {
 
 export function renderList(ctx: PanelContext, focus = false) {
   const { data } = ctx;
-  const groups = new Map<string, { km2: number; names: { name: string; km2: number }[] }>();
+  const groups = new Map<string, { km2: number; ci: number; names: { name: string; km2: number }[] }>();
   const seen = new Set<string>();
+  const palette = currentTheme().palette;
   for (const f of data.borders.features) {
-    const { name, sovereign, km2 } = f.properties;
-    const g = groups.get(sovereign) ?? { km2: 0, names: [] };
+    const { name, sovereign, km2, ci } = f.properties;
+    const g = groups.get(sovereign) ?? { km2: 0, ci, names: [] };
     g.km2 += km2;
     if (!seen.has(name)) g.names.push({ name, km2 }), seen.add(name);
     groups.set(sovereign, g);
@@ -468,7 +469,7 @@ export function renderList(ctx: PanelContext, focus = false) {
     ${sorted
       .map(
         ([sovereign, g]) => `<section class="sovereign-group">
-        <h3><button type="button" class="link" data-action="polity" data-name="${esc(sovereign)}">${esc(sovereign)}</button>
+        <h3><span class="swatch" style="background:${palette[g.ci % palette.length]}" aria-hidden="true"></span><button type="button" class="link" data-action="polity" data-name="${esc(sovereign)}">${esc(sovereign)}</button>
         <span class="muted small">${formatArea(g.km2)}</span></h3>
         <ul class="territory-list">${g.names
           .sort((a, b) => b.km2 - a.km2)
