@@ -126,6 +126,7 @@ class App {
   /** Adds the large Wikidata event set once it has loaded in the background. */
   setWikidataEvents(events: HistoryEvent[]) {
     this.wdEvents = events;
+    this.drawDensity();
     if (!this.data) return;
     this.refresh();
     if (this.pendingEvent) this.selectEvent(this.pendingEvent, true);
@@ -223,6 +224,8 @@ class App {
     const data = await loadYear(year);
     if (token !== this.loadToken) return; // a newer request superseded this one
     this.data = data;
+    // Fetch the neighbouring snapshots in the background, so stepping and playing feel instant.
+    for (const j of [i + 1, i - 1]) if (j >= 0 && j < this.years.length) loadYear(this.years[j]).catch(() => {});
     const era = this.era(i, data);
     await this.atlas.setYear(this.layers(era));
     $("map-a-year").textContent = formatYear(year);
@@ -482,7 +485,29 @@ class App {
 
   // --- Controls --------------------------------------------------------------
 
+  /**
+   * A faint profile along the timeline of how many recorded events fall in
+   * each snapshot's era (on a square-root scale), so busy periods show at a glance.
+   */
+  private drawDensity() {
+    const ys = this.years;
+    const counts = ys.map((y, i) => {
+      const next = ys[i + 1] ?? Infinity;
+      let n = 0;
+      for (const e of this.wdEvents) if (e.start >= y && e.start < next) n++;
+      for (const e of this.curated) if (e.start >= y && e.start < next) n++;
+      return Math.sqrt(n);
+    });
+    const max = Math.max(...counts, 1);
+    const W = 1000, H = 20, n = ys.length;
+    const pts = counts.map((c, i) => `${((i / (n - 1)) * W).toFixed(1)},${(H - (c / max) * H).toFixed(1)}`);
+    const svg = $("density");
+    svg.setAttribute("viewBox", `0 0 ${W} ${H}`);
+    svg.innerHTML = `<path d="M0,${H} L${pts.join(" L")} L${W},${H} Z"/>`;
+  }
+
   private buildTimeline() {
+    this.drawDensity();
     const n = this.years.length;
     this.slider.max = String(n - 1);
     $("ticks").innerHTML = this.years

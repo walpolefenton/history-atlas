@@ -546,6 +546,9 @@ body.comparing .year-mark { display: none; }
 }
 
 .ticks { position: absolute; left: 16px; right: 16px; top: 44px; height: 16px; }
+/* How much recorded history each period holds, as a faint profile behind the slider. */
+.density { position: absolute; left: 16px; right: 16px; top: 20px; width: calc(100% - 32px); height: 20px; pointer-events: none; }
+.density path { fill: var(--accent); opacity: 0.16; }
 .tick { position: absolute; top: 0; width: 1px; height: 3px; background: var(--line); }
 .tick.major { height: 6px; background: var(--muted); }
 .tick span {
