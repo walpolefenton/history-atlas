@@ -20,6 +20,7 @@
   "devDependencies": {
     "@turf/area": "^7.4.0",
     "@turf/boolean-point-in-polygon": "^7.4.0",
+    "axe-core": "^4.14.0",
     "mapshaper": "^0.7.95",
     "polylabel": "^2.1.0",
     "typescript": "^7.0.2",
