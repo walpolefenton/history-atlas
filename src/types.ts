@@ -75,6 +75,8 @@ export interface Drawing {
   approx?: boolean;
   /** 1 visible from afar, 2 at regional zoom, 3 only up close. */
   tier: 1 | 2 | 3;
+  /** Drawing scale; defaults by tier. The great monuments are drawn larger. */
+  size?: number;
   /** The caption: dry, short, true. */
   quip: string;
   /** The plain fact behind the caption. */

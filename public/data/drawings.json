@@ -29,7 +29,8 @@
       "tier": 1,
       "quip": "Aligned to the solstice. Purpose: still under discussion, five thousand years on.",
       "note": "The great sarsen circle was raised around 2500 BCE on a site in use since about 3000 BCE.",
-      "wiki": "Stonehenge"
+      "wiki": "Stonehenge",
+      "size": 1.3
     },
     {
       "id": "giza",
@@ -44,7 +45,8 @@
       "tier": 1,
       "quip": "Tallest building on Earth for about 3,800 years. A record no skyscraper will match.",
       "note": "Built for the pharaoh Khufu around 2560 BCE; the oldest of the Seven Wonders, and the only one still standing.",
-      "wiki": "Great Pyramid of Giza"
+      "wiki": "Great Pyramid of Giza",
+      "size": 1.9
     },
     {
       "id": "mohenjo-daro",
@@ -118,7 +120,8 @@
       "tier": 1,
       "quip": "Has almost no straight lines, by design, and has served as temple, church, mosque and gunpowder store.",
       "note": "Completed in 438 BCE for Athena; badly damaged when a Venetian shell hit the Ottoman powder store inside in 1687.",
-      "wiki": "Parthenon"
+      "wiki": "Parthenon",
+      "size": 1.45
     },
     {
       "id": "lighthouse-alexandria",
@@ -162,7 +165,8 @@
       "tier": 1,
       "quip": "Not visible from the Moon. Quite visible from Badaling on a Sunday.",
       "note": "Qin Shi Huang linked earlier walls after 221 BCE; most of what stands today is Ming, from after 1368.",
-      "wiki": "Great Wall of China"
+      "wiki": "Great Wall of China",
+      "size": 1.8
     },
     {
       "id": "terracotta-army",
@@ -176,7 +180,8 @@
       "tier": 3,
       "quip": "Eight thousand soldiers, every face different, guarding an emperor underground. Found by farmers digging a well in 1974.",
       "note": "Buried with Qin Shi Huang around 210 BCE.",
-      "wiki": "Terracotta Army"
+      "wiki": "Terracotta Army",
+      "size": 1.1
     },
     {
       "id": "petra",
@@ -191,7 +196,8 @@
       "tier": 2,
       "quip": "The Treasury holds no treasure. Bedouin shot at its urn for centuries checking.",
       "note": "The Nabataean rock-cut façade of Al-Khazneh dates to the early 1st century CE.",
-      "wiki": "Petra"
+      "wiki": "Petra",
+      "size": 1.3
     },
     {
       "id": "colosseum",
@@ -205,7 +211,8 @@
       "tier": 1,
       "quip": "Seated about 50,000. Lost much of its outer wall, largely to other people's building projects.",
       "note": "Opened in 80 CE under Titus; later quarried for stone after earthquakes damaged it.",
-      "wiki": "Colosseum"
+      "wiki": "Colosseum",
+      "size": 1.5
     },
     {
       "id": "pantheon",
@@ -235,7 +242,8 @@
       "tier": 2,
       "quip": "The Aztecs found it already ancient and named it 'the place where gods were born'.",
       "note": "Completed around 200 CE in what was then one of the largest cities in the world.",
-      "wiki": "Pyramid of the Sun"
+      "wiki": "Pyramid of the Sun",
+      "size": 1.5
     },
     {
       "id": "hagia-sophia",
@@ -249,7 +257,8 @@
       "tier": 1,
       "quip": "Cathedral for 900 years, mosque for nearly 500, museum for 86, mosque again since 2020.",
       "note": "Built in five years for Justinian and dedicated in 537; the minarets were added after 1453.",
-      "wiki": "Hagia Sophia"
+      "wiki": "Hagia Sophia",
+      "size": 1.55
     },
     {
       "id": "dome-rock",
@@ -293,7 +302,8 @@
       "tier": 2,
       "quip": "Walk its terraces clockwise and you read 2,672 relief panels. Bring water.",
       "note": "The world's largest Buddhist monument, completed around 825 under the Shailendra dynasty.",
-      "wiki": "Borobudur"
+      "wiki": "Borobudur",
+      "size": 1.5
     },
     {
       "id": "cahokia",
@@ -323,7 +333,8 @@
       "tier": 1,
       "quip": "At the equinox, the afternoon sun draws a serpent down the stairs. Every year, on schedule.",
       "note": "The pyramid of Kukulcán, built between the 8th and 12th centuries.",
-      "wiki": "El Castillo, Chichen Itza"
+      "wiki": "El Castillo, Chichen Itza",
+      "size": 1.5
     },
     {
       "id": "tower-london",
@@ -353,7 +364,8 @@
       "tier": 1,
       "quip": "Built as a Hindu temple, became a Buddhist one, and now appears on Cambodia's flag.",
       "note": "Built for King Suryavarman II in the first half of the 12th century; the largest religious monument in the world.",
-      "wiki": "Angkor Wat"
+      "wiki": "Angkor Wat",
+      "size": 1.7
     },
     {
       "id": "lalibela",
@@ -383,7 +395,8 @@
       "tier": 2,
       "quip": "Dry-stone walls eleven metres high, without a drop of mortar. A country later took its name.",
       "note": "Capital of a trading kingdom from about the 11th to the 15th century.",
-      "wiki": "Great Zimbabwe"
+      "wiki": "Great Zimbabwe",
+      "size": 1.3
     },
     {
       "id": "alhambra",
@@ -412,7 +425,8 @@
       "tier": 2,
       "quip": "Nearly a thousand of them, and they mostly face inland, keeping an eye on the islanders.",
       "note": "Carved between about 1250 and 1500, on one of the most remote inhabited islands on Earth.",
-      "wiki": "Moai"
+      "wiki": "Moai",
+      "size": 1.2
     },
     {
       "id": "notre-dame",
@@ -469,7 +483,8 @@
       "tier": 1,
       "quip": "Home of 24 emperors. Commoners admitted from 1925, tickets now required.",
       "note": "Completed in 1420 for the Ming Yongle Emperor; the imperial palace until 1912.",
-      "wiki": "Forbidden City"
+      "wiki": "Forbidden City",
+      "size": 1.6
     },
     {
       "id": "machu-picchu",
@@ -484,7 +499,8 @@
       "tier": 1,
       "quip": "The Spanish never found it. Everyone else has.",
       "note": "An Inca estate built around 1450 for the emperor Pachacuti, abandoned a century later.",
-      "wiki": "Machu Picchu"
+      "wiki": "Machu Picchu",
+      "size": 1.6
     },
     {
       "id": "kremlin",
@@ -512,7 +528,8 @@
       "tier": 2,
       "quip": "Twin temples atop a city built on a lake. Dismantled by the Spanish, rediscovered by electricians in 1978.",
       "note": "The main temple of the Aztec capital, enlarged in seven building phases; destroyed after 1521.",
-      "wiki": "Templo Mayor"
+      "wiki": "Templo Mayor",
+      "size": 1.4
     },
     {
       "id": "st-peters",
@@ -540,7 +557,8 @@
       "tier": 1,
       "quip": "A mausoleum for a beloved wife. The minarets lean outward slightly, so they would fall away from her.",
       "note": "Built by Shah Jahan for Mumtaz Mahal; the mausoleum was finished around 1643.",
-      "wiki": "Taj Mahal"
+      "wiki": "Taj Mahal",
+      "size": 1.6
     },
     {
       "id": "potala",
@@ -596,7 +614,8 @@
       "tier": 2,
       "quip": "A French gift, assembled from 350 pieces. She was copper-coloured until about 1906.",
       "note": "Dedicated in 1886; designed by Bartholdi with an internal frame by Gustave Eiffel.",
-      "wiki": "Statue of Liberty"
+      "wiki": "Statue of Liberty",
+      "size": 1.3
     },
     {
       "id": "eiffel",
@@ -610,7 +629,8 @@
       "tier": 1,
       "quip": "Built to stand for twenty years. Artists signed a petition against the 'useless and monstrous' thing.",
       "note": "Built for the 1889 World's Fair; the tallest structure in the world until 1930.",
-      "wiki": "Eiffel Tower"
+      "wiki": "Eiffel Tower",
+      "size": 1.5
     },
     {
       "id": "empire-state",
@@ -624,7 +644,8 @@
       "tier": 2,
       "quip": "Built in 410 days during the Depression, then so empty it was nicknamed the 'Empty State Building'.",
       "note": "The world's tallest building from 1931 to 1970.",
-      "wiki": "Empire State Building"
+      "wiki": "Empire State Building",
+      "size": 1.4
     },
     {
       "id": "christ-redeemer",
@@ -638,7 +659,8 @@
       "tier": 2,
       "quip": "Struck by lightning several times a year. Spare fingertips are kept for repairs.",
       "note": "Completed in 1931 on Corcovado, above Rio de Janeiro.",
-      "wiki": "Christ the Redeemer (statue)"
+      "wiki": "Christ the Redeemer (statue)",
+      "size": 1.3
     },
     {
       "id": "berlin-wall",
@@ -666,7 +688,8 @@
       "tier": 2,
       "quip": "Ten years late, fourteen times over budget, and its architect never saw it finished.",
       "note": "Designed by Jørn Utzon; opened in 1973.",
-      "wiki": "Sydney Opera House"
+      "wiki": "Sydney Opera House",
+      "size": 1.3
     },
     {
       "id": "burj-khalifa",
@@ -680,7 +703,8 @@
       "tier": 2,
       "quip": "You can watch the sunset at the base, take the lift, and watch it again from the top.",
       "note": "At 828 metres, the tallest building in the world since it opened in 2010.",
-      "wiki": "Burj Khalifa"
+      "wiki": "Burj Khalifa",
+      "size": 1.5
     },
     {
       "id": "beringia",
@@ -1153,7 +1177,8 @@
       "approx": true,
       "quip": "Saharan rock art shows hippos, giraffes and people swimming. Nobody was imagining things.",
       "note": "During the African Humid Period, roughly 9000–3500 BCE, stronger monsoons turned the Sahara into grassland with lakes and rivers. The map shows it green in these eras.",
-      "wiki": "African humid period"
+      "wiki": "African humid period",
+      "size": 2.2
     },
     {
       "cat": "nature",
@@ -1340,7 +1365,8 @@
       "approx": true,
       "quip": "A ceremonial capital for the King of Kings. Alexander burned it in 330 BCE, possibly after a long night.",
       "note": "Begun by Darius I around 518 BCE; its stairways are carved with delegations from across the Persian Empire bringing tribute.",
-      "wiki": "Persepolis"
+      "wiki": "Persepolis",
+      "size": 1.4
     },
     {
       "cat": "landmark",

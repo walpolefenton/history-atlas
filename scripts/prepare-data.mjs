@@ -129,15 +129,70 @@ function pointsInside(geometry, count) {
   return out;
 }
 
-/** Villages for settled states (not the cultures handled by inhabitants()). */
-function villages(name, geometry, km2, year) {
+// River vertices, so villages can be sited along rivers as real settlements are.
+const riverPoints = JSON.parse(await readFile(`${SRC}/ne_50m_rivers_lake_centerlines.geojson`, "utf8"))
+  .features.flatMap((f) => (f.geometry.type === "LineString" ? [f.geometry.coordinates] : f.geometry.coordinates))
+  .flatMap((line) => line.filter((_, i) => i % 3 === 0));
+
+function riversideSpots(geometry, count) {
+  const polys = geometry.type === "Polygon" ? [geometry.coordinates] : geometry.coordinates;
+  let [w, so, e, n] = [180, 90, -180, -90];
+  for (const rings of polys) for (const [x, y] of rings[0]) ((w = Math.min(w, x)), (e = Math.max(e, x)), (so = Math.min(so, y)), (n = Math.max(n, y)));
+  const near = riverPoints.filter(([x, y]) => x >= w && x <= e && y >= so && y <= n);
+  const out = [];
+  for (let tries = 0; out.length < count && tries < count * 6 && near.length; tries++) {
+    const p = near[Math.floor(sceneRand() * near.length)];
+    const q = [p[0] + (sceneRand() - 0.5) * 0.3, p[1] + (sceneRand() - 0.5) * 0.3];
+    if (booleanPointInPolygon(q, geometry)) out.push(q.map((v) => Math.round(v * 100) / 100));
+  }
+  return out;
+}
+
+/** Joins a capital and its villages with the shortest network of roads (a minimum spanning tree). */
+function roadNetwork(points, name) {
+  if (points.length < 2) return [];
+  const dist = (a, b) => Math.hypot((a[0] - b[0]) * Math.cos(((a[1] + b[1]) * Math.PI) / 360), a[1] - b[1]);
+  const inTree = [0];
+  const roads = [];
+  while (inTree.length < points.length) {
+    let best = null;
+    for (const i of inTree)
+      for (let j = 0; j < points.length; j++) {
+        if (inTree.includes(j)) continue;
+        const d = dist(points[i], points[j]);
+        if (!best || d < best.d) best = { i, j, d };
+      }
+    inTree.push(best.j);
+    if (best.d > 9) continue; // too far for a road worth drawing
+    const [a, b] = [points[best.i], points[best.j]];
+    // A slight bend at the middle, so roads look walked rather than ruled.
+    const mid = [(a[0] + b[0]) / 2 + (sceneRand() - 0.5) * best.d * 0.15, (a[1] + b[1]) / 2 + (sceneRand() - 0.5) * best.d * 0.15];
+    roads.push({ type: "Feature", properties: { road: true, of: name }, geometry: { type: "LineString", coordinates: [a, mid, b].map((p) => p.map((v) => Math.round(v * 100) / 100)) } });
+  }
+  return roads;
+}
+
+/** Villages, fields and roads for settled states (not the cultures handled by inhabitants()). */
+function villages(name, geometry, km2, year, capitalPoint) {
   if (year < -3000 || WAYS_OF_LIFE.some(([re]) => re.test(name))) return [];
   const count = Math.min(10, Math.round(km2 / 350_000));
-  return pointsInside(geometry, count).map((p, i) => ({
-    type: "Feature",
-    properties: { k: townFor(p, year), t: i < 2 ? 3 : 4, of: name, village: true },
-    geometry: { type: "Point", coordinates: p },
-  }));
+  if (!count) return [];
+  // Half the villages stand on rivers where the territory has any.
+  const riverside = riversideSpots(geometry, Math.ceil(count / 2));
+  const spots = [...riverside, ...pointsInside(geometry, count - riverside.length)];
+  const out = [];
+  spots.forEach((p, i) => {
+    const kind = townFor(p, year);
+    out.push({ type: "Feature", properties: { k: kind, t: i < 2 ? 3 : 4, of: name, village: true, s: 0.9 + sceneRand() * 0.4 }, geometry: { type: "Point", coordinates: p } });
+    // Farmland around settled villages, though not on the steppe.
+    if (kind !== "town-steppe" && sceneRand() < 0.6) {
+      const f = [p[0] + 0.35 + sceneRand() * 0.3, p[1] - 0.15 - sceneRand() * 0.25];
+      if (booleanPointInPolygon(f, geometry)) {
+        out.push({ type: "Feature", properties: { k: "fields", t: 4, of: name, village: true, s: 1 + sceneRand() * 0.5 }, geometry: { type: "Point", coordinates: f.map((v) => Math.round(v * 100) / 100) } });
+      }
+    }
+  });
+  return [...out, ...roadNetwork(capitalPoint ? [capitalPoint, ...spots] : spots, name)];
 }
 
 function inhabitants(name, geometry, km2, lp, year) {
@@ -336,7 +391,7 @@ for (const { year, filename } of index.years.sort((a, b) => a.year - b.year)) {
   raw.features.forEach((f, i) => {
     if (!info[i]?.lp) return;
     const people = inhabitants(f.properties.NAME, f.geometry, info[i].km2, info[i].lp, year);
-    scenery.push(...(people.length ? people : villages(f.properties.NAME, f.geometry, info[i].km2, year)));
+    scenery.push(...(people.length ? people : villages(f.properties.NAME, f.geometry, info[i].km2, year, info[i].capital?.point ?? null)));
   });
 
   await writeFile(

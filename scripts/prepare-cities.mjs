@@ -71,7 +71,8 @@ for (const c of cities) {
   const override = FOUNDED[c.title];
   const founded = override ?? c.founded;
   const undated = founded === null;
-  const from = undated ? (lateRegion(c.coord) ? 1900 : 1500) : founded;
+  // Only well-known undated cities are assumed old; lesser ones are likely modern.
+  const from = undated ? (lateRegion(c.coord) ? 1900 : c.links >= 150 ? 1500 : 1850) : founded;
   const names = NAMES[c.title] ?? null;
   out.push({
     qid: c.qid,
@@ -91,4 +92,4 @@ for (const c of cities) {
 }
 out.sort((a, b) => b.links - a.links);
 await writeFile("public/data/cities.json", JSON.stringify(out));
-console.log(`${out.length} cities (${out.filter((c) => c.undated).length} undated, shown from 1500/1900)`);
+console.log(`${out.length} cities (${out.filter((c) => c.undated).length} undated, shown from 1500, 1850 or 1900)`);

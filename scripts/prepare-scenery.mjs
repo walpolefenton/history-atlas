@@ -70,7 +70,8 @@ const isAustralia = (p) => inBox(p, 112, -44, 154, -10);
 function landScenery(p, kind) {
   const [lon, lat] = p;
   if (kind === "mountains") return { peaks: 6, peak: 4 };
-  if (kind === "desert") return isAmericas(p) ? { cactus: 4, dune: 6 } : { dune: 8, camel: 1 };
+  // Deserts keep plenty of open ground between their dunes.
+  if (kind === "desert") return isAmericas(p) ? { cactus: 4, dune: 4, none: 3 } : { dune: 5, camel: 0.8, none: 5 };
   if (kind === "tundra") return { caribou: 2, grass: 3 };
   if (kind === "plateau") return { peak: 3, grass: 3 };
   if (kind === "wetland") return { grass: 3, fisher: 1 };
@@ -100,6 +101,20 @@ function landScenery(p, kind) {
 
 // --- Scattered scenery ---------------------------------------------------------------------
 
+/** Base drawing scale by kind: big things drawn big. Each piece then varies a little. */
+const SCALE = {
+  peaks: 1.5, peak: 1.15, jungle: 1.4, pine: 1.15, oak: 1.1, palm: 1.05, dune: 1.3, cactus: 0.85, grass: 0.7,
+  bison: 1, caribou: 0.9, giraffe: 1.15, elephant: 1.2, kangaroo: 0.9, penguin: 0.75, polarbear: 1, wildhorse: 0.9,
+  camel: 1, rider: 1, fisher: 1, waves: 0.95, whale: 1.6, fish: 0.8,
+};
+const scaled = (kind, shrink = 1) => Math.round((SCALE[kind] ?? 1) * shrink * (0.78 + rand() * 0.5) * 100) / 100;
+
+// Trees grow in clumps and grazing animals move in herds.
+const CLUMPS = { pine: [2, 4], oak: [1, 3], jungle: [2, 4], palm: [1, 3], bison: [1, 3], caribou: [1, 3], wildhorse: [1, 2], giraffe: [0, 1], dune: [1, 3], peaks: [0, 2] };
+
+/** Is this sea point near a coast? Waves gather there, like engraved water lines. */
+const nearCoast = (p, d) => [[d, 0], [-d, 0], [0, d], [0, -d]].some(([dx, dy]) => hit(land, [p[0] + dx, p[1] + dy]));
+
 const TIERS = [
   { tier: 1, spacing: 7, ocean: true },
   { tier: 2, spacing: 3.5, ocean: true },
@@ -120,12 +135,21 @@ for (const { tier, spacing, ocean } of TIERS) {
         if (hit(ice, p)) continue;
         const t = hit(terrain, p);
         const kind = pick(landScenery(p, t ? TERRAIN[t.properties.FEATURECLA] : null) ?? {});
-        if (kind) point({ type: "point", k: kind, t: tier }, p);
+        if (!kind || kind === "none") continue;
+        point({ type: "point", k: kind, t: tier, s: scaled(kind) }, p);
+        const [lo, hi] = CLUMPS[kind] ?? [0, 0];
+        const extra = lo + Math.floor(rand() * (hi - lo + 1));
+        for (let j = 0; j < extra; j++) {
+          const q = [p[0] + (rand() - 0.5) * spacing * 0.45, p[1] + (rand() - 0.5) * spacing * 0.3];
+          if (hit(land, q)) point({ type: "point", k: kind, t: Math.min(4, tier + 1), s: scaled(kind, 0.8) }, q);
+        }
       } else if (ocean && Math.abs(p[1]) < 72) {
         if (tier === 2 && rand() < 0.5) continue;
-        if (rand() < 0.35) continue; // keep the sea calmer than the land
-        const kind = pick({ waves: 9, whale: tier === 1 ? 1.2 : 0.7, fish: 1.4 });
-        if (kind) point({ type: "point", k: kind, t: tier }, p);
+        // Open sea stays calm; coastal water carries bands of waves.
+        const coastal = nearCoast(p, spacing * 0.6);
+        if (rand() < (coastal ? 0.1 : 0.55)) continue;
+        const kind = coastal ? pick({ waves: 12, fish: 1 }) : pick({ waves: 6, whale: tier === 1 ? 1.4 : 0.8, fish: 1.2 });
+        if (kind) point({ type: "point", k: kind, t: tier, s: scaled(kind, coastal ? 0.85 : 1) }, p);
       }
     }
   }

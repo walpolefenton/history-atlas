@@ -194,6 +194,10 @@ const D: Record<string, string> = {
   bridge: `<path d="M16 50 V12 M48 50 V12"/><path d="M14 12 H18 M46 12 H50"/><path d="M2 40 Q16 12 16 12 Q32 34 48 12 Q48 12 62 40"/>
     <path d="M2 40 H62 V44 H2 Z" fill="WASH"/><path d="M22 40 V24 M28 40 V29 M36 40 V29 M42 40 V24 M8 40 V30 M56 40 V30" opacity=".6"/><path d="M2 54 Q10 51 18 54 T34 54 T50 54 T62 54" opacity=".6"/>`,
 
+  // Farmland: a patchwork of furrowed plots, laid around villages.
+  fields: `<path d="M4 40 L22 30 L40 36 L22 48 Z M24 29 L44 20 L60 27 L42 35 Z M42 37 L60 29 L62 40 L46 48 Z" fill="WASH"/>
+    <path d="M8 40 L24 32 M12 42 L28 34 M16 44 L32 37 M28 27 L46 23 M32 29 L50 25 M36 31 L54 27 M46 40 L60 33 M48 43 L61 37" opacity=".6"/>`,
+
   // A city on an old map: a small ring with a dot, drawn by hand.
   city: `<circle cx="32" cy="32" r="14" fill="WASH"/><circle cx="32" cy="32" r="4.5"/>`,
   "city-ruin": `<circle cx="32" cy="32" r="14" stroke-dasharray="5 4"/><path d="M26 34 V28 M32 36 V26 M38 34 V29" />`,
@@ -201,7 +205,9 @@ const D: Record<string, string> = {
   // --- Scenery: the land ----------------------------------------------------------
   peak: `<path d="M8 50 L30 16 L52 50" fill="WASH"/><path d="M23 27 L30 31 L36 25"/><path d="M36 30 L41 37 M38 38 L44 46 M42 32 L46 40" opacity=".6"/>`,
   peaks: `<path d="M3 52 L18 28 L28 42 L40 18 L61 52 Z" fill="WASH"/><path d="M14 34 L18 37 L21 33 M35 26 L40 30 L44 25"/><path d="M45 32 L50 40 M48 42 L53 50 M24 40 L27 46" opacity=".6"/>`,
-  dune: `<path d="M4 46 Q20 28 36 44 Q46 34 60 46" fill="WASH"/><path d="M8 54 Q26 42 46 54"/><path d="M26 38 L30 44 M30 36 L34 42" opacity=".5"/>`,
+  // A crescent dune: windward slope washed, slip face hatched.
+  dune: `<path d="M4 46 Q18 30 38 33 Q52 35 60 46 Q46 40 33 42 Q18 44 4 46 Z" fill="WASH"/><path d="M38 33 Q35 39 33 42"/>
+    <path d="M40 36 L44 42 M45 37 L49 43 M50 39 L53 44" opacity=".55"/><path d="M10 52 Q30 47 54 52" opacity=".4"/>`,
   cactus: `<path d="M28 54 V17 Q28 11 32 11 Q36 11 36 17 V54 Z" fill="WASH"/><path d="M28 34 H23 Q19 34 19 30 V23 M36 28 H41 Q45 28 45 24 V18"/><path d="M32 16 V50" opacity=".5"/><path d="M12 54 H52"/>`,
   palm: `<path d="M30 56 Q27 40 34 22"/><path d="M34 22 Q23 15 14 23 M34 22 Q29 11 20 9 M34 22 Q41 11 50 12 M34 22 Q47 18 53 27 M34 22 Q37 31 31 35" fill="none"/>
     <circle cx="33" cy="25" r="2" fill="WASH"/><circle cx="37" cy="24" r="2" fill="WASH"/><path d="M18 56 H46"/>`,
@@ -317,6 +323,6 @@ export const SCENERY_KINDS = [
   "peak", "peaks", "dune", "cactus", "palm", "jungle", "pine", "oak", "grass", "bison", "caribou", "giraffe", "kangaroo",
   "penguin", "polarbear", "wildhorse", "elephant", "camel", "hunter", "herder", "farmer", "fisher", "rider",
   "town-ancient", "town-europe", "town-islamic", "town-eastasia", "town-southasia", "town-americas", "town-africa",
-  "town-steppe", "town-industrial", "town-metro", "waves", "whale", "fish", "wind", "compass", "city", "city-ruin",
+  "town-steppe", "town-industrial", "town-metro", "waves", "whale", "fish", "wind", "compass", "city", "city-ruin", "fields",
   "galley", "dhow", "junk", "galleon", "longship", "canoe", "clipper", "steamship", "container", "airliner",
 ];
