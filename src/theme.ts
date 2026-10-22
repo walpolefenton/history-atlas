@@ -121,7 +121,7 @@ export const THEMES = {
     wash: "rgba(217, 178, 106, 0.42)",
     washSoft: "rgba(217, 178, 106, 0.16)",
     muralOpacity: 0.32,
-    relief: { exaggeration: 0.25, shadow: "rgba(0, 0, 0, 0.5)", highlight: "rgba(180, 210, 240, 0.12)", accent: "rgba(0, 0, 0, 0.3)" },
+    relief: { exaggeration: 0.32, shadow: "rgba(0, 0, 0, 0.5)", highlight: "rgba(180, 210, 240, 0.12)", accent: "rgba(0, 0, 0, 0.3)" },
     clay: false,
   },
   // A hand-tinted 19th-century lithograph atlas: pale sea with water lining.
@@ -158,7 +158,7 @@ export const THEMES = {
     wash: "rgba(168, 54, 42, 0.2)",
     washSoft: "rgba(120, 90, 60, 0.08)",
     muralOpacity: 0.3,
-    relief: { exaggeration: 0.22, shadow: "rgba(80, 70, 60, 0.35)", highlight: "rgba(255, 255, 255, 0.25)", accent: "rgba(80, 70, 60, 0.2)" },
+    relief: { exaggeration: 0.32, shadow: "rgba(80, 70, 60, 0.35)", highlight: "rgba(255, 255, 255, 0.25)", accent: "rgba(80, 70, 60, 0.2)" },
     clay: false,
   },
 } as unknown as Record<ThemeName, MapTheme>;

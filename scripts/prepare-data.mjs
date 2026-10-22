@@ -173,7 +173,7 @@ function roadNetwork(points, name) {
   return roads;
 }
 
-/** Villages, fields and roads for settled states (not the cultures handled by inhabitants()). */
+/** Villages and roads for settled states (not the cultures handled by inhabitants()). */
 function villages(name, geometry, km2, year, capitalPoint) {
   if (year < -3000 || WAYS_OF_LIFE.some(([re]) => re.test(name))) return [];
   const count = Math.min(10, Math.round(km2 / 350_000));
@@ -185,13 +185,6 @@ function villages(name, geometry, km2, year, capitalPoint) {
   spots.forEach((p, i) => {
     const kind = townFor(p, year);
     out.push({ type: "Feature", properties: { k: kind, t: i < 2 ? 3 : 4, of: name, village: true, s: 0.9 + sceneRand() * 0.4, v: Math.floor(sceneRand() * 4) }, geometry: { type: "Point", coordinates: p } });
-    // Farmland around settled villages, though not on the steppe.
-    if (kind !== "town-steppe" && sceneRand() < 0.6) {
-      const f = [p[0] + 0.35 + sceneRand() * 0.3, p[1] - 0.15 - sceneRand() * 0.25];
-      if (booleanPointInPolygon(f, geometry)) {
-        out.push({ type: "Feature", properties: { k: "fields", t: 4, of: name, village: true, s: 1 + sceneRand() * 0.5, v: Math.floor(sceneRand() * 4) }, geometry: { type: "Point", coordinates: f.map((v) => Math.round(v * 100) / 100) } });
-      }
-    }
   });
   return [...out, ...roadNetwork(capitalPoint ? [capitalPoint, ...spots] : spots, name)];
 }
@@ -204,7 +197,8 @@ function inhabitants(name, geometry, km2, lp, year) {
   if (!kind && year < -1000) kind = year <= -8000 || lp[1] > 56 ? "hunter" : regionOf(lp) === "steppe" ? "herder" : "farmer";
   if (!kind) return [];
   if (kind === "herder" && regionOf(lp) === "steppe") kind = "rider";
-  const count = Math.min(6, Math.max(1, Math.round(km2 / 1_200_000)));
+  // One figure says how people lived here; more just repeat it.
+  const count = km2 > 4_000_000 ? 2 : 1;
   const polys = geometry.type === "Polygon" ? [geometry.coordinates] : geometry.coordinates;
   let [w, so, e, n] = [180, 90, -180, -90];
   for (const rings of polys) for (const [x, y] of rings[0]) ((w = Math.min(w, x)), (e = Math.max(e, x)), (so = Math.min(so, y)), (n = Math.max(n, y)));

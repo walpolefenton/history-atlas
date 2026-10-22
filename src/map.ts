@@ -9,7 +9,6 @@ import { currentTheme, type MapTheme } from "./theme";
 import { formatYear } from "./format";
 import { capitalIconSvg, eventIconSvg, svgToImage } from "./icons";
 import { DRAWING_KINDS, SCENERY_KINDS, VARIANTS, drawingSvg } from "./drawings";
-import { FURROWS, fieldPlots, furrowSvg } from "./fields";
 
 maplibregl.setWorkerUrl(workerUrl);
 
@@ -109,6 +108,121 @@ function patternSvg(kind: string, t: MapTheme): string {
   }
 }
 
+/** What covers the land (scripts/prepare-landcover.mjs), painted as textured areas. */
+const COVERS = ["broadleaf", "conifer", "jungle", "grassland", "savanna", "farmland"] as const;
+
+/** Repeatable 0..1 from integers, for textures drawn by hand but the same every time. */
+const jitter = (i: number, j: number, salt: number) => {
+  const h = Math.sin(i * 127.1 + j * 311.7 + salt * 74.7) * 43758.5453;
+  return h - Math.floor(h);
+};
+
+/**
+ * Farmland as a patchwork: a tile of irregular plots meeting along shared
+ * hedges, in two tones, each furrowed its own way. Plot corners on the tile's
+ * edges repeat, so the tile joins seamlessly with its neighbours.
+ */
+function farmSvg(t: MapTheme, ripe: string, green: string) {
+  const ink = `rgba(${t.ink},`;
+  const N = 3;
+  const S = 128 / N;
+  const wrap = (i: number) => ((i % N) + N) % N;
+  const corner = (i: number, j: number): [number, number] => [
+    i * S + (jitter(wrap(i), wrap(j), 1) - 0.5) * S * 0.7,
+    j * S + (jitter(wrap(i), wrap(j), 2) - 0.5) * S * 0.7,
+  ];
+  const furrows = Array.from({ length: 30 }, (_, k) => `M-60 ${-60 + k * 6} H190`).join(" ");
+  const clips: string[] = [];
+  const plots: string[] = [];
+  // One ring of cells beyond the tile too, so plots cut by its edge are complete.
+  for (let i = -1; i <= N; i++)
+    for (let j = -1; j <= N; j++) {
+      const pts = [corner(i, j), corner(i + 1, j), corner(i + 1, j + 1), corner(i, j + 1)];
+      const d = `M${pts.map(([x, y]) => `${x.toFixed(1)} ${y.toFixed(1)}`).join(" L")} Z`;
+      const r = jitter(wrap(i), wrap(j), 3);
+      const id = `p${i + 1}_${j + 1}`;
+      const fallow = r < 0.3;
+      const angle = [0, 45, 90, 135][Math.floor(jitter(wrap(i), wrap(j), 4) * 4)];
+      clips.push(`<clipPath id="${id}"><path d="${d}"/></clipPath>`);
+      plots.push(
+        (fallow ? "" : `<path d="${d}" fill="${r < 0.55 ? ripe : green}" fill-opacity="0.32"/>`) +
+          (fallow ? "" : `<g clip-path="url(#${id})"><path d="${furrows}" transform="rotate(${angle} 64 64)" stroke="${ink}0.2)" stroke-width="0.8"/></g>`) +
+          `<path d="${d}" fill="none" stroke="${ink}0.26)" stroke-width="1"/>`,
+      );
+    }
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128"><defs>${clips.join("")}</defs>${plots.join("")}</svg>`;
+}
+
+/** How each kind of cover is drawn: a mark, how densely marks are sown, and their ink. */
+const MARKS: Record<string, { grid: number; density: number; alpha: number; mark: (x: number, y: number, k: number, r: number) => string; shade?: (x: number, y: number, k: number) => string }> = {
+  // Woodland: rounded crowns on short stems, shaded on the east.
+  broadleaf: {
+    grid: 7, density: 0.85, alpha: 0.42,
+    mark: (x, y, k) => `M${x - 4 * k} ${y} a${4 * k} ${4 * k} 0 1 1 ${8 * k} 0 M${x} ${y} v${2.5 * k}`,
+    shade: (x, y, k) => `M${x + 1.5 * k} ${y - 1 * k} l${2 * k} -${2 * k}`,
+  },
+  // Conifers: narrow spikes.
+  conifer: { grid: 8, density: 0.85, alpha: 0.42, mark: (x, y, k) => `M${x - 2.5 * k} ${y} L${x} ${y - 7 * k} L${x + 2.5 * k} ${y} M${x} ${y} v${2 * k}` },
+  // Rainforest: dense double scallops.
+  jungle: { grid: 7, density: 1, alpha: 0.36, mark: (x, y, k) => `M${x - 5 * k} ${y} q${2.5 * k} -${5 * k} ${5 * k} 0 q${2.5 * k} -${5 * k} ${5 * k} 0` },
+  // Grass: sparse tufts.
+  grassland: { grid: 6, density: 0.5, alpha: 0.32, mark: (x, y, k) => `M${x - 2 * k} ${y} l-${k} -${3 * k} M${x} ${y} v-${4 * k} M${x + 2 * k} ${y} l${k} -${3 * k}` },
+  // Savanna: tufts, and now and then a flat-topped acacia.
+  savanna: {
+    grid: 6, density: 0.5, alpha: 0.34,
+    mark: (x, y, k, r) =>
+      r < 0.18 ? `M${x} ${y} v-${5 * k} M${x - 5 * k} ${y - 5 * k} q${5 * k} -${3 * k} ${10 * k} 0` : `M${x - 2 * k} ${y} l-${k} -${3 * k} M${x} ${y} v-${4 * k} M${x + 2 * k} ${y} l${k} -${3 * k}`,
+  },
+  // Mountains: broad hills in profile, as on old maps, their east slopes hatched.
+  mountains: {
+    grid: 5, density: 0.85, alpha: 0.5,
+    mark: (x, y, k) => `M${x - 10 * k} ${y} Q${x - 4 * k} ${y - 12 * k} ${x} ${y - 12 * k} Q${x + 4 * k} ${y - 12 * k} ${x + 10 * k} ${y}`,
+    shade: (x, y, k) =>
+      [2, 4.5, 7].map((o) => `M${x + o * k} ${y - (12 - o * 1.2) * k + 1} l${1.2 * k} ${(9 - o * 1.1) * k}`).join(" "),
+  },
+};
+
+/**
+ * An engraved texture: marks sown over a 128-unit tile, one per cell of a grid
+ * but jittered, varied in size, with some cells left bare, so the repeat doesn't
+ * show. Marks near an edge are drawn again on the opposite edge, so the tile
+ * joins seamlessly. Everything is shaded on the east, like the rest of the map.
+ */
+function coverSvg(kind: string, t: MapTheme, themeName: string) {
+  if (kind === "farmland") return farmSvg(t, ...(FIELD_TINT[themeName] ?? FIELD_TINT.night));
+  const ink = `rgba(${t.ink},`;
+  const m = MARKS[kind];
+  const cell = 128 / m.grid;
+  const salt = kind.length * 13;
+  let d = "";
+  let shade = "";
+  for (let i = 0; i < m.grid; i++)
+    for (let j = 0; j < m.grid; j++) {
+      const r = jitter(i, j, salt);
+      if (r > m.density) continue;
+      // Stagger alternate rows, then jitter within the cell.
+      const x = (i + 0.5 + (j % 2) * 0.5 + (jitter(i, j, salt + 1) - 0.5) * 0.6) * cell;
+      const y = (j + 0.5 + (jitter(i, j, salt + 2) - 0.5) * 0.5) * cell;
+      const k = 0.8 + jitter(i, j, salt + 3) * 0.45;
+      for (const dx of [-128, 0, 128])
+        for (const dy of [-128, 0, 128]) {
+          const [px, py] = [x + dx, y + dy];
+          if (px < -16 || px > 144 || py < -16 || py > 144) continue;
+          d += m.mark(px, py, k, r / m.density) + " ";
+          if (m.shade) shade += m.shade(px, py, k) + " ";
+        }
+    }
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128"><g fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <path d="${d}" stroke="${ink}${m.alpha})" stroke-width="1.1"/>${shade ? `<path d="${shade}" stroke="${ink}${m.alpha * 0.8})" stroke-width="0.9"/>` : ""}</g></svg>`;
+}
+
+/** Land-cover tints by theme: a wash under each texture. */
+const COVER_TINT: Record<string, Record<(typeof COVERS)[number], string>> = {
+  night: { broadleaf: "#2f4a35", conifer: "#28423a", jungle: "#2a4d33", grassland: "#4a4a32", savanna: "#5a4e30", farmland: "#5a5236" },
+  survey: { broadleaf: "#9fb88a", conifer: "#8eab8c", jungle: "#86b07c", grassland: "#cfcf9a", savanna: "#d9c88f", farmland: "#d6c995" },
+  clay: { broadleaf: "#8f9c5a", conifer: "#7d8f60", jungle: "#7f9a52", grassland: "#c9b878", savanna: "#d1ad6a", farmland: "#cfae6c" },
+};
+
 /** Watercolour paper: a faint, seamlessly tiling grain laid over the territories. */
 function paperSvg(t: MapTheme) {
   return `<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128">
@@ -137,6 +251,7 @@ function trailPatternSvg(t: MapTheme) {
 }
 
 async function themeImages(t: MapTheme): Promise<Record<string, HTMLImageElement>> {
+  const themeName = document.documentElement.dataset.theme ?? "night";
   const entries: [string, string, number][] = [
     ...EVENT_TYPES.map((k): [string, string, number] => [`event-${k}`, eventIconSvg(k, t.events[k], t.ring, t.clay), 64]),
     ["capital", capitalIconSvg(t.capital, t.ring, t.clay), 64],
@@ -153,7 +268,11 @@ async function themeImages(t: MapTheme): Promise<Record<string, HTMLImageElement
     // Murals are big and faint; render them large so they stay crisp.
     ...MURAL_KINDS.map((k, i): [string, string, number] => [`mural-${k}`, drawingSvg(k, t.label, t.wash, "transparent", i + 31, t.clay, 512, 0.45), 512]),
     ["pat-paper", paperSvg(t), 128],
-    ...Array.from({ length: FURROWS }, (_, i): [string, string, number] => [`pat-furrow-${i}`, furrowSvg(i, t.labelMuted), 16]),
+    // Each texture twice: as drawn, and twice as large for close zoom, so woods never turn to wallpaper.
+    ...[...COVERS, "mountains"].flatMap((k): [string, string, number][] => [
+      [`cover-${k}`, coverSvg(k, t, themeName), 128],
+      [`cover-${k}-lg`, coverSvg(k, t, themeName), 256],
+    ]),
     ["line-range", rangePatternSvg(t), 192],
     ["line-wall", wallPatternSvg(t), 128],
     ["line-trail", trailPatternSvg(t), 48],
@@ -194,14 +313,14 @@ function cityLayer(tier: number, minzoom: number, minLinks: number, fonts: Lette
     filter: ["all", [">=", ["get", "links"], minLinks], ["<", ["get", "links"], upper === Infinity ? 1e9 : upper]],
     layout: {
       // A ring from afar; up close, a little townscape of its region and era.
-      "icon-image": ["step", ["zoom"], ["case", ["get", "ancient"], "scn-city-ruin", "scn-city"], 5, ["case", ["get", "ancient"], "scn-city-ruin", ["concat", "scn-", ["get", "town"], ["case", [">", ["get", "v"], 0], ["concat", "~", ["to-string", ["get", "v"]]], ""]]]],
-      "icon-size": ["interpolate", ["linear"], ["zoom"], 2.2, 0.12, 4.99, 0.2, 5, 0.32, 7, 0.55, 9, 0.9],
-      "icon-anchor": ["step", ["zoom"], "center", 5, "bottom"],
+      "icon-image": ["step", ["zoom"], ["case", ["get", "ancient"], "scn-city-ruin", "scn-city"], 6.5, ["case", ["get", "ancient"], "scn-city-ruin", ["concat", "scn-", ["get", "town"], ["case", [">", ["get", "v"], 0], ["concat", "~", ["to-string", ["get", "v"]]], ""]]]],
+      "icon-size": ["interpolate", ["linear"], ["zoom"], 2.2, 0.12, 6.49, 0.2, 6.5, 0.42, 9, 0.9],
+      "icon-anchor": ["step", ["zoom"], "center", 6.5, "bottom"],
       "text-field": ["get", "name"],
       "text-font": fonts.regular,
       "text-size": ["interpolate", ["linear"], ["zoom"], 2.2, tier === 1 ? 10.5 : 9.5, 7, tier === 1 ? 14 : 12],
-      "text-anchor": ["step", ["zoom"], "left", 5, "top"],
-      "text-offset": ["step", ["zoom"], ["literal", [0.7, 0]], 5, ["literal", [0, 0.3]]],
+      "text-anchor": ["step", ["zoom"], "left", 6.5, "top"],
+      "text-offset": ["step", ["zoom"], ["literal", [0.7, 0]], 6.5, ["literal", [0, 0.3]]],
       "text-optional": true,
       "symbol-sort-key": ["-", 0, ["get", "links"]],
       "icon-padding": 1,
@@ -225,8 +344,7 @@ function sceneryLayer(tier: 1 | 2 | 3 | 4): maplibregl.LayerSpecification {
     type: "symbol",
     source: "scenery",
     minzoom: SCENERY_MINZOOM[tier],
-    // Fields are drawn flat on the ground instead (the "fields" layers).
-    filter: ["all", ["==", ["get", "type"], "point"], ["==", ["get", "t"], tier], ["!=", ["get", "k"], "fields"]],
+    filter: ["all", ["==", ["get", "type"], "point"], ["==", ["get", "t"], tier]],
     layout: {
       "icon-image": sceneryImage,
       // Images are 192px at pixel ratio 2: 96 CSS px at size 1. Each piece has its
@@ -274,6 +392,7 @@ const terrainPattern = (green: boolean) =>
 function styleFor(land: GeoJSON.FeatureCollection, t: MapTheme, themeName: string, era: LetteringEra): maplibregl.StyleSpecification {
   const tint = TERRAIN_TINT[themeName] ?? TERRAIN_TINT.night;
   const fonts = LETTERING[era];
+  const coverColor = ["match", ["get", "cover"], ...COVERS.flatMap((k) => [k, (COVER_TINT[themeName] ?? COVER_TINT.night)[k]]), "#888"] as unknown as maplibregl.ExpressionSpecification;
   const physical = (layer: string) => ["==", ["get", "layer"], layer] as maplibregl.FilterSpecification;
 
   const drawingLayer = (tier: 1 | 2 | 3): maplibregl.LayerSpecification => ({
@@ -326,7 +445,7 @@ function styleFor(land: GeoJSON.FeatureCollection, t: MapTheme, themeName: strin
       "admin1-labels": { type: "geojson", data: EMPTY },
       cities: { type: "geojson", data: EMPTY },
       "scenery-year": { type: "geojson", data: EMPTY },
-      fields: { type: "geojson", data: EMPTY },
+      landcover: { type: "geojson", data: import.meta.env.BASE_URL + "data/landcover.json" },
       relief: {
         type: "raster-dem",
         tiles: [RELIEF_TILES],
@@ -432,6 +551,48 @@ function styleFor(land: GeoJSON.FeatureCollection, t: MapTheme, themeName: strin
         type: "fill",
         source: "borders",
         paint: { "fill-pattern": "pat-paper", "fill-opacity": t.clay ? 0.5 : themeName === "survey" ? 0.55 : 0.85 },
+      },
+      // --- Land cover: woods, rainforest and grassland painted as areas, with
+      // a soft darker margin, so the land reads as one continuous picture. ---
+      {
+        id: "cover-tint",
+        type: "fill",
+        source: "landcover",
+        paint: {
+          "fill-color": coverColor,
+          "fill-opacity": t.clay ? 0.35 : themeName === "night" ? 0.45 : 0.32,
+        },
+      },
+      {
+        id: "cover-margin",
+        type: "line",
+        source: "landcover",
+        filter: ["in", ["get", "cover"], ["literal", ["broadleaf", "conifer", "jungle"]]],
+        layout: { "line-join": "round" },
+        paint: {
+          "line-color": coverColor,
+          "line-width": ["interpolate", ["linear"], ["zoom"], 1, 1, 4, 3, 7, 6],
+          "line-blur": ["interpolate", ["linear"], ["zoom"], 1, 1, 4, 2.5, 7, 5],
+          "line-opacity": 0.5,
+        },
+      },
+      {
+        id: "cover-texture",
+        type: "fill",
+        source: "landcover",
+        minzoom: 2.2,
+        paint: {
+          "fill-pattern": ["step", ["zoom"], ["concat", "cover-", ["get", "cover"]], 6, ["concat", "cover-", ["get", "cover"], "-lg"]],
+          "fill-opacity": ["interpolate", ["linear"], ["zoom"], 2.2, 0, 3.4, ["case", ["==", ["get", "cover"], "farmland"], 0.75, 1]],
+        },
+      },
+      {
+        id: "mountain-texture",
+        type: "fill",
+        source: "physical",
+        filter: ["all", physical("terrain"), ["==", ["get", "kind"], "mountains"]],
+        minzoom: 2.2,
+        paint: { "fill-pattern": ["step", ["zoom"], "cover-mountains", 6, "cover-mountains-lg"], "fill-opacity": fadeIn(2.2, 3.4) },
       },
       {
         // The previous year's territories, faded out over the new ones when
@@ -551,34 +712,29 @@ function styleFor(land: GeoJSON.FeatureCollection, t: MapTheme, themeName: strin
         id: "ranges",
         type: "symbol",
         source: "scenery",
+        // From afar; closer in, the mountains' own texture takes over.
+        maxzoom: 4.2,
         filter: ["==", ["get", "type"], "range"],
         layout: {
           "symbol-placement": "line",
-          "symbol-spacing": ["interpolate", ["linear"], ["zoom"], 1, 14, 4, 26, 7, 44],
+          // Closer than a peak is wide, so neighbours overlap into one ridge.
+          "symbol-spacing": ["interpolate", ["linear"], ["zoom"], 1, 9, 4, 16, 7, 29],
           "icon-image": "scn-peaks",
           "icon-size": ["interpolate", ["exponential", 1.4], ["zoom"], 1, 0.17, 4, 0.3, 7, 0.55],
           "icon-rotation-alignment": "viewport",
           "icon-allow-overlap": true,
           "icon-padding": 0,
         },
-        paint: { "icon-opacity": 0.95 },
+        paint: { "icon-opacity": ["interpolate", ["linear"], ["zoom"], 3.4, 0.95, 4.2, 0] },
       },
       {
-        // The Great Wall: wall segments laid end to end along its course.
+        // The Great Wall, drawn continuously along its course.
         id: "great-wall",
-        type: "symbol",
+        type: "line",
         source: "scenery",
         filter: ["==", ["get", "type"], "wall"],
-        layout: {
-          "symbol-placement": "line",
-          // Spacing matches the drawn segment width, so the wall reads as continuous.
-          "symbol-spacing": ["interpolate", ["linear"], ["zoom"], 1, 12, 4, 30, 7, 58],
-          "icon-image": "line-wall",
-          "icon-size": ["interpolate", ["linear"], ["zoom"], 1, 0.2, 4, 0.5, 7, 0.95],
-          "icon-rotation-alignment": "map",
-          "icon-allow-overlap": true,
-          "icon-keep-upright": false,
-        },
+        layout: { "line-join": "round" },
+        paint: { "line-pattern": "line-wall", "line-width": ["interpolate", ["linear"], ["zoom"], 1, 3, 4, 7, 7, 14] },
       },
       {
         id: "routes-land",
@@ -600,33 +756,6 @@ function styleFor(land: GeoJSON.FeatureCollection, t: MapTheme, themeName: strin
           "line-opacity": themeName === "survey" ? 0.8 : 0.6,
           "line-dasharray": ["case", ["==", ["get", "mode"], "air"], ["literal", [6, 4]], ["literal", [0.5, 3]]],
         },
-      },
-      // Farmland: a patchwork of plots lying flat on the land, each tinted a
-      // little differently and furrowed in its own direction.
-      {
-        id: "fields-fill",
-        type: "fill",
-        source: "fields",
-        minzoom: 2.6,
-        paint: {
-          "fill-color": ["case", ["<", ["get", "tone"], 0.5], (FIELD_TINT[themeName] ?? FIELD_TINT.night)[0], (FIELD_TINT[themeName] ?? FIELD_TINT.night)[1]],
-          "fill-opacity": ["interpolate", ["linear"], ["zoom"], 2.6, 0, 3.4, ["+", 0.3, ["*", 0.3, ["get", "tone"]]]],
-        },
-      },
-      {
-        id: "fields-furrows",
-        type: "fill",
-        source: "fields",
-        minzoom: 3.2,
-        paint: { "fill-pattern": ["concat", "pat-furrow-", ["to-string", ["get", "furrow"]]], "fill-opacity": fadeIn(3.2, 4, 0.9) },
-      },
-      {
-        id: "fields-edge",
-        type: "line",
-        source: "fields",
-        minzoom: 2.6,
-        layout: { "line-join": "round" },
-        paint: { "line-color": t.labelMuted, "line-width": ["interpolate", ["linear"], ["zoom"], 2.6, 0.3, 7, 1.1], "line-opacity": fadeIn(2.6, 3.4, 0.4) },
       },
       {
         id: "roads",
@@ -660,18 +789,21 @@ function styleFor(land: GeoJSON.FeatureCollection, t: MapTheme, themeName: strin
         paint: { "icon-opacity": fadeIn(2.4, 3) },
       },
       {
+        // Villages: a small inked ring where the roads meet, as on a county map.
         id: "villages",
-        type: "symbol",
+        type: "circle",
         source: "scenery-year",
         minzoom: 3.4,
-        filter: ["all", ["has", "village"], ["==", ["geometry-type"], "Point"], ["!=", ["get", "k"], "fields"]],
-        layout: {
-          "icon-image": sceneryImage,
-          "icon-size": ["interpolate", ["exponential", 1.5], ["zoom"], 3.4, ["*", 0.24, ["get", "s"]], 7, ["*", 0.5, ["get", "s"]], 9, ["*", 0.85, ["get", "s"]]],
-          "icon-padding": 2,
-          "symbol-sort-key": ["get", "t"],
+        filter: ["all", ["has", "village"], ["==", ["geometry-type"], "Point"]],
+        paint: {
+          "circle-radius": ["interpolate", ["linear"], ["zoom"], 3.4, 1, 7, 2.6, 9, 3.5],
+          "circle-color": t.land,
+          "circle-stroke-color": t.labelMuted,
+          "circle-stroke-width": ["interpolate", ["linear"], ["zoom"], 3.4, 0.6, 7, 1.1],
+          "circle-opacity": fadeIn(3.4, 3.9),
+          "circle-stroke-opacity": fadeIn(3.4, 3.9, 0.9),
+          "circle-pitch-alignment": "map",
         },
-        paint: { "icon-opacity": fadeIn(3.4, 3.9, 0.85) },
       },
       {
         id: "inhabitants",
@@ -1160,8 +1292,9 @@ export class AtlasMap {
     src("cities").setData({ type: "FeatureCollection", features: layers.cities });
     // States and provinces appear from the year they were created.
     for (const id of ["admin1-fill", "admin1-line", "admin1-label"]) this.map.setFilter(id, ["<=", ["get", "from"], data.year]);
+    // Farmland spreads as farming does; wild cover is always there.
+    for (const id of ["cover-tint", "cover-texture"]) this.map.setFilter(id, ["<=", ["get", "from"], data.year]);
     src("scenery-year").setData(data.scenery ?? EMPTY);
-    src("fields").setData(fieldPlots([...layers.scenery, ...(data.scenery?.features ?? [])]));
     src("drawings").setData({
       type: "FeatureCollection",
       features: drawings.map((d) => ({

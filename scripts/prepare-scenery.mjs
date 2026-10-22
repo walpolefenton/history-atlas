@@ -122,6 +122,11 @@ const RIDGE = new Set(["peaks", "peak"]);
 /** Is this sea point near a coast? Waves gather there, like engraved water lines. */
 const nearCoast = (p, d) => [[d, 0], [-d, 0], [0, d], [0, -d]].some(([dx, dy]) => hit(land, [p[0] + dx, p[1] + dy]));
 
+// Vegetation and terrain are painted as areas now (prepare-landcover.mjs) and
+// mountains drawn along their ranges, so the scatter keeps only what lives on
+// the land: herds, seen from afar. Farmland is land cover too.
+const PAINTED = new Set(["peaks", "peak", "dune", "cactus", "palm", "jungle", "pine", "oak", "grass", "fields"]);
+
 const TIERS = [
   { tier: 1, spacing: 7, ocean: true },
   { tier: 2, spacing: 3.5, ocean: true },
@@ -144,10 +149,9 @@ for (const { tier, spacing, ocean } of TIERS) {
         if (hit(ice, p)) continue;
         const t = hit(terrain, p);
         const kind = pick(landScenery(p, t ? TERRAIN[t.properties.FEATURECLA] : null) ?? {});
-        if (!kind || kind === "none") continue;
-        if (tier === 4 && rand() < 0.4) continue; // keep the closest zoom from becoming a thicket
-        // Fields only appear once farming had reached the region.
-        point({ type: "point", k: kind, t: tier, s: scaled(kind), ...(kind === "fields" ? { from: -3000, to: null } : {}) }, p);
+        if (!kind || kind === "none" || PAINTED.has(kind)) continue;
+        if (tier >= 3) continue; // close up, the land itself carries the picture
+        point({ type: "point", k: kind, t: tier, s: scaled(kind) }, p);
         const [lo, hi] = CLUMPS[kind] ?? [0, 0];
         const extra = lo + Math.floor(rand() * (hi - lo + 1));
         for (let j = 0; j < extra; j++) {
@@ -160,11 +164,13 @@ for (const { tier, spacing, ocean } of TIERS) {
           if (hit(land, q)) point({ type: "point", k: kind, t: Math.min(4, tier + 1), s: scaled(kind, RIDGE.has(kind) ? 0.9 - j * 0.08 : 0.8) }, q);
         }
       } else if (ocean && Math.abs(p[1]) < 72) {
-        if (tier === 2 && rand() < 0.5) continue;
+        // A few whales and fish far out at sea; the coasts are drawn in line.
+        if (tier > 1 || rand() < 0.6) continue;
         // Open sea stays calm; coastal water carries bands of waves.
         const coastal = nearCoast(p, spacing * 0.6);
         if (rand() < (coastal ? 0.1 : 0.55)) continue;
-        const kind = coastal ? pick({ waves: 12, fish: 1 }) : pick({ waves: 6, whale: tier === 1 ? 1.4 : 0.8, fish: 1.2 });
+        if (coastal) continue;
+        const kind = pick({ whale: 1.4, fish: 1 });
         if (kind) point({ type: "point", k: kind, t: tier, s: scaled(kind, coastal ? 0.85 : 1) }, p);
       }
     }
