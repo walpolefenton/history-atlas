@@ -194,6 +194,10 @@ const D: Record<string, string> = {
   bridge: `<path d="M16 50 V12 M48 50 V12"/><path d="M14 12 H18 M46 12 H50"/><path d="M2 40 Q16 12 16 12 Q32 34 48 12 Q48 12 62 40"/>
     <path d="M2 40 H62 V44 H2 Z" fill="WASH"/><path d="M22 40 V24 M28 40 V29 M36 40 V29 M42 40 V24 M8 40 V30 M56 40 V30" opacity=".6"/><path d="M2 54 Q10 51 18 54 T34 54 T50 54 T62 54" opacity=".6"/>`,
 
+  // A city on an old map: a small ring with a dot, drawn by hand.
+  city: `<circle cx="32" cy="32" r="14" fill="WASH"/><circle cx="32" cy="32" r="4.5"/>`,
+  "city-ruin": `<circle cx="32" cy="32" r="14" stroke-dasharray="5 4"/><path d="M26 34 V28 M32 36 V26 M38 34 V29" />`,
+
   // --- Scenery: the land ----------------------------------------------------------
   peak: `<path d="M8 50 L30 16 L52 50" fill="WASH"/><path d="M23 27 L30 31 L36 25"/><path d="M36 30 L41 37 M38 38 L44 46 M42 32 L46 40" opacity=".6"/>`,
   peaks: `<path d="M3 52 L18 28 L28 42 L40 18 L61 52 Z" fill="WASH"/><path d="M14 34 L18 37 L21 33 M35 26 L40 30 L44 25"/><path d="M45 32 L50 40 M48 42 L53 50 M24 40 L27 46" opacity=".6"/>`,
@@ -313,6 +317,6 @@ export const SCENERY_KINDS = [
   "peak", "peaks", "dune", "cactus", "palm", "jungle", "pine", "oak", "grass", "bison", "caribou", "giraffe", "kangaroo",
   "penguin", "polarbear", "wildhorse", "elephant", "camel", "hunter", "herder", "farmer", "fisher", "rider",
   "town-ancient", "town-europe", "town-islamic", "town-eastasia", "town-southasia", "town-americas", "town-africa",
-  "town-steppe", "town-industrial", "town-metro", "waves", "whale", "fish", "wind", "compass",
+  "town-steppe", "town-industrial", "town-metro", "waves", "whale", "fish", "wind", "compass", "city", "city-ruin",
   "galley", "dhow", "junk", "galleon", "longship", "canoe", "clipper", "steamship", "container", "airliner",
 ];

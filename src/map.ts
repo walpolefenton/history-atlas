@@ -4,7 +4,7 @@ import "maplibre-gl/dist/maplibre-gl.css";
 // MapLibre finds its worker relative to its own module, which breaks once
 // bundled; point it at the emitted worker file explicitly.
 import workerUrl from "maplibre-gl/dist/maplibre-gl-worker.mjs?url";
-import type { Drawing, EventType, HistoryEvent, SurveyorSpot, YearData } from "./types";
+import type { Admin1Data, Drawing, EventType, HistoryEvent, SurveyorSpot, YearData } from "./types";
 import { currentTheme, type MapTheme } from "./theme";
 import { formatYear } from "./format";
 import { capitalIconSvg, eventIconSvg, svgToImage } from "./icons";
@@ -71,6 +71,8 @@ export interface MapHandlers {
   onDrawingClick(id: string): void;
   onSurveyorClick(): void;
   onRouteClick(name: string): void;
+  onCityClick(qid: string): void;
+  onAdminClick(name: string, country: string): void;
 }
 
 export interface MapOptions {
@@ -157,6 +159,38 @@ const TERRAIN_TINT: Record<string, Record<(typeof TERRAIN_KINDS)[number], string
   survey: { desert: "#efe2bf", mountains: "#e3d9c6", plateau: "#ebe3cc", tundra: "#e4eaea", wetland: "#dfe8d6" },
   clay: { desert: "#e6c98f", mountains: "#c9b08a", plateau: "#d6bd92", tundra: "#d7d3c4", wetland: "#b9bf8c" },
 };
+
+/** Cities in three tiers of prominence, the best known appearing first. */
+function cityLayer(tier: number, minzoom: number, minLinks: number, fonts: Lettering): maplibregl.LayerSpecification {
+  const t = currentTheme();
+  const upper = tier === 1 ? Infinity : tier === 2 ? 200 : 100;
+  return {
+    id: `cities-${tier}`,
+    type: "symbol",
+    source: "cities",
+    minzoom,
+    filter: ["all", [">=", ["get", "links"], minLinks], ["<", ["get", "links"], upper === Infinity ? 1e9 : upper]],
+    layout: {
+      "icon-image": ["case", ["get", "ancient"], "scn-city-ruin", "scn-city"],
+      "icon-size": ["interpolate", ["linear"], ["zoom"], 2.2, 0.22, 7, 0.4],
+      "text-field": ["get", "name"],
+      "text-font": fonts.regular,
+      "text-size": ["interpolate", ["linear"], ["zoom"], 2.2, tier === 1 ? 10.5 : 9.5, 7, tier === 1 ? 14 : 12],
+      "text-anchor": "left",
+      "text-offset": [0.7, 0],
+      "text-optional": true,
+      "symbol-sort-key": ["-", 0, ["get", "links"]],
+      "icon-padding": 1,
+    },
+    paint: {
+      "text-color": t.label,
+      "text-halo-color": t.halo,
+      "text-halo-width": 1.2,
+      "icon-opacity": fadeIn(minzoom, minzoom + 0.4),
+      "text-opacity": fadeIn(minzoom, minzoom + 0.4),
+    },
+  };
+}
 
 function sceneryLayer(tier: 1 | 2 | 3 | 4): maplibregl.LayerSpecification {
   return {
@@ -253,6 +287,9 @@ function styleFor(land: GeoJSON.FeatureCollection, t: MapTheme, themeName: strin
       surveyor: { type: "geojson", data: EMPTY },
       "borders-prev": { type: "geojson", data: EMPTY },
       scenery: { type: "geojson", data: EMPTY },
+      admin1: { type: "geojson", data: EMPTY },
+      "admin1-labels": { type: "geojson", data: EMPTY },
+      cities: { type: "geojson", data: EMPTY },
       "scenery-year": { type: "geojson", data: EMPTY },
       relief: {
         type: "raster-dem",
@@ -352,6 +389,36 @@ function styleFor(land: GeoJSON.FeatureCollection, t: MapTheme, themeName: strin
           // Dashed outlines signal approximate borders.
           "line-dasharray": ["case", ["==", ["get", "precision"], 1], ["literal", [2, 2]], ["literal", [1, 0]]],
         },
+      },
+      {
+        // Invisible fill so states can be hovered and clicked.
+        id: "admin1-fill",
+        type: "fill",
+        source: "admin1",
+        minzoom: 3,
+        filter: ["<=", ["get", "from"], 99999],
+        paint: { "fill-color": "#000", "fill-opacity": 0 },
+      },
+      {
+        id: "admin1-line",
+        type: "line",
+        source: "admin1",
+        minzoom: 2.6,
+        filter: ["<=", ["get", "from"], 99999],
+        layout: { "line-join": "round" },
+        paint: {
+          "line-color": t.labelMuted,
+          "line-width": ["interpolate", ["linear"], ["zoom"], 2.6, 0.3, 6, 0.9],
+          "line-opacity": fadeIn(2.6, 3.4, 0.7),
+          "line-dasharray": [3, 2],
+        },
+      },
+      {
+        id: "admin1-hover",
+        type: "line",
+        source: "admin1",
+        filter: ["==", ["get", "name"], ""],
+        paint: { "line-color": t.hover, "line-width": 1.2, "line-opacity": 0.7 },
       },
       {
         id: "polity-hover",
@@ -557,6 +624,27 @@ function styleFor(land: GeoJSON.FeatureCollection, t: MapTheme, themeName: strin
         paint: { "text-color": t.labelMuted, "text-opacity": fadeIn(2.8, 3.3, 0.75), "text-halo-color": t.halo, "text-halo-width": 1 },
       },
       {
+        id: "admin1-label",
+        type: "symbol",
+        source: "admin1-labels",
+        minzoom: 3.6,
+        filter: ["<=", ["get", "from"], 99999],
+        layout: {
+          "text-field": ["get", "name"],
+          "text-font": fonts.italic,
+          "text-transform": "uppercase",
+          "text-letter-spacing": 0.14,
+          "text-size": ["interpolate", ["linear"], ["zoom"], 3.6, 9, 7, 12.5],
+          "text-max-width": 7,
+          "symbol-sort-key": ["-", 0, ["get", "km2"]],
+          "text-padding": 6,
+        },
+        paint: { "text-color": t.labelMuted, "text-opacity": fadeIn(3.6, 4.1, 0.85), "text-halo-color": t.halo, "text-halo-width": 1 },
+      },
+      cityLayer(1, 2.2, 200, fonts),
+      cityLayer(2, 3.1, 100, fonts),
+      cityLayer(3, 4.0, 0, fonts),
+      {
         id: "polity-label-small",
         type: "symbol",
         source: "labels",
@@ -673,6 +761,10 @@ const FONT_ROLES: Record<string, keyof Lettering> = {
   "sea-label-minor": "italic",
   "land-label": "italic",
   "polity-label-small": "regular",
+  "admin1-label": "italic",
+  "cities-1": "regular",
+  "cities-2": "regular",
+  "cities-3": "regular",
   "polity-label": "regular",
   capitals: "italic",
   "drawings-1": "italic",
@@ -681,7 +773,8 @@ const FONT_ROLES: Record<string, keyof Lettering> = {
   "polity-label-major": "major",
 };
 
-const INTERACTIVE = ["surveyor", "drawings-3", "drawings-2", "drawings-1", "events-key", "events-more", "travellers", "inhabitants", "capitals", "polity-fill"];
+const INTERACTIVE = ["surveyor", "drawings-3", "drawings-2", "drawings-1", "events-key", "events-more", "travellers", "inhabitants", "capitals",
+  "cities-1", "cities-2", "cities-3", "admin1-fill", "polity-fill"];
 
 /** How the figures for each way of life are described on hover. */
 const WAY_OF_LIFE: Record<string, string> = {
@@ -702,6 +795,8 @@ export interface YearLayers {
   surveyor: SurveyorSpot | null;
   /** Static scenery features that belong to this era. */
   scenery: GeoJSON.Feature[];
+  /** Cities that existed in this era, named as they were then. */
+  cities: GeoJSON.Feature[];
 }
 
 export class AtlasMap {
@@ -714,6 +809,7 @@ export class AtlasMap {
   private era: LetteringEra = "modern";
   private selection: { polity: string | null; event: string | null } = { polity: null, event: null };
   private globe = true;
+  private admin1: Admin1Data | null = null;
   private green = false;
   /** Borders currently on screen, for the cross-fade to the next year. */
   private shown: YearData | null = null;
@@ -780,6 +876,7 @@ export class AtlasMap {
     this.map.once("style.load", () => {
       if (!this.globe) this.map.setProjection({ type: "mercator" });
       if (this.last) this.setYear(this.last);
+      if (this.admin1) this.setAdmin1(this.admin1);
       this.highlight(this.selection.polity, this.selection.event);
     });
   }
@@ -828,6 +925,7 @@ export class AtlasMap {
     m.on("mousemove", (e: maplibregl.MapMouseEvent) => {
       const f = query(e.point);
       m.getCanvas().style.cursor = f ? "pointer" : "";
+      if (!f || f.layer.id !== "admin1-fill") m.setFilter("admin1-hover", ["==", ["get", "name"], ""]);
       if (!f) {
         this.tooltip.hidden = true;
         m.setFilter("polity-hover", ["==", ["get", "name"], ""]);
@@ -846,6 +944,8 @@ export class AtlasMap {
       else if (id.startsWith("events-")) this.handlers.onEventClick(f.properties.id);
       else if (id === "travellers") this.handlers.onRouteClick(f.properties.route);
       else if (id === "inhabitants") this.handlers.onPolityClick(f.properties.of);
+      else if (id.startsWith("cities-")) this.handlers.onCityClick(f.properties.qid);
+      else if (id === "admin1-fill") this.handlers.onAdminClick(f.properties.name, f.properties.country);
       else if (id === "capitals") this.handlers.onPolityClick(f.properties.of);
       else this.handlers.onPolityClick(f.properties.name);
     });
@@ -860,7 +960,11 @@ export class AtlasMap {
     else if (id.startsWith("drawings-")) text = `${p.name}\n${p.quip}`;
     else if (id.startsWith("events-")) text = p.title;
     else if (id === "travellers") text = `${p.route}\n${formatYear(p.from)} – ${p.to === null || p.to === undefined ? "today" : formatYear(p.to)}`;
-    else if (id === "inhabitants") {
+    else if (id.startsWith("cities-")) text = f.properties.name;
+    else if (id === "admin1-fill") {
+      text = `${p.name}\n${p.kind} of ${p.country}`;
+      this.map.setFilter("admin1-hover", ["all", ["==", ["get", "name"], p.name], ["==", ["get", "country"], p.country]]);
+    } else if (id === "inhabitants") {
       text = `${WAY_OF_LIFE[p.k] ?? "People"}\n${p.of}`;
       hover = p.of;
     }
@@ -925,6 +1029,9 @@ export class AtlasMap {
       })),
     });
     src("scenery").setData({ type: "FeatureCollection", features: layers.scenery });
+    src("cities").setData({ type: "FeatureCollection", features: layers.cities });
+    // States and provinces appear from the year they were created.
+    for (const id of ["admin1-fill", "admin1-line", "admin1-label"]) this.map.setFilter(id, ["<=", ["get", "from"], data.year]);
     src("scenery-year").setData(data.scenery ?? EMPTY);
     src("drawings").setData({
       type: "FeatureCollection",
@@ -965,6 +1072,14 @@ export class AtlasMap {
 
   flyToPoint(lon: number, lat: number, zoom = 3.5) {
     this.map.flyTo({ center: [lon, lat], zoom: Math.max(this.map.getZoom(), zoom), ...this.motion });
+  }
+
+  /** States and provinces load separately, once, after the first map is drawn. */
+  async setAdmin1(admin: Admin1Data) {
+    this.admin1 = admin;
+    await this.ready;
+    (this.map.getSource("admin1") as GeoJSONSource).setData(admin.shapes);
+    (this.map.getSource("admin1-labels") as GeoJSONSource).setData(admin.labels);
   }
 
   setGlobe(globe: boolean) {

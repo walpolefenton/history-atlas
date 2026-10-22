@@ -1,4 +1,4 @@
-import type { Drawing, HistoryEvent, Meta, SurveyorSpot, YearData } from "./types";
+import type { Admin1Data, City, Drawing, HistoryEvent, Meta, SurveyorSpot, YearData } from "./types";
 
 const base = import.meta.env.BASE_URL + "data/";
 
@@ -13,6 +13,27 @@ export const loadLand = () => getJson<GeoJSON.FeatureCollection>("land.json");
 export const loadEvents = () => getJson<{ events: HistoryEvent[] }>("events.json").then((d) => d.events);
 export const loadDrawings = () => getJson<{ drawings: Drawing[] }>("drawings.json").then((d) => d.drawings);
 export const loadSurveyor = () => getJson<{ spots: Record<string, SurveyorSpot> }>("surveyor.json").then((d) => d.spots);
+export const loadCities = () => getJson<City[]>("cities.json");
+export const loadAdmin1 = () => getJson<Admin1Data>("admin1.json");
+
+/** The name a city went by in a given year. */
+export function cityNameAt(c: City, year: number): string {
+  for (const [until, name] of c.names ?? []) if (year < until) return name;
+  return c.name;
+}
+
+/** Cities that existed in a snapshot year, as map features named as they were then. */
+export function citiesForEra(cities: City[], from: number, exclude: Set<string>): GeoJSON.Feature[] {
+  return cities
+    // Unlike events, a city must already exist in the snapshot year itself.
+    .filter((c) => !exclude.has(c.qid) && c.from <= from && (c.to === null || c.to >= from))
+    .map((c) => ({
+      type: "Feature",
+      properties: { qid: c.qid, name: cityNameAt(c, from), links: c.links, ancient: c.ancient ?? false },
+      geometry: { type: "Point", coordinates: [c.lon, c.lat] },
+    }));
+}
+
 export const loadScenery = () => getJson<GeoJSON.FeatureCollection>("scenery.json").then((d) => d.features);
 export const loadWikidataEvents = () => getJson<{ events: HistoryEvent[] }>("wd-events.json").then((d) => d.events);
 

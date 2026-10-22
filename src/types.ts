@@ -100,7 +100,46 @@ export type Selection =
   | { kind: "compare" }
   | { kind: "drawing"; id: string }
   | { kind: "surveyor" }
-  | { kind: "route"; name: string };
+  | { kind: "route"; name: string }
+  | { kind: "city"; qid: string }
+  | { kind: "admin"; name: string; country: string };
+
+/** A city (public/data/cities.json). */
+export interface City {
+  qid: string;
+  /** Present-day name. */
+  name: string;
+  /** Earlier names, oldest first: [until year, name]. */
+  names?: [number, string][];
+  lon: number;
+  lat: number;
+  from: number;
+  to: number | null;
+  approx?: boolean;
+  /** No founding date known; shown from a default year. */
+  undated?: boolean;
+  pop: number | null;
+  /** Wikipedia language editions: a rough measure of prominence. */
+  links: number;
+  ancient?: boolean;
+}
+
+/** A state, province or other first-level division (public/data/admin1.json). */
+export interface AdminProps {
+  name: string;
+  country: string;
+  kind: string;
+  qid: string | null;
+  /** Year from which it is drawn. */
+  from: number;
+  km2: number;
+  rank: number;
+}
+
+export interface Admin1Data {
+  shapes: FeatureCollection<Polygon | MultiPolygon, AdminProps>;
+  labels: FeatureCollection<Point, { name: string; km2: number; rank: number; from: number }>;
+}
 
 /** A trade route or sea lane from the scenery layer. */
 export interface RouteInfo {

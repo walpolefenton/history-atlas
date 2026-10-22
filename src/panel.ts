@@ -1,4 +1,5 @@
-import type { Drawing, EventType, HistoryEvent, Meta, RouteInfo, SurveyorSpot, YearData } from "./types";
+import type { AdminProps, City, Drawing, EventType, HistoryEvent, Meta, RouteInfo, SurveyorSpot, YearData } from "./types";
+import { cityNameAt } from "./data";
 import { EVENT_TYPES, PRECISION_LABEL, escapeHtml as esc, formatArea, formatEventDate, formatYear } from "./format";
 import { eventArticle, polityArticle, type WikiSummary } from "./wiki";
 import { eventIconSvg } from "./icons";
@@ -549,6 +550,62 @@ export function renderRoute(ctx: PanelContext, r: RouteInfo, focus = false) {
     focus,
   );
   eventArticle(r.wiki).then((w) => {
+    if (current?.data !== ctx.data) return;
+    fillWiki(w, null);
+  });
+}
+
+// --- Cities and states ---------------------------------------------------------------
+
+export function renderCity(ctx: PanelContext, c: City, focus = false) {
+  const year = ctx.data.year;
+  const then = cityNameAt(c, year);
+  const where = territoryAt(ctx, c.lon, c.lat);
+  const founded = c.undated ? null : `${c.approx ? "c. " : ""}${formatYear(c.from)}`;
+  const formerNames = (c.names ?? []).filter(([, n]) => n !== c.name);
+  render(
+    ctx,
+    `${backButton}
+    <p class="eyebrow">${c.ancient ? "Ancient city" : "City"}</p>
+    <h2>${esc(then)}</h2>
+    ${then !== c.name ? `<p class="lede">Today ${esc(c.name)}</p>` : ""}
+    <dl class="facts">
+      <div><dt>${c.to !== null ? "Settled" : "Founded"}</dt><dd>${founded ?? '<span class="muted">Date not recorded</span>'}</dd></div>
+      ${c.to !== null ? `<div><dt>Abandoned</dt><dd>${formatYear(c.to)}</dd></div>` : ""}
+      ${c.pop && c.to === null ? `<div><dt>Population today</dt><dd>${c.pop.toLocaleString("en")}</dd></div>` : ""}
+      ${where ? `<div><dt>In ${formatYear(year)}</dt><dd><button type="button" class="link" data-action="polity" data-name="${esc(where.name)}">${esc(where.name)}</button></dd></div>` : ""}
+      ${formerNames.length ? `<div><dt>Earlier names</dt><dd>${formerNames.map(([until, n]) => `${esc(n)} <span class="small muted">until ${formatYear(until)}</span>`).join("<br>")}</dd></div>` : ""}
+    </dl>
+    <section aria-live="polite" id="wiki"><p class="muted">Loading Wikipedia summary…</p></section>`,
+    focus,
+  );
+  polityArticle(c.name, c.qid).then((w) => {
+    if (current?.data !== ctx.data) return;
+    fillWiki(w, null);
+  });
+}
+
+export function renderAdmin(ctx: PanelContext, a: AdminProps, focus = false) {
+  const joined =
+    a.country === "United States of America"
+      ? `Joined the Union in ${a.from}`
+      : a.country === "Canada"
+        ? `Part of Canada since ${a.from}`
+        : a.country === "Australia"
+          ? `Established as a colony or territory in ${a.from}`
+          : "Present-day boundaries";
+  render(
+    ctx,
+    `${backButton}
+    <p class="eyebrow">${esc(a.kind)} of ${esc(a.country)}</p>
+    <h2>${esc(a.name)}</h2>
+    <p class="lede">${joined}</p>
+    <dl class="facts"><div><dt>Area</dt><dd>${formatArea(a.km2)}</dd></div></dl>
+    <p class="small muted">State and province borders are drawn as they are today.</p>
+    <section aria-live="polite" id="wiki"><p class="muted">Loading Wikipedia summary…</p></section>`,
+    focus,
+  );
+  polityArticle(a.name, a.qid).then((w) => {
     if (current?.data !== ctx.data) return;
     fillWiki(w, null);
   });

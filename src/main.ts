@@ -1,10 +1,10 @@
 import "./style.css";
 import { AtlasMap, letteringEra, type YearLayers } from "./map";
-import { drawingsForEra, eventsForEra, loadDrawings, loadEvents, loadLand, loadMeta, loadScenery, loadSurveyor, loadWikidataEvents, loadYear, sceneryForEra } from "./data";
+import { citiesForEra, drawingsForEra, eventsForEra, loadAdmin1, loadCities, loadDrawings, loadEvents, loadLand, loadMeta, loadScenery, loadSurveyor, loadWikidataEvents, loadYear, sceneryForEra } from "./data";
 import { formatYear } from "./format";
-import { initPanel, renderCompare, renderDrawing, renderEvent, renderList, renderOverview, renderPolity, renderRoute, renderSurveyor, type PanelContext } from "./panel";
+import { initPanel, renderAdmin, renderCity, renderCompare, renderDrawing, renderEvent, renderList, renderOverview, renderPolity, renderRoute, renderSurveyor, type PanelContext } from "./panel";
 import { initSearch } from "./search";
-import type { Drawing, EventType, HistoryEvent, Meta, RouteInfo, Selection, SurveyorSpot, YearData } from "./types";
+import type { Admin1Data, City, Drawing, EventType, HistoryEvent, Meta, RouteInfo, Selection, SurveyorSpot, YearData } from "./types";
 import { applyTheme, loadThemeChoice, saveThemeChoice, type ThemeChoice } from "./theme";
 
 const TICK_YEARS = [-10000, -3000, -1000, -1, 500, 1000, 1500, 1800, 1914, 2010];
@@ -50,6 +50,7 @@ interface Era {
   drawings: Drawing[];
   surveyor: SurveyorSpot | null;
   scenery: GeoJSON.Feature[];
+  cities: GeoJSON.Feature[];
 }
 
 class App {
@@ -63,6 +64,8 @@ class App {
   private wdEvents: HistoryEvent[] = [];
   /** The illustrated layer, loaded after the first map is on screen. */
   private scenery: GeoJSON.Feature[] = [];
+  private cities: City[] = [];
+  private admin1: Admin1Data | null = null;
   /** Event requested by URL before the Wikidata events had loaded. */
   private pendingEvent: string | null = null;
   /** Snapshot years in which this viewer has found the Surveyor. */
@@ -88,6 +91,17 @@ class App {
 
   private get allEvents() {
     return this.curated.concat(this.wdEvents);
+  }
+
+  setCities(cities: City[]) {
+    this.cities = cities;
+    if (this.data) this.refresh();
+  }
+
+  setAdmin1(admin: Admin1Data) {
+    this.admin1 = admin;
+    this.atlas.setAdmin1(admin);
+    this.atlasB?.setAdmin1(admin);
   }
 
   setScenery(features: GeoJSON.Feature[]) {
@@ -117,11 +131,13 @@ class App {
       drawings: drawingsForEra(this.drawings, data.year, next),
       surveyor: this.spots[String(data.year)] ?? null,
       scenery: sceneryForEra(this.scenery, data.year, next),
+      // Capitals are drawn already, as towers and townscapes; don't mark them twice.
+      cities: citiesForEra(this.cities, data.year, new Set(data.capitals.features.map((f) => f.properties.qid))),
     };
   }
 
   private layers(era: Era): YearLayers {
-    return { data: era.data, featured: era.key, more: era.more, drawings: era.drawings, surveyor: era.surveyor, scenery: era.scenery };
+    return { data: era.data, featured: era.key, more: era.more, drawings: era.drawings, surveyor: era.surveyor, scenery: era.scenery, cities: era.cities };
   }
 
   private context(): PanelContext {
@@ -200,7 +216,14 @@ class App {
       const id = sel.id;
       if (!era.drawings.some((d) => d.id === id)) sel = { kind: "none" };
     } else if (sel.kind === "surveyor") sel = { kind: "none" };
-    else if (sel.kind === "route") {
+    else if (sel.kind === "city") {
+      const qid = sel.qid;
+      if (!era.cities.some((f) => f.properties?.qid === qid)) sel = { kind: "none" };
+    } else if (sel.kind === "admin") {
+      const { name, country } = sel;
+      const a = this.admin1?.shapes.features.find((f) => f.properties.name === name && f.properties.country === country);
+      if (!a || a.properties.from > year) sel = { kind: "none" };
+    } else if (sel.kind === "route") {
       const name = sel.name;
       const r = this.route(name);
       if (!r || r.from >= (era.next ?? Infinity) || (r.to !== null && r.to < year)) sel = { kind: "none" };
@@ -240,6 +263,8 @@ class App {
         onDrawingClick: (id) => this.selectDrawing(id, false),
         onSurveyorClick: () => {},
         onRouteClick: (name) => this.selectRoute(name),
+        onCityClick: (qid) => this.select({ kind: "city", qid }, true),
+        onAdminClick: (name, country) => this.select({ kind: "admin", name, country }, true),
       }, { secondary: true });
       this.atlas.syncWith(this.atlasB);
     }
@@ -293,6 +318,14 @@ class App {
     else if (sel.kind === "route") {
       const r = this.route(sel.name);
       if (r) renderRoute(ctx, r, focusPanel);
+      else renderOverview(ctx, focusPanel);
+    } else if (sel.kind === "city") {
+      const c = this.cities.find((x) => x.qid === sel.qid);
+      if (c) renderCity(ctx, c, focusPanel);
+      else renderOverview(ctx, focusPanel);
+    } else if (sel.kind === "admin") {
+      const a = this.admin1?.shapes.features.find((f) => f.properties.name === sel.name && f.properties.country === sel.country)?.properties;
+      if (a) renderAdmin(ctx, a, focusPanel);
       else renderOverview(ctx, focusPanel);
     }
     else renderOverview(ctx, focusPanel);
@@ -360,6 +393,14 @@ class App {
   private route(name: string): RouteInfo | null {
     const f = this.scenery.find((x) => x.properties?.type === "route" && x.properties.name === name);
     return f ? (f.properties as RouteInfo) : null;
+  }
+
+  selectCity(qid: string) {
+    this.select({ kind: "city", qid }, true);
+  }
+
+  selectAdmin(name: string, country: string) {
+    this.select({ kind: "admin", name, country }, true);
   }
 
   selectRoute(name: string) {
@@ -543,6 +584,8 @@ async function boot() {
       onDrawingClick: (id) => app.selectDrawing(id, false),
       onSurveyorClick: () => app.foundSurveyor(),
       onRouteClick: (name) => app.selectRoute(name),
+      onCityClick: (qid) => app.selectCity(qid),
+      onAdminClick: (name, country) => app.selectAdmin(name, country),
     });
     app = new App(meta, curated, atlas, land, drawings, spots);
     // Handy for testing in development; not present in production builds.
@@ -553,6 +596,12 @@ async function boot() {
       onDrawing: (d) => app.selectDrawing(d.id, true),
     });
     await app.start();
+    loadCities()
+      .then((c) => app.setCities(c))
+      .catch((err) => console.warn("Cities unavailable", err));
+    loadAdmin1()
+      .then((a) => app.setAdmin1(a))
+      .catch((err) => console.warn("States and provinces unavailable", err));
     loadScenery()
       .then((s) => app.setScenery(s))
       .catch((err) => console.warn("Scenery unavailable", err));
