@@ -10,6 +10,19 @@ const times = (n: number, f: (i: number) => string) => Array.from({ length: n },
 /** Rounds to one decimal, to keep generated paths short. */
 const r1 = (v: number) => Math.round(v * 10) / 10;
 
+/** A horse standing, facing right, on the ground line at y 56: shared by the herds and the riders. */
+const HORSE_BODY = `<path d="M14.6 34 Q26 36.4 37.6 32 Q40.6 24.6 46.6 20.2 L46.8 17.4 L48.8 19.6 Q50.6 19.8 52 21.4 L57.4 27.6 Q58.6 29.8 57 31 Q55.4 31.6 53.4 30.8 Q50 31.2 49.2 29 Q48.6 30.6 47.4 31.6 Q46.2 35 45.2 38.6 Q43.8 42.2 41.6 42.8 L22.4 43 Q16.4 42.8 14.2 39.6 Q12.8 36.8 14.6 34 Z" fill="WASH"/>
+  <path d="M37.8 31.6 Q41.4 24.6 46.4 20.6 M39.8 30.8 Q42.6 26 45.6 23.2" opacity=".5"/><path d="M49.4 28.8 Q50 26.6 51.6 25.8" opacity=".45"/><circle cx="51.6" cy="23.4" r="0.55"/><path d="M56 29.6 l.7 .3"/>`;
+const HORSE_STAND = `${HORSE_BODY}
+  <path d="M41.2 42.2 L42.2 49.4 L41.8 55.6 H44 L44.4 49.2 L44.6 41.6 Z M37.4 42.8 L37.8 49.6 L37.2 55.6 H39.4 L39.8 49.4 L40.2 42.6 Z" fill="WASH"/>
+  <path d="M15 40.8 L18.4 46.6 L16.6 50.4 L17 55.6 H19.2 L19 50.6 L21.2 46 L20.2 41.6 Z M20.6 42.6 L23 47.4 L21.8 51 L22.4 55.6 H24.6 L24.2 51.2 L25.8 47 L24.6 42.8 Z" fill="WASH"/>
+  <path d="M14.8 34.6 Q9.6 38.4 10.4 48 Q12.6 42.8 14.6 38.4 Z" fill="WASH"/>`;
+/** The same horse at full gallop: forelegs reaching, hind legs driving, the tail streaming. */
+const HORSE_GALLOP = `${HORSE_BODY}
+  <path d="M42 41.6 L48 46 L52.6 47.4 L52.4 49.2 L47.2 48 L41 43.4 Z M38.6 42.6 L42 47.6 L39.6 51.6 L37.8 50.8 L39.6 47.6 L37 43 Z" fill="WASH"/>
+  <path d="M15.6 40.6 L10.4 46.6 L5.6 49.2 L5 47.4 L9.4 45 L14 40 Z M21 42.6 L19 48.4 L22.6 52.4 L21.4 53.6 L17 49 L18.4 42.6 Z" fill="WASH"/>
+  <path d="M14.8 34.6 Q8 34 4.6 38.6 Q9.4 37.8 14.6 37.8 Z" fill="WASH"/><path d="M28 57 H40 M44 55 H56" opacity=".35"/>`;
+
 const D: Record<string, string> = {
   // The Giza plateau: the Great Pyramid in front, Khafre behind, courses of stone on the lit face.
   pyramid: `<path d="M37 37.7 L46 24 L62 54 L48 54 Z" fill="WASH"/><path d="M46 24 L50.5 54"/><path d="M44.2 26.8 L47.6 26.8" opacity=".6"/>
@@ -166,31 +179,54 @@ const D: Record<string, string> = {
   serpent: `<path d="M4 44 Q10 29 16 44 M20 44 Q26 27 32 44 M36 44 Q42 31 48 44"/>
     <path d="M47 44 Q50 29 57 31 Q61 35 56 38 L51 39" fill="WASH"/><circle cx="55" cy="33.5" r="0.8"/><path d="M58 37 L62 39 M58 37 L61 41"/>
     <path d="M9 37 L11 34 M25 35 L27 32 M41 37 L43 34"/><path d="M2 49 Q8 46 14 49 T26 49 T38 49 T50 49 T62 49"/>`,
-  longship: `<path d="M8 40 Q32 54 56 40 L54 44 Q32 56 10 44 Z" fill="WASH"/><path d="M56 40 Q62 30 56 25 Q53 29 57 32"/><path d="M8 40 Q2 31 8 27 Q11 31 7 33"/>
-    <path d="M32 47 V11"/><path d="M19 13 H45 V33 H19 Z"/><path d="M25 13 V33 M32 13 V33 M39 13 V33"/>
-    <circle cx="17" cy="43" r="1.5"/><circle cx="24" cy="45" r="1.5"/><circle cx="31" cy="46" r="1.5"/><circle cx="38" cy="45" r="1.5"/><circle cx="45" cy="43" r="1.5"/>
-    <path d="M2 54 Q8 51 14 54 T26 54 T38 54 T50 54 T62 54"/>`,
-  junk: `<path d="M6 41 L12 49 H52 L58 39 Z" fill="WASH"/><path d="M15 41 V14 M33 41 V8 M48 40 V18"/>
-    <path d="M15 16 Q22 15 26 18 V38 H15 M33 10 Q40 9 44 12 V37 H33 M48 20 Q53 19 56 22 V37 H48"/>
-    <path d="M15 24 H26 M15 31 H26 M33 18 H44 M33 26 H44 M48 27 H56"/><path d="M2 54 Q8 51 14 54 T26 54 T38 54 T50 54 T62 54"/>`,
+  // A Viking longship: the dragon prow, a row of shields, the striped square sail, oars out.
+  longship: `<path d="M32 42 V9"/><path d="M15 12 H49 L50 33 Q32 36 14 33 Z" fill="WASH"/>${times(5, (i) => `<path d="M${19 + i * 6.6} 12.6 Q${18.6 + i * 6.6} 23 ${19.4 + i * 6.6} 34" opacity=".45"/>`)}
+    <path d="M32 9 L14.4 33 M32 9 L49.6 33" opacity=".25"/>
+    <path d="M6 37 Q32 44 58 37 L54.6 44.4 Q32 50.4 9.4 44.4 Z" fill="WASH"/>
+    <path d="M58 37 Q61.6 30 60.6 25 Q59 22 56 23 Q58.6 24.6 57.6 27 Q56.6 29.6 57 33 Z" fill="WASH"/><circle cx="58.8" cy="25.2" r="0.45"/>
+    <path d="M6 37 Q2.4 31 3.8 27 Q5.6 25 7 26.4 Q5.4 28.6 6 31 Z" fill="WASH"/>
+    ${times(7, (i) => `<circle cx="${14 + i * 6}" cy="${r1(40.2 + Math.sin((i / 6) * Math.PI) * 1.4)}" r="2.2" fill="WASH"/><circle cx="${14 + i * 6}" cy="${r1(40.2 + Math.sin((i / 6) * Math.PI) * 1.4)}" r="0.5"/>`)}
+    ${times(6, (i) => `<path d="M${17 + i * 6} ${r1(44 + Math.sin(((i + 0.5) / 6) * Math.PI) * 1.4)} L${13 + i * 6} 52"/>`)}
+    <path d="M2 53 Q8 51.6 14 53 T26 53 T38 53 T50 53 T62 53 M8 57 Q14 55.6 20 57 T32 57 T44 57 T56 57" opacity=".45"/>`,
+  // A Chinese junk: battened lug sails like opened fans, the high square stern, the rudder.
+  junk: `${[[22, 6, 14], [39, 10, 11], [51, 18, 7]].map(([x, top, w]) => `<path d="M${x} 42 V${top}"/><path d="M${x - w * 0.35} ${top + 1} L${x + w * 0.65} ${top + 2.4} L${x + w * 0.75} 36 L${x - w * 0.45} 36 Z" fill="WASH"/>${times(5, (i) => `<path d="M${r1(x - w * 0.36 - (i + 1) * 0.02 * w)} ${r1(top + 1 + ((i + 1) * (35 - top)) / 6)} L${r1(x + w * 0.66 + (i + 1) * 0.015 * w)} ${r1(top + 2.4 + ((i + 1) * (33.6 - top)) / 6)}" opacity=".55"/>`)}`).join("")}
+    <path d="M4 32 H14 L16 38 H56 L60 36 L55 46.4 Q32 49.6 10 46.6 Z" fill="WASH"/><path d="M6 34.6 H14.6 M8 42.4 Q32 46 56.4 41" opacity=".5"/>
+    <path d="M6 46 L4.6 51 L9 50" /><circle cx="54" cy="40.6" r="1.1"/>
+    <path d="M2 53 Q8 51.6 14 53 T26 53 T38 53 T50 53 T62 53 M8 57 Q14 55.6 20 57 T32 57 T44 57 T56 57" opacity=".45"/>`,
   camel: `<path d="M12 34 Q16 20 25 28 Q31 16 39 28 Q43 31 46 29 L50 22 Q53 20 55 23 L52 27 L49 35 Q44 39 36 38 H18 Q13 38 12 34 Z" fill="WASH"/>
     <path d="M18 38 L16 52 M23 38 L24 52 M36 38 L34 52 M42 37 L44 52"/><path d="M12 34 Q8 36 9 42"/><circle cx="52.5" cy="23.5" r="0.7"/>
     <path d="M24 24 L21 14 L27 14 Z"/><path d="M3 53 Q20 50 34 53 T62 52" opacity=".6"/>`,
-  canoe: `<path d="M30 42 Q18 22 24 7 Q34 21 45 13 Q38 30 34 42 Z" fill="WASH"/><path d="M32 42 L28 18"/>
-    <path d="M6 46 Q32 52 58 46 M10 41 Q32 46 54 41"/><path d="M18 42 V47 M32 44 V49 M46 42 V47"/>
-    <path d="M2 55 Q8 52 14 55 T26 55 T38 55 T50 55 T62 55"/>`,
-  galleon: `<path d="M8 38 L14 49 H50 L58 36 L48 38 H17 Z" fill="WASH"/><path d="M48 38 V32 H58 V36"/>
-    <path d="M24 38 V8 M38 38 V6"/><path d="M15 14 Q24 18 33 14 V28 Q24 32 15 28 Z M29 11 Q38 15 47 11 V27 Q38 31 29 27 Z"/>
-    <path d="M38 6 L44 8 L38 10"/><path d="M14 42 H52" opacity=".6"/><path d="M2 54 Q8 51 14 54 T26 54 T38 54 T50 54 T62 54"/>`,
+  // A Polynesian voyaging canoe: twin hulls joined by a deck, the crab-claw sail, paddlers aboard.
+  canoe: `<path d="M30 38 L24 10 M30 38 L44 9"/><path d="M24 10 Q31 16 44 9 Q40 22 30 38 Q27 22 24 10 Z" fill="WASH"/><path d="M27 18 Q33 19 40 15 M28.4 27 Q32 26.4 36.6 22" opacity=".35"/>
+    <path d="M14 38 H50 V40 H14 Z" fill="WASH"/><path d="M18 38 V35 L21 33 V38 M42 38 V34.4 L45 33 V38" opacity=".6"/>
+    <path d="M4 40.6 Q32 46.4 60 40.6 Q61.6 38.4 63 36.4 L58.6 44.4 Q32 50 6 44.6 Q3 41 2 38.4 Z" fill="WASH"/><path d="M8 47.6 Q32 52 56 47.6" opacity=".55"/>
+    <circle cx="20" cy="35" r="1.1"/><circle cx="43" cy="34.6" r="1.1"/>
+    <path d="M2 53 Q8 51.6 14 53 T26 53 T38 53 T50 53 T62 53 M8 57 Q14 55.6 20 57 T32 57 T44 57 T56 57" opacity=".45"/>`,
+  // A sixteenth-century galleon: high stern castle, three masts, billowing courses and topsails, a lateen mizzen.
+  galleon: `<path d="M30 6 L5.6 34 M30 6 L56 37 M44 12 L60 31.6 M15.6 14 L5 34" opacity=".3"/>
+    <path d="M30 42 V6 M44 41 V12 M17 37 V14"/><path d="M55 37 L62.6 30.6"/><path d="M57.4 35.4 L61.4 32 V36 Z" fill="WASH"/>
+    <path d="M22.4 22 Q30 24.6 37.6 22 L37 32.4 Q30 35.4 23 32.4 Z M24.6 11.4 Q30 13 35.4 11.4 L35.2 20 Q30 22 24.8 20 Z" fill="WASH"/>
+    <path d="M38 24.4 Q44 26.4 50 24.4 L49.4 33.4 Q44 36 38.6 33.4 Z M40 15 Q44 16.2 48 15 L48.4 22.4 Q44 24 39.6 22.4 Z" fill="WASH"/>
+    <path d="M11 33 L19.6 15.6 L19.8 33 Z" fill="WASH"/><path d="M30 6 L34.4 7.2 L30 8.4 M44 12 L47.4 13 L44 14 M17 14 L19.8 14.8 L17 15.6" />
+    <path d="M5 33.6 H14 L16 40 H44 Q50 40 55 36.6 L59 37.4 L53 46.6 Q32 50.6 11 47.6 Z" fill="WASH"/>
+    <path d="M9 42.4 Q32 46.2 54.4 41.4" opacity=".5"/>${times(6, (i) => `<path d="M${17 + i * 5.6} ${r1(44.6 + Math.sin((i / 5) * Math.PI) * 0.8)} h1.8 v1.6 h-1.8 Z" opacity=".7"/>`)}
+    <path d="M6.6 36.4 H13.4 M6.6 38.8 H13.6" opacity=".55"/>
+    <path d="M2 52 Q8 50.6 14 52 T26 52 T38 52 T50 52 T62 52 M8 56 Q14 54.6 20 56 T32 56 T44 56 T56 56" opacity=".45"/>`,
   balloon: `<path d="M32 5 Q13 5 15 23 Q17 33 26 40 H38 Q47 33 49 23 Q51 5 32 5 Z" fill="WASH"/>
     <path d="M32 5 V40 M23 8 Q20 24 27 40 M41 8 Q44 24 37 40"/><path d="M16 22 Q32 27 48 22"/>
     <path d="M26 40 L28 47 M38 40 L36 47"/><path d="M27 47 H37 V53 H27 Z"/>`,
   train: `<path d="M14 44 V32 H42 V44 Z M42 44 V24 H54 V44 Z" fill="WASH"/><path d="M18 32 L16 19 H26 L24 32"/>
     <path d="M14 44 L7 51 H14"/><circle cx="21" cy="47" r="5"/><circle cx="33" cy="47" r="5"/><circle cx="48" cy="46" r="6"/>
     <path d="M45 28 H51 V34 H45 Z"/><circle cx="19" cy="12" r="3.5"/><circle cx="12" cy="7" r="4.5"/><path d="M2 53 H62"/>`,
-  steamship: `<path d="M3 39 H58 L54 49 H9 Z" fill="WASH"/><path d="M12 39 V33 H50 V39"/>
-    <path d="M17 33 L19 21 H24 L23 33 M26 33 L28 21 H33 L32 33 M35 33 L37 21 H42 L41 33 M44 33 L46 21 H50 L49 33"/>
-    <path d="M14 44 H15 M21 44 H22 M28 44 H29 M35 44 H36 M42 44 H43"/><path d="M2 55 Q8 52 14 55 T26 55 T38 55 T50 55 T62 55"/>`,
+  // An ocean liner of the 1910s: four raked funnels, lifeboats along the boat deck, rows of portholes.
+  steamship: `<path d="M3 38 H58 L61 36.6 L56.4 47.6 Q32 50 7 48 L3 38 Z" fill="WASH"/><path d="M3.6 41.4 H58.6" opacity=".5"/>
+    ${times(16, (i) => `<circle cx="${8 + i * 3.1}" cy="44.2" r="0.55"/>`)}
+    <path d="M10 38 V33.6 H52 V38 Z" fill="WASH"/>${times(10, (i) => `<path d="M${12 + i * 3.8} 37 v-1.6 h2.4 v1.6 Z" opacity=".55"/>`)}
+    <path d="M14 33.6 V30.6 H48 V33.6 Z" fill="WASH"/>${times(7, (i) => `<path d="M${15.6 + i * 4.8} 32.8 q1.4 1 2.8 0" opacity=".6"/>`)}
+    ${times(4, (i) => { const x = 18 + i * 7.6; return `<path d="M${x} 30.6 L${x + 1.2} 18.6 H${x + 5.2} L${x + 5} 30.6 Z" fill="WASH"/><path d="M${x + 1.1} 21 H${x + 5.1}" />`; })}
+    <path d="M7 34 L9 22 M55 38 L53 24" opacity=".5"/><path d="M9 22 L53 24" opacity=".25"/>
+    <path d="M21 17 Q19 13 22.6 11.4 Q25.6 8.4 29.6 10.4 M29 17 Q28 13.6 31 12.4" opacity=".4"/>
+    <path d="M2 52 Q8 50.6 14 52 T26 52 T38 52 T50 52 T62 52 M8 56 Q14 54.6 20 56 T32 56 T44 56 T56 56" opacity=".45"/>`,
   biplane: `<path d="M8 25 H52 V29 H8 Z M8 37 H52 V41 H8 Z" fill="WASH"/><path d="M14 29 V37 M24 29 V37 M36 29 V37 M46 29 V37"/>
     <path d="M52 33 H60 M56 27 V39"/><path d="M2 31 H8 M4 28 V35"/><circle cx="31" cy="23" r="2.5"/><path d="M31 25.5 V29"/>`,
   airship: `<ellipse cx="32" cy="25" rx="26" ry="10" fill="WASH"/><path d="M14 18 Q12 25 14 32 M23 16 Q21 25 23 34 M32 15 V35 M41 16 Q43 25 41 34 M50 18 Q52 25 50 32"/>
@@ -201,8 +237,11 @@ const D: Record<string, string> = {
   elephant: `<path d="M12 40 Q11 22 30 21 Q43 20 46 30 Q52 29 54 38 Q55 49 51 50" fill="WASH"/><path d="M12 40 H44"/>
     <path d="M16 40 V52 M23 40 V52 M36 40 V52 M43 40 V51"/><path d="M36 26 Q31 31 35 37 Q40 38 41 31"/><path d="M47 37 Q44 42 39 41"/><circle cx="45" cy="29" r="0.8"/>
     <path d="M24 21 L22 14 H32 L30 21"/><path d="M4 54 L20 46 L30 52 L44 42 L60 52" opacity=".5"/>`,
-  horse: `<path d="M14 36 H44 V26 Q45 17 51 15 L57 19 L52 25 V36 Z" fill="WASH"/><path d="M18 36 V47 M24 36 V47 M38 36 V47 M44 36 V47"/>
-    <path d="M10 47 H50"/><circle cx="16" cy="51" r="3"/><circle cx="44" cy="51" r="3"/><path d="M14 30 H44 M20 26 V36 M30 26 V36"/><path d="M48 15 L46 10 M14 32 Q9 34 10 40"/><circle cx="53" cy="18" r="0.8"/>`,
+  // The horse tamed: a handler holding a horse on a lead rope.
+  horse: `<g transform="translate(-7 0)">${HORSE_STAND}</g>
+    <circle cx="57.4" cy="25.2" r="2.1" fill="WASH"/><path d="M55.4 28.4 Q57.6 27.4 59.6 28.6 L60.4 40 Q57.4 41 54.6 40 Z" fill="WASH"/>
+    <path d="M56 40.4 L55.2 55.6 H57.2 L57.6 41 M58.4 41 L59.4 55.6 H61.4 L60.2 40.4"/><path d="M55.6 30.4 L51.6 33.4 Q49 30 49 28.4"/>
+    <path d="M1 55.8 H63" opacity=".5"/>`,
   press: `<path d="M14 54 V10 H50 V54"/><path d="M14 16 H50"/><path d="M32 16 V30"/><path d="M20 24 H44"/>
     <path d="M22 30 H42 V36 H22 Z" fill="WASH"/><path d="M18 42 H46 V46 H18 Z"/><path d="M24 40 L40 40" opacity=".6"/><path d="M8 54 H56"/>`,
   dodo: `<path d="M14 42 Q10 25 27 24 Q33 17 42 19 Q51 21 49 29 Q46 33 42 31 Q44 40 36 45 Q24 50 14 42 Z" fill="WASH"/>
@@ -325,9 +364,11 @@ const D: Record<string, string> = {
     <path d="M34 26 L32 32 L35 36 L33 42"/>`,
   cow: `<path d="M10 38 Q10 26 22 26 H44 Q50 22 54 28 L56 34 L52 36 Q50 40 44 40 H16 Q10 40 10 38 Z" fill="WASH"/><path d="M16 40 V52 M22 40 V52 M40 40 V52 M45 40 V52"/>
     <path d="M50 24 L48 20 M54 25 L57 22"/><path d="M24 30 Q28 26 32 30 Q28 34 24 30 M36 32 Q39 29 42 33" /><path d="M10 32 Q5 36 7 42"/><path d="M30 40 Q30 44 33 44" />`,
-  cowboy: `<path d="M10 38 Q12 30 22 30 H36 Q40 24 46 22 L50 26 L44 32 Q42 38 36 40 H14 Q10 40 10 38 Z" fill="WASH"/><path d="M15 40 L10 52 M20 40 L22 52 M34 40 L30 52 M38 39 L44 50"/>
-    <path d="M20 10 Q28 6 36 10 M22 10 Q28 2 34 10"/><circle cx="28" cy="14" r="3.5"/><path d="M28 18 L27 30 M27 22 L38 18 Q44 14 42 24 Q40 30 46 32"/><path d="M10 34 Q4 34 3 42"/>`,
-
+  // A cowboy on his cow pony, a lariat swinging overhead.
+  cowboy: `<g transform="translate(-2 4)">${HORSE_STAND}</g>
+    <path d="M27.6 33 Q29.4 26 28.8 21.6 L33 21.2 Q34 27.4 32.6 34 Z" fill="WASH"/><circle cx="30.8" cy="18.4" r="2.1" fill="WASH"/>
+    <path d="M26.6 16.6 Q30.8 15.4 35 16.6 M28.4 16.4 Q28.6 13.2 30.8 13 Q33 13.2 33.2 16.4" fill="WASH"/>
+    <path d="M30 32.4 L32 39.6 L30.2 43.6"/><path d="M32.4 23.6 L37.4 15.6"/><ellipse cx="41" cy="9.6" rx="7" ry="2.4" transform="rotate(-8 41 9.6)"/><path d="M37.4 15.6 Q38.6 12.6 36 11"/>`,
   // Farmland: a patchwork of furrowed plots, laid around villages.
   fields: `<path d="M4 40 L22 30 L40 36 L22 48 Z M24 29 L44 20 L60 27 L42 35 Z M42 37 L60 29 L62 40 L46 48 Z" fill="WASH"/>
     <path d="M8 40 L24 32 M12 42 L28 34 M16 44 L32 37 M28 27 L46 23 M32 29 L50 25 M36 31 L54 27 M46 40 L60 33 M48 43 L61 37" opacity=".6"/>`,
@@ -363,46 +404,92 @@ const D: Record<string, string> = {
     <path d="M33 22 L38 24 L33 25"/><path d="M22 34 L16 42 M38 34 L44 42"/><path d="M24 54 H36"/>`,
   polarbear: `<path d="M8 42 Q8 30 22 30 H42 Q50 28 54 34 L58 38 L54 40 Q48 42 44 42 H12 Z" fill="WASH"/>
     <path d="M14 42 V50 M21 42 V50 M40 42 V50 M47 42 V50"/><path d="M48 30 L49 27 L51 30"/><circle cx="53" cy="34" r="0.7"/><path d="M2 52 H62 M10 55 L20 52 M40 55 L50 52" opacity=".6"/>`,
-  wildhorse: `<path d="M12 34 Q14 26 24 26 H38 Q42 20 48 18 L52 22 L46 28 Q44 34 38 36 H16 Q12 36 12 34 Z" fill="WASH"/>
-    <path d="M17 36 L12 48 M22 36 L24 48 M36 36 L32 48 M40 35 L46 46"/><path d="M12 30 Q6 30 5 38"/><path d="M42 22 L40 30" opacity=".6"/>`,
-
-  // --- Scenery: people at work ---------------------------------------------------
-  hunter: `<circle cx="24" cy="14" r="4"/><path d="M24 18 L22 36 L16 50 M22 36 L28 50"/><path d="M23 24 L14 30 M23 24 L36 18"/><path d="M14 34 L48 6" />
-    <path d="M44 9 L50 4 L47 11"/><path d="M40 46 Q44 40 50 42 Q54 44 52 48 Z" fill="WASH"/><path d="M50 42 L52 38 M48 42 L48 38"/>`,
-  herder: `<circle cx="14" cy="14" r="4"/><path d="M14 18 L13 36 L9 50 M13 36 L18 50 M14 24 L20 28"/><path d="M20 50 V22 Q20 16 25 17 Q28 19 25 22"/>
-    <path d="M28 42 Q26 33 34 33 Q38 29 43 33 Q50 33 48 42 Z M44 46 Q43 40 49 40 Q52 37 56 40 Q60 41 58 46 Z" fill="WASH"/>
-    <path d="M31 42 V48 M45 42 V48 M47 46 V51 M56 46 V51"/><path d="M48 36 L52 34" />`,
-  farmer: `<path d="M30 38 Q30 28 40 28 H52 Q57 28 58 34 L60 38 L56 40 H34 Q30 40 30 38 Z" fill="WASH"/><path d="M34 40 V50 M40 40 V50 M50 40 V50 M55 40 V50"/>
-    <path d="M56 28 L58 24 M56 28 L60 26"/><path d="M30 34 L18 40 L14 48"/><circle cx="10" cy="22" r="3.5"/><path d="M10 26 L11 38 L7 50 M11 38 L15 50 M11 30 L18 38"/>
-    <path d="M2 52 H62 M4 56 H24 M30 56 H60" opacity=".6"/>`,
-  fisher: `<path d="M8 42 Q32 50 56 42 L52 46 Q32 52 12 46 Z" fill="WASH"/><circle cx="26" cy="28" r="3.5"/><path d="M26 31.5 L27 42 M27 35 L40 26"/>
-    <path d="M40 26 L52 14 M52 14 Q56 30 54 52"/><path d="M48 54 Q52 50 56 54 Q52 58 48 54 Z"/><path d="M2 52 Q8 49 14 52 T26 52 T38 52" opacity=".6"/>`,
-  rider: `<path d="M10 38 Q12 30 22 30 H36 Q40 24 46 22 L50 26 L44 32 Q42 38 36 40 H14 Q10 40 10 38 Z" fill="WASH"/>
-    <path d="M15 40 L10 52 M20 40 L22 52 M34 40 L30 52 M38 39 L44 50"/><circle cx="28" cy="14" r="3.5"/><path d="M28 18 L28 30 M28 22 L38 18"/>
-    <path d="M38 10 Q46 18 38 28"/><path d="M10 34 Q4 34 3 42"/>`,
-
-  // --- Scenery: towns, by region and era ---------------------------------------------
-  "town-ancient": `<path d="M18 30 L32 21 L46 30 Z" fill="WASH"/><path d="M20 30 V44 M26 30 V44 M32 30 V44 M38 30 V44 M44 30 V44 M17 44 H47"/>
-    <path d="M4 50 H60 M4 50 V42 H8 V50 M56 50 V42 H60 V50"/><path d="M8 50 V46 H14 V50 M50 50 V46 H56 V50"/>`,
-  "town-europe": `<path d="M30 50 V24 L34 10 L38 24 V50" fill="WASH"/><path d="M10 50 V38 L16 32 L22 38 V50 M42 50 V36 L48 30 L54 36 V50 M22 50 V42 L26 38 L30 42"/>
-    <path d="M2 50 H62"/><path d="M34 30 V34"/><path d="M14 44 H18 M46 42 H50"/>`,
-  "town-islamic": `<path d="M18 38 Q30 18 42 38 Z" fill="WASH"/><path d="M14 38 H46 V50 H14"/><path d="M50 50 V20 M53 50 V20 M50 20 L51.5 14 L53 20"/>
-    <path d="M6 50 V42 Q9 38 12 42 V50"/><path d="M30 24 V20"/><path d="M26 50 V45 Q30 41 34 45 V50"/><path d="M2 50 H62"/>`,
-  "town-eastasia": `<path d="M14 30 Q32 24 50 30 M14 30 L12 27 M50 30 L52 27" /><path d="M18 30 V40 H46 V30" fill="WASH"/><path d="M10 40 Q32 35 54 40"/>
-    <path d="M4 50 V42 H60 V50"/><path d="M28 50 V44 Q32 40 36 44 V50"/><path d="M6 44 V42 M12 44 V42 M52 44 V42 M58 44 V42"/><path d="M2 50 H62"/>`,
-  "town-southasia": `<path d="M24 48 V30 Q24 14 32 8 Q40 14 40 30 V48 Z" fill="WASH"/><path d="M26 24 H38 M25 32 H39 M25 40 H39" opacity=".6"/><path d="M32 8 V3 L37 5 L32 7"/>
-    <path d="M8 48 V38 L14 34 L20 38 V48 M44 48 V40 L50 36 L56 40 V48"/><path d="M2 48 H62"/>`,
-  "town-americas": `<path d="M18 50 V44 H46 V50 M22 44 V38 H42 V44 M26 38 V32 H38 V38" fill="WASH"/><path d="M28 32 V26 H36 V32"/><path d="M30 50 V32 M34 50 V32"/>
-    <path d="M4 50 V44 L9 38 L14 44 V50 M50 50 V44 L55 38 L60 44 V50"/><path d="M2 50 H62"/>`,
-  "town-africa": `<path d="M20 50 V30 H44 V50" fill="WASH"/><path d="M24 30 V22 Q27 18 30 22 V30 M36 30 V24 Q39 20 42 24 V30"/><path d="M18 36 H22 M42 36 H46 M18 42 H22 M42 42 H46"/>
-    <path d="M4 50 V42 M4 42 L9 34 L14 42 V50 M50 50 V42 M50 42 L55 34 L60 42 V50"/><path d="M2 50 H62"/>`,
-  "town-steppe": `<path d="M8 50 V40 Q8 32 18 30 Q28 32 28 40 V50 Z M34 50 V42 Q34 36 42 34 Q50 36 50 42 V50 Z" fill="WASH"/>
-    <path d="M18 30 V26 M42 34 V31 M8 40 H28 M34 42 H50"/><path d="M15 50 V44 H21 V50"/><path d="M54 50 V36 L58 38 L54 40"/><path d="M2 50 H62"/>`,
-  "town-industrial": `<path d="M8 50 V34 L16 28 V34 L24 28 V34 L32 28 V50 Z" fill="WASH"/><path d="M38 50 V18 H43 V50 M48 50 V24 H52 V50"/>
-    <circle cx="40" cy="12" r="3.5"/><circle cx="46" cy="7" r="4.5"/><circle cx="50" cy="18" r="3"/><path d="M12 42 H14 M20 42 H22 M26 42 H28"/><path d="M2 50 H62"/>`,
-  "town-metro": `<path d="M8 50 V28 H16 V50 M18 50 V16 H26 V50 M28 50 V8 H34 V50 M36 50 V22 H44 V50 M46 50 V30 H56 V50" fill="WASH"/>
-    <path d="M31 8 V2"/><path d="M21 22 H23 M21 30 H23 M21 38 H23 M39 28 H41 M39 36 H41 M11 34 H13 M11 42 H13 M50 36 H52"/><path d="M2 50 H62"/>`,
-
+  wildhorse: `${HORSE_GALLOP}`,
+  // A Paleolithic hunter in a fur cloak, spear drawn back, a red deer bolting ahead of him.
+  hunter: `<circle cx="22" cy="18.6" r="2.6" fill="WASH"/><path d="M19.6 17.4 Q21 14.6 24.6 16"/>
+    <path d="M19.4 22 Q22 20.8 24.8 22.4 L26.4 33 Q23 35 18.6 33.6 Z" fill="WASH"/><path d="M19.2 33.6 l-.4 1.6 M21.2 34.4 l-.2 1.6 M23.2 34.6 v1.6 M25.2 34.2 l.3 1.6" opacity=".6"/>
+    <path d="M24 34 L28.6 43.6 L27.4 54 H29.6 L31 43 L26.6 33.6 Z M20.6 34 L18 44 L14.6 53.4 H16.8 L20.6 44.6 L23 34.4 Z" fill="WASH"/>
+    <path d="M24.6 23 L29.4 19.4 L30.6 20.8 L25.6 25 Z M20 23.4 L15.4 28.6 L16.6 29.8 L21.4 25.4 Z" fill="WASH"/>
+    <path d="M12 34 L46 10.6"/><path d="M44.2 11.8 L48.6 8.6 L46.2 13.2 Z" fill="WASH"/>
+    <path d="M44 45 Q46 41 52 41.4 Q56 41 57.2 43.4 L56.2 46.6 H45.6 Z" fill="WASH"/><path d="M46.6 46.6 L45.2 53.4 M49 46.6 L49.6 53.4 M54 46.4 L55.8 53 M55.6 45.8 L58.4 52"/>
+    <path d="M56.2 42 L58.6 37.4 L61.2 37 L59.8 39.6 L57.8 43" fill="WASH"/><path d="M58.8 37.4 L57.8 33.4 M58.8 37.4 L61 34 M58 35 L56.4 34.2" />
+    <path d="M2 54 H62"/><path d="M6 56.4 l1 -1.6 M34 56.4 l1 -1.6 M40 56.4 l1 -1.6" opacity=".35"/>`,
+  // A shepherd in a long cloak with his crook, and his flock.
+  herder: `<circle cx="13" cy="15.6" r="2.4" fill="WASH"/><path d="M10.4 14.8 Q13 11.6 15.8 14.6 Q13 13.6 10.4 14.8 Z" fill="WASH"/>
+    <path d="M10.2 19 Q13 17.8 15.8 19 L17.4 41 Q13 42.6 8.6 41 Z" fill="WASH"/><path d="M12.4 20 Q11.6 30 12 40.6 M14.6 20.4 Q15.6 30 15.6 40.6" opacity=".35"/>
+    <path d="M11 41.6 L10.6 50 H12.6 L12.8 41.8 M14.6 41.8 L15.2 50 H17.2 L16.6 41.4" />
+    <path d="M15.6 21.4 L20 28.4 L21 27.6 L17 20.6"/><path d="M20.6 50 V14 Q20.6 9.6 24.4 10.4 Q26.6 11.6 24.8 14"/>
+    ${[[33, 44, 1], [46, 41, 0.9], [53, 47, 0.95], [40, 49, 0.85]].map(([x, y, k]) => `<g transform="translate(${x} ${y}) scale(${k})"><path d="M-6 0 Q-7 -4 -4 -5.4 Q-2 -7.2 1 -6 Q4 -7 6 -4.4 Q7.6 -2 6 0.4 Q2 1.8 -2 1.2 Q-5.4 1.6 -6 0 Z" fill="WASH"/><path d="M-3.6 -2.8 q1 -1 2 0 M0.4 -3.4 q1 -1 2 0 M2.6 -1 q1 -1 2 0" opacity=".45"/><path d="M5.4 -4.4 Q8.6 -5 9 -2.4 Q8.4 -0.6 6.4 -1" fill="WASH"/><path d="M-4 1 V5.4 M-1.6 1.4 V5.4 M2.4 1.4 V5.4 M4.6 0.8 V5.4"/></g>`).join("")}
+    <path d="M2 54.4 H62" opacity=".5"/>`,
+  // A ploughman behind his yoked ox, the share turning the furrow.
+  farmer: `<path d="M30 33 Q30 27.6 37 27 H51 Q56 27 57.4 30.4 Q60.4 30.4 61.6 33.6 L60.6 36.6 Q57.6 37.4 56.4 35.6 Q55.6 39 52 39.8 H36 Q31 39.6 30 36 Z" fill="WASH"/>
+    <path d="M57.6 29.6 Q57 26.4 59.4 25.8 M58.6 30 Q61 27.6 62.4 28.8" /><circle cx="59.4" cy="32.2" r="0.5"/>
+    <path d="M33 39.4 L32.4 47.4 H34.4 L35 40 M37.4 39.8 L37.4 47.4 H39.4 V40 M50 39.8 L50.6 47.4 H52.6 L52.6 39.6 M54 38.8 L55.6 47.4 H57.6 L56.6 38.4" fill="WASH"/>
+    <path d="M30.6 31.4 Q27.4 33 27.6 38.6" /><path d="M52.6 27.2 L54.8 24.6 L56.8 27.2" fill="WASH"/>
+    <path d="M52 27.4 L20 34"/><path d="M20.6 33.6 L17 45.4 L23 45 Z" fill="WASH"/><path d="M17 45.4 L13 46.2 M18.4 38.6 L12.4 33.4"/>
+    <circle cx="9.6" cy="19.6" r="2.3" fill="WASH"/><path d="M7.4 23 Q10 21.8 12.2 23.4 L13.2 35 Q10 36.2 6.8 35 Z" fill="WASH"/>
+    <path d="M11.8 25 L13.6 33.6 M8.6 35.4 L7 47 H9 L10.4 36 M11.4 35.6 L13.6 46.4 H15.6 L13.4 35.4"/>
+    <path d="M2 47.4 H62"/><path d="M2 51 Q20 49.4 40 51 T62 50.4 M4 54.6 Q24 53 44 54.6 T62 54" opacity=".4"/>`,
+  // A fisherman standing in his boat, casting a weighted net.
+  fisher: `<path d="M8 44 Q32 52 56 43 L53 48.6 Q32 55 11.4 49 Z" fill="WASH"/><path d="M12 46.4 Q32 52.4 53.6 45.6" opacity=".45"/>
+    <circle cx="27" cy="22" r="2.3" fill="WASH"/><path d="M24.8 25.4 Q27.4 24.2 29.6 25.6 L30.2 36 Q27 37 24 36 Z" fill="WASH"/>
+    <path d="M25.6 36.4 L24.8 46 M28.8 36.4 L30.4 46"/><path d="M29.4 27 L37.6 21.6 M25 27.2 L21 33"/>
+    <path d="M37.6 21.6 Q46 16 52 22 Q56.6 28 54.4 40" /><path d="M37.6 21.6 Q42 26 44.6 38.4 M37.6 21.6 Q48 21 50.6 40" opacity=".55"/>
+    <path d="M44.6 38.4 Q47.6 40.6 50.6 40 Q52.6 40.6 54.4 40" />${times(6, (i) => `<circle cx="${44.6 + i * 2}" cy="${38.6 + Math.sin(i) * 0.8}" r="0.5"/>`)}
+    <path d="M40 30 Q45 28 49 31 M41.6 34.6 Q46.6 33 51.6 35.6" opacity=".35"/>
+    <path d="M2 52 Q8 50.6 14 52 T26 52 T38 52 T50 52 T62 52 M6 56 Q12 54.6 18 56 T30 56 T42 56 T54 56" opacity=".45"/>`,
+  // A mounted archer of the steppe at the gallop, drawing his bow.
+  rider: `<g transform="translate(-2 2)">${HORSE_GALLOP}</g>
+    <path d="M28.4 30 Q31 22 30 17.6 L33.6 16.8 Q35 23 32.8 31 Z" fill="WASH"/><circle cx="31.6" cy="14.4" r="2.2" fill="WASH"/><path d="M29.4 13.4 L31.6 10.6 L33.8 13.4"/>
+    <path d="M30.6 29.6 L33.6 36 L31 40.4"/><path d="M33.4 20 L41.4 19"/><path d="M41 13.4 Q46 19 41 25" /><path d="M41 13.4 L36 19.4 L41 25" opacity=".55"/><path d="M36 19.4 H44.6"/>`,
+  "town-ancient": `<path d="M2 50 V42 H62 V50 Z" fill="WASH"/>${times(10, (i) => `<path d="M${3 + i * 6.2} 42 V39.6 H${5.6 + i * 6.2} V42"/>`)}
+    <path d="M7 50 V35 H13 V50 Z M51 50 V35 H57 V50 Z" fill="WASH"/><path d="M6.4 35 H13.6 M50.4 35 H57.6"/><path d="M9 39 V37.4 H11 V39 M53 39 V37.4 H55 V39" opacity=".6"/>
+    <path d="M18 34 L32 26.6 L46 34 Z" fill="WASH"/><path d="M17 34 H47 V35.8 H17 Z" fill="WASH"/>
+    ${times(7, (i) => `<path d="M${19.5 + i * 4.16} 35.8 V41.2" />`)}<path d="M16 41.2 H48 V42 H16 Z" fill="WASH"/>
+    <path d="M28.5 50 V46 Q30.2 44.2 32 46 V50 M32 50 V46 Q33.8 44.2 35.5 46 V50" opacity=".6"/><path d="M1 50 H63"/>`,
+  "town-europe": `<path d="M2 50 V43 H62 V50 Z" fill="WASH"/>${times(9, (i) => `<path d="M${3 + i * 7} 43 V40.8 H${5.6 + i * 7} V43"/>`)}
+    ${[[5, 31, 9], [43, 33, 8], [52, 30, 8.5]].map(([x, top, w]) => `<path d="M${x} 43 V${top + 5} L${x + w / 2} ${top} L${x + w} ${top + 5} V43 Z" fill="WASH"/><path d="M${x} ${top + 9} H${x + w} M${x + w / 3} ${top + 5.6} V43 M${x + (2 * w) / 3} ${top + 5.6} V43 M${x} ${top + 5.6} L${x + w / 3} ${top + 9}" opacity=".4"/><path d="M${x + w / 2 - 0.8} ${top + 3.4} h1.6" opacity=".6"/>`).join("")}
+    <path d="M17 43 V31 H33 V43 Z" fill="WASH"/><path d="M16 31 L25 25.5 L34 31 Z" fill="WASH"/>${times(3, (i) => `<path d="M${19.5 + i * 4.5} 40 V35.6 Q${20.5 + i * 4.5} 34.2 ${21.5 + i * 4.5} 35.6 V40" opacity=".55"/>`)}
+    <path d="M33 43 V21 H39 V43 Z" fill="WASH"/><path d="M32.4 21 L36 6.5 L39.6 21 Z" fill="WASH"/><path d="M35 17 h2 M36 6.5 V3.6 M35 4.6 H37"/><path d="M35.4 27.4 V24.6 Q36 23.8 36.6 24.6 V27.4" opacity=".6"/>
+    <path d="M24 50 V45.6 Q26 43.6 28 45.6 V50"/><path d="M1 50 H63"/>`,
+  "town-islamic": `${[[3, 40, 10], [13, 37, 8], [44, 38, 9], [53, 41, 9]].map(([x, top, w]) => `<path d="M${x} 50 V${top} H${x + w} V50 Z" fill="WASH"/><path d="M${x - 0.5} ${top} H${x + w + 0.5}"/><path d="M${x + 2} ${top + 3} v2 h1.6 v-2 Z M${x + w - 3.6} ${top + 3} v2 h1.6 v-2 Z" opacity=".55"/>`).join("")}
+    <path d="M21 50 V34 H43 V50 Z" fill="WASH"/><path d="M23 34 Q23 21 32 20 Q41 21 41 34 Z" fill="WASH"/><path d="M27 33.6 Q26.8 25 32 20.4 M37 33.6 Q37.2 25 32 20.4" opacity=".35"/>
+    <path d="M32 20 V16.6 M30.8 17.4 Q32 15.6 33.2 17.4" /><path d="M28.6 50 V43.6 Q32 39.4 35.4 43.6 V50"/>${[24, 38].map((x) => `<path d="M${x} 47 V42 Q${x + 1} 40.6 ${x + 2} 42 V47" opacity=".55"/>`).join("")}
+    <path d="M45.6 50 V18 H48.8 V50 Z" fill="WASH"/><path d="M44.6 18 H49.8 M44.8 28 H49.6 M44.8 38 H49.6"/><path d="M45.6 18 Q47.2 13.4 48.8 18 M47.2 14.6 V11.4"/>
+    <path d="M7 40 V31 M7 31 Q3.6 28.6 2 30.4 M7 31 Q9.4 27.4 12.4 28.6 M7 31 Q6 27.6 3.4 26.8 M7 31 Q9.2 30 11.6 32.4" opacity=".75"/><path d="M1 50 H63"/>`,
+  "town-eastasia": `<path d="M2 50 V39 H62 V50 Z" fill="WASH"/>${times(13, (i) => `<path d="M${3 + i * 4.6} 39 V37.2 H${5.2 + i * 4.6} V39"/>`)}
+    <path d="M18 39 V27.6 H46 V39 Z" fill="WASH"/><path d="M28 50 V43.4 Q32 39.6 36 43.4 V50"/>
+    <path d="M12 28.4 Q22 27 22 25.4 H42 Q42 27 52 28.4 Q44 29.8 32 29.6 Q20 29.8 12 28.4 Z" fill="WASH"/>
+    <path d="M22 25.4 V19.6 H42 V25.4" fill="WASH"/>${times(6, (i) => `<path d="M${24.6 + i * 3} 25 V20.4" opacity=".45"/>`)}
+    <path d="M15.6 20 Q24 18.8 24 17.4 H40 Q40 18.8 48.4 20 Q41 21.2 32 21 Q23 21.2 15.6 20 Z" fill="WASH"/><path d="M24 17.4 Q32 15 40 17.4" opacity=".6"/>
+    ${[[4, 9], [51, 9]].map(([x, w]) => `<path d="M${x + 1} 50 V44.4 H${x + w - 1} V50" fill="WASH"/><path d="M${x - 1} 44.8 Q${x + w / 2} 42.2 ${x + w + 1} 44.8" />`).join("")}
+    <path d="M1 50 H63"/>`,
+  "town-southasia": `${[[3, 41, 9], [12, 38, 8], [47, 40, 8], [55, 42, 7]].map(([x, top, w]) => `<path d="M${x} 50 V${top} H${x + w} V50 Z" fill="WASH"/><path d="M${x - 0.6} ${top} H${x + w + 0.6} M${x + 2} ${top + 2.6} H${x + w - 2}" opacity=".85"/><path d="M${x + w / 2 - 1} 50 V${top + 6} H${x + w / 2 + 1} V50" opacity=".55"/>`).join("")}
+    <path d="M21 50 V36 H43 V50 Z" fill="WASH"/><path d="M22 36 H42 V33.6 H22 Z" fill="WASH"/>
+    <path d="M24.6 33.6 Q24 19 32 10.4 Q40 19 39.4 33.6 Z" fill="WASH"/>${times(5, (i) => `<path d="M${r1(25 + i * 0.5)} ${30.6 - i * 4} Q32 ${29.4 - i * 4} ${r1(39 - i * 0.5)} ${30.6 - i * 4}" opacity=".4"/>`)}
+    <path d="M28.6 33.4 Q28.6 21 32 12.4 M35.4 33.4 Q35.4 21 32 12.4" opacity=".3"/><ellipse cx="32" cy="9.6" rx="2.4" ry="1"/><path d="M32 8.6 V5.6 L35 6.8 L32 7.8"/>
+    <path d="M28.6 50 V44.6 Q32 40.6 35.4 44.6 V50"/><path d="M1 50 H63"/>`,
+  "town-americas": `<path d="M18 50 H46 V45.6 H43 V41.2 H40 V36.8 H24 V41.2 H21 V45.6 H18 Z" fill="WASH"/>
+    <path d="M29.6 50 V36.8 M34.4 50 V36.8"/>${times(4, (i) => `<path d="M29.6 ${48 - i * 3.2} H34.4" opacity=".5"/>`)}<path d="M20 47.8 H28 M36 47.8 H44 M23 43.4 H28 M36 43.4 H41" opacity=".35"/>
+    <path d="M26 36.8 V30.4 H38 V36.8" fill="WASH"/><path d="M30.4 36.8 V33 H33.6 V36.8"/><path d="M27.6 30.4 V26 H36.4 V30.4" fill="WASH"/>${times(3, (i) => `<path d="M${29.6 + i * 2.4} 27.4 V29" opacity=".6"/>`)}
+    ${[3, 10.5, 50, 56.5].map((x) => `<path d="M${x} 50 V45 H${x + 6} V50 Z" fill="WASH"/><path d="M${x - 1} 45.2 L${x + 3} 39.6 L${x + 7} 45.2 Z" fill="WASH"/><path d="M${x + 1} 44 L${x + 3} 41.4 M${x + 5} 44 L${x + 3} 41.4" opacity=".4"/><path d="M${x + 2.2} 50 V47.4 H${x + 3.8} V50" opacity=".6"/>`).join("")}
+    <path d="M1 50 H63"/>`,
+  "town-africa": `<path d="M20 50 V31 H44 V50 Z" fill="WASH"/>${times(5, (i) => `<path d="M${22.4 + i * 4.8} 31 L${23.4 + i * 4.8} 28.4 L${24.4 + i * 4.8} 31" />`)}
+    <path d="M28 31 V20 Q28 17.6 32 16 Q36 17.6 36 20 V31 Z" fill="WASH"/><path d="M32 16 V13.6"/><circle cx="32" cy="13" r="0.7"/>
+    ${times(3, (i) => `<path d="M26.4 ${22 + i * 4} H28 M36 ${22 + i * 4} H37.6 M18.4 ${36 + i * 5} H20 M44 ${36 + i * 5} H45.6"/>`)}
+    <path d="M29.6 50 V43.6 H34.4 V50"/>${[23, 39].map((x) => `<path d="M${x} 50 V36.4 M${x + 1.6} 50 V36.4" opacity=".3"/>`).join("")}
+    ${[[3.5, 8], [10, 7]].concat([[47, 7], [54, 8]]).map(([x, w]) => `<path d="M${x} 50 V44 H${x + w} V50 Z" fill="WASH"/><path d="M${x - 1.4} 44.4 L${x + w / 2} 37.6 L${x + w + 1.4} 44.4 Z" fill="WASH"/><path d="M${x + w / 2 - 2} 42 L${x + w / 2 - 3} 43.8 M${x + w / 2 + 2} 42 L${x + w / 2 + 3} 43.8" opacity=".4"/><path d="M${x + w / 2 - 0.9} 50 V47 H${x + w / 2 + 0.9} V50" opacity=".6"/>`).join("")}
+    <path d="M1 50 H63"/>`,
+  "town-steppe": `${[[16, 13, 8], [40, 11, 7], [55, 7, 5]].map(([x, rx, h]) => `<path d="M${x - rx} 50 V${50 - h} Q${x - rx * 0.5} ${50 - h - rx * 0.62} ${x} ${50 - h - rx * 0.72} Q${x + rx * 0.5} ${50 - h - rx * 0.62} ${x + rx} ${50 - h} V50 Z" fill="WASH"/><path d="M${x - rx} ${50 - h} H${x + rx}"/><path d="M${x - rx + 1} ${50 - h * 0.45} H${x + rx - 1}" opacity=".35"/>${times(5, (i) => `<path d="M${r1(x - rx + ((i + 1) * 2 * rx) / 6)} ${50 - h} L${x} ${r1(50 - h - rx * 0.72)}" opacity=".3"/>`)}<path d="M${x - rx * 0.22} 50 V${r1(50 - h * 0.62)} H${x + rx * 0.22} V50"/><path d="M${x - rx * 0.15} ${r1(50 - h - rx * 0.66)} h${r1(rx * 0.3)}"/>`).join("")}
+    <path d="M28 50 V39 M27 39.6 H29.4"/><path d="M30.6 39.8 L37 40.6" opacity=".5"/><path d="M1 50 H63"/>`,
+  "town-industrial": `<path d="M2 50 V40 L8 35.6 V40 L14 35.6 V40 L20 35.6 V40 L26 35.6 V50 Z" fill="WASH"/>${times(4, (i) => `<path d="M${3.6 + i * 6} 39.4 L${7.6 + i * 6} 36.4" opacity=".4"/>`)}
+    ${times(5, (i) => `<path d="M${4 + i * 4.4} 47 V43.6 H${6.4 + i * 4.4} V47" opacity=".55"/>`)}
+    ${[[31, 17, 3.2], [38, 22, 2.8]].map(([x, top, w]) => `<path d="M${x} 50 V${top} H${x + w} V50 Z" fill="WASH"/><path d="M${x - 0.4} ${top} H${x + w + 0.4} M${x} ${top + 3} H${x + w}" />`).join("")}
+    <path d="M32.6 15.4 Q30 12 33.6 10 Q36 7 40 8.4 Q44 6.8 46 9.6" opacity=".5"/><path d="M39.4 20.4 Q38 17.8 40.6 16.2 Q43 14.6 45.4 16" opacity=".45"/>
+    <path d="M43 50 V40 H62 V50 Z" fill="WASH"/><path d="M43 40 L46 37.6 H59 L62 40" fill="WASH"/>${times(4, (i) => `<path d="M${45 + i * 4.4} 44 V42 H${46.8 + i * 4.4} V44 M${45 + i * 4.4} 50 V46.6 H${46.8 + i * 4.4} V50" opacity=".55"/><path d="M${47.6 + i * 4.4} 37.6 V35.6 H${48.8 + i * 4.4} V37.6" />`)}
+    <path d="M1 50 H63"/>`,
+  "town-metro": `${[[3, 34, 7], [10.5, 24, 7.5], [18.5, 14, 7], [26, 8, 6.5], [33, 18, 7], [40.5, 27, 7.5], [48.5, 20, 6.5], [55.5, 32, 6]].map(([x, top, w]) => `<path d="M${x} 50 V${top} H${x + w} V50 Z" fill="WASH"/>${times(Math.floor((49 - top) / 3.4), (r) => `<path d="M${x + 1.2} ${top + 2.4 + r * 3.4} H${x + w - 1.2}" opacity=".3"/>`)}<path d="M${x + w / 2} ${top + 1} V49" opacity=".22"/>`).join("")}
+    <path d="M29.2 8 V3.4 M28.4 5 H30"/><path d="M21 14 L22 11.6 L23 14"/><path d="M1 50 H63"/>`,
   // --- Scenery: the sea and sky ---------------------------------------------------
   waves: `<path d="M6 30 Q12 24 18 30 T30 30 M28 40 Q34 34 40 40 T52 40"/>`,
   whale: `<path d="M6 38 Q10 26 28 26 Q44 26 52 34 L58 28 L58 42 L52 38 Q40 46 24 44 Q10 44 6 38 Z" fill="WASH"/>
@@ -413,15 +500,33 @@ const D: Record<string, string> = {
   compass: `<circle cx="32" cy="32" r="20"/><circle cx="32" cy="32" r="16" opacity=".5"/>
     <path d="M32 6 L36 28 L58 32 L36 36 L32 58 L28 36 L6 32 L28 28 Z" fill="WASH"/><path d="M32 12 L34 30 L52 14 M32 52 L30 34 L12 50" opacity=".5"/>
     <path d="M29 4 V-1 L35 4 V-1" />`,
-  galley: `<path d="M4 38 L60 38 L54 44 H10 Z" fill="WASH"/><path d="M60 38 L64 40"/><path d="M32 38 V12 M20 14 H44 V32 H20 Z"/>
-    <path d="M12 44 L8 52 M18 44 L14 52 M24 44 L20 52 M30 44 L26 52 M36 44 L32 52 M42 44 L38 52 M48 44 L44 52"/><path d="M4 38 Q2 32 6 30"/>`,
-  dhow: `<path d="M8 40 Q32 50 56 38 L52 46 Q32 52 12 46 Z" fill="WASH"/><path d="M30 42 V12"/><path d="M14 36 L52 6 Q42 26 30 40 Z" fill="WASH"/><path d="M2 52 Q8 49 14 52 T26 52 T38 52 T50 52 T62 52" opacity=".6"/>`,
-  clipper: `<path d="M6 40 L58 38 L52 47 H12 Z" fill="WASH"/><path d="M58 38 L64 33"/><path d="M18 40 V10 M32 40 V6 M46 39 V12"/>
-    <path d="M12 14 H24 V20 H12 Z M11 22 H25 V30 H11 Z M26 10 H38 V17 H26 Z M25 19 H39 V28 H25 Z M40 16 H52 V22 H40 Z M39 24 H53 V32 H39 Z"/><path d="M2 53 Q8 50 14 53 T26 53 T38 53 T50 53 T62 53" opacity=".6"/>`,
-  container: `<path d="M4 40 H60 L56 48 H8 Z" fill="WASH"/><path d="M8 40 V34 H16 V40 M16 34 V28 H24 V40 M24 34 H32 V40 M32 28 H40 V40 M40 34 H48 V40 M16 28 V34 M32 28 H24 V34"/>
-    <path d="M50 40 V24 H56 V40 M52 24 V20"/><path d="M2 54 Q8 51 14 54 T26 54 T38 54 T50 54 T62 54" opacity=".6"/>`,
-  airliner: `<path d="M8 32 L48 30 Q58 30 60 32 Q58 34 48 34 Z" fill="WASH"/><path d="M30 31 L20 16 H25 L38 31 M30 33 L20 48 H25 L38 33 M10 32 L6 24 H9 L14 31 M10 32 L6 40 H9 L14 33"/>`,
-
+  // A war galley (trireme): the bronze ram, three banks of oars, the square sail, the curling stern.
+  galley: `<path d="M31 37 V12"/><path d="M20 13 H42 V30 Q31 32.4 20 30 Z" fill="WASH"/><path d="M23.6 13.6 V30.4 M27.4 13.6 V31 M34.6 13.6 V31 M38.4 13.6 V30.4" opacity=".3"/>
+    <path d="M4 36 Q4 28 9 26 Q8 31 11 37 H54 L60 39 L54 41.6 Q32 45.6 9 42 Z" fill="WASH"/><path d="M54 39.4 H62.6 L60.4 41.4 H54" fill="WASH"/>
+    <circle cx="51" cy="38.6" r="1.2"/><path d="M10 39.6 Q32 42.6 54 40" opacity=".5"/>
+    ${times(10, (i) => `<path d="M${13 + i * 4} 41.4 L${10 + i * 4} 50.4" /><path d="M${15 + i * 4} 42.2 L${12.4 + i * 4} 51.4" opacity=".55"/>`)}
+    <path d="M2 53 Q8 51.6 14 53 T26 53 T38 53 T50 53 T62 53 M8 57 Q14 55.6 20 57 T32 57 T44 57 T56 57" opacity=".45"/>`,
+  // An Arab dhow: a great lateen sail on a raked mast, the long yard, the hull with its raked stem.
+  dhow: `<path d="M30 42 L33 13"/><path d="M8 37 L57 4"/><path d="M11 35.6 L55.6 5.6 Q48 24 33.4 39 Z" fill="WASH"/>
+    <path d="M18 31 Q36 22 50 11 M24 34.4 Q40 26 53 9" opacity=".3"/><path d="M54 6 L60 18.6 M33 14 L56 39" opacity=".3"/>
+    <path d="M6 39 L58 37 L54 46 Q32 49.6 10 46 Z" fill="WASH"/><path d="M58 37 L62 32"/><path d="M8.6 42 Q32 45 55.6 41" opacity=".5"/>
+    <path d="M2 52 Q8 50.6 14 52 T26 52 T38 52 T50 52 T62 52 M8 56 Q14 54.6 20 56 T32 56 T44 56 T56 56" opacity=".45"/>`,
+  // A tea clipper under full sail: a long sharp hull, three masts of stacked square sails, jibs to the bowsprit.
+  clipper: `<path d="M18 44 V5 M32 44 V3 M46 44 V7"/><path d="M53 42 L63 34"/><path d="M46 9 L62.6 34.4 M32 4 L5 42 M18 6 L4 41" opacity=".3"/>
+    ${[[18, 5, 7.4], [32, 3, 8.6], [46, 7, 7]].map(([x, top, w]) => times(4, (i) => { const y = top + 4 + i * 8.6; const ww = w - (3 - i) * 1.2; return `<path d="M${r1(x - ww)} ${r1(y)} Q${x} ${r1(y + 1.8)} ${r1(x + ww)} ${r1(y)} L${r1(x + ww + 0.4)} ${r1(y + 7)} Q${x} ${r1(y + 9)} ${r1(x - ww - 0.4)} ${r1(y + 7)} Z" fill="WASH"/>`; })).join("")}
+    <path d="M48.6 10 L61 33.6 L50 34 Z M47 18 L57.6 34.6 L48 35 Z" fill="WASH"/>
+    <path d="M4 42 H54 Q58 41.6 62 38.4 L57 47.4 Q32 50 9 47.6 Z" fill="WASH"/><path d="M7 44.6 Q32 47 58.4 42.4" opacity=".5"/>
+    <path d="M2 52 Q8 50.6 14 52 T26 52 T38 52 T50 52 T62 52 M8 56 Q14 54.6 20 56 T32 56 T44 56 T56 56" opacity=".45"/>`,
+  // A container ship: the stacked boxes, the bridge aft, the bulbous bow.
+  container: `<path d="M2 40 H60 Q62.4 40.4 61.6 42 L57.4 48.6 Q32 50.6 6 48.6 Z" fill="WASH"/><path d="M3.4 43.4 H59.6" opacity=".5"/>
+    ${times(8, (c) => times(c === 7 ? 2 : 3, (r) => `<path d="M${16 + c * 5.4} ${40 - (r + 1) * 3.6} h5.2 v3.6 h-5.2 Z" fill="WASH"/><path d="M${17.4 + c * 5.4} ${40.6 - (r + 1) * 3.6} v2.4 M${18.8 + c * 5.4} ${40.6 - (r + 1) * 3.6} v2.4 M${20.2 + c * 5.4} ${40.6 - (r + 1) * 3.6} v2.4" opacity=".3"/>`))}
+    <path d="M5 40 V25 H13.6 V40 Z" fill="WASH"/>${times(3, (i) => `<path d="M6.4 ${28 + i * 4} H12.4" opacity=".55"/>`)}<path d="M4 25 H14.6 V23.4 H4 Z" fill="WASH"/><path d="M8.6 23.4 V17.6 M7 19.6 H10.2"/>
+    <path d="M2 52 Q8 50.6 14 52 T26 52 T38 52 T50 52 T62 52 M8 56 Q14 54.6 20 56 T32 56 T44 56 T56 56" opacity=".45"/>`,
+  // A jet airliner in flight, seen from the side and a little below.
+  airliner: `<path d="M5 31.6 Q8 29 16 29 H49 Q57 29 60.4 31.4 Q57 33.6 49 33.6 H16 Q8 33.6 5 31.6 Z" fill="WASH"/><path d="M55.6 29.8 Q57.6 30.2 58.6 31" opacity=".6"/>
+    ${times(12, (i) => `<circle cx="${18 + i * 2.6}" cy="30.8" r="0.45"/>`)}
+    <path d="M27 33 L19.6 46 H23.6 L36.4 33.4 Z M30 29.4 L24.6 22.6 H27.4 L35 29.2 Z" fill="WASH"/><path d="M22.6 40.4 h4 v2.4 h-4 Z" fill="WASH"/>
+    <path d="M7.6 30 L4.4 21.6 H7.4 L13.6 29.2 Z M8.6 33.2 L5 37.6 H7.6 L12.6 33.4 Z" fill="WASH"/><path d="M38 36 Q46 38 54 37" opacity=".3"/>`,
   // --- The Surveyor: a small, long-nosed figure with a telescope ---------------
   surveyor: `<path d="M24 12 H38 M27 12 V4 H35 V12"/><circle cx="31" cy="17" r="5"/><path d="M35 17 L41 19 L35 20"/>
     <path d="M27 22 L22 44 H38 L34 22 Z" fill="WASH"/><path d="M33 26 L50 17"/><path d="M48 15 L54 12 L56 16 L50 19 Z"/>
@@ -492,8 +597,8 @@ const SHADING = (ink: string, mirrored: boolean) => {
     <linearGradient id="eastward" x1="${x1}" y1="0" x2="${x2}" y2="0.25"><stop offset="0" stop-color="#000"/><stop offset="1" stop-color="#fff"/></linearGradient>
     <mask id="east" maskContentUnits="objectBoundingBox"><rect width="1" height="1" fill="url(#eastward)"/></mask>`;
 };
-/** Every washed form in a drawing: the silhouettes that take shading. */
-const WASHED = /<(?:path|circle|ellipse|rect)\b[^>]*fill="WASH"[^>]*\/>/g;
+/** Any single drawn shape; those with fill="WASH" are the forms that take shading. */
+const SHAPE = /<(?:path|circle|ellipse|rect)\b[^>]*\/>/g;
 
 /** Clay: a lumpier wobble and a soft cast shadow, like a figure on a stop-motion set. */
 const CLAY_FILTER = (seed: number) =>
@@ -565,10 +670,13 @@ export function drawingSvg(kind: string, ink: string, wash: string, halo: string
   // Two weights of line: a firm outline round each washed form, a finer one
   // for everything drawn inside and around it.
   const inked = body.replace(/fill="WASH"/g, `fill="${wash}" stroke-width="${0.95 * w}"`);
-  // Shading copies carry no stroke of their own (a form may set one already).
-  const forms = (body.match(WASHED) ?? []).map((f) => f.replace(/\sstroke(?:-width)?="[^"]*"/g, ""));
-  const deepen = forms.map((f) => f.replace(/fill="WASH"/, `fill="${wash}" stroke="none" mask="url(#east)"`)).join("");
-  const hatch = forms.map((f) => f.replace(/fill="WASH"/, 'fill="url(#hatch)" stroke="none" mask="url(#east)"')).join("");
+  // The shading passes are copies of the whole drawing with everything but the
+  // washed forms taken out, so forms inside moved or rotated groups stay put.
+  // The copies carry no stroke of their own (a form may set one already).
+  const shaded = (fill: string) =>
+    body.replace(SHAPE, (el) => (el.includes('fill="WASH"') ? el.replace(/\sstroke(?:-width)?="[^"]*"/g, "").replace('fill="WASH"', `fill="${fill}" stroke="none" mask="url(#east)"`) : ""));
+  const deepen = shaded(wash);
+  const hatch = shaded("url(#hatch)");
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="${px}" height="${px}">
     <defs>${FILTER(s)}${SHADING(ink, v.mirrored)}</defs>
     <g transform="${v.transform}" stroke-linecap="round" stroke-linejoin="round">
