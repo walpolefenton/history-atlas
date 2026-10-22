@@ -343,20 +343,46 @@ export const VARIANTS = 4;
  * line. With a different wobble seed each, no two neighbours look stamped.
  */
 const VARIANT_STYLE = [
-  { transform: "", weight: 1 },
-  { transform: "translate(64 0) scale(-1 1)", weight: 0.9 },
-  { transform: "translate(32 60) scale(1.12 0.88) translate(-32 -60)", weight: 0.85 },
-  { transform: "translate(64 0) scale(-1 1) translate(32 60) scale(0.9 1.12) translate(-32 -60)", weight: 1.15 },
+  { transform: "", weight: 1, sy: 1 },
+  { transform: "translate(64 0) scale(-1 1)", weight: 0.9, sy: 1 },
+  { transform: "translate(32 60) scale(1.12 0.88) translate(-32 -60)", weight: 0.85, sy: 0.88 },
+  { transform: "translate(64 0) scale(-1 1) translate(32 60) scale(0.9 1.12) translate(-32 -60)", weight: 1.15, sy: 1.12 },
 ];
+
+/** Scenery that stands on the land: trees, beasts, people and towns, but not the sea or sky. */
+const STANDING = new Set([
+  "peak", "peaks", "dune", "cactus", "palm", "jungle", "pine", "oak", "grass", "bison", "caribou", "giraffe", "kangaroo",
+  "penguin", "polarbear", "wildhorse", "elephant", "camel", "hunter", "herder", "farmer", "fisher", "rider",
+  "town-ancient", "town-europe", "town-islamic", "town-eastasia", "town-southasia", "town-americas", "town-africa",
+  "town-steppe", "town-industrial", "town-metro",
+]);
+/** A drawing's own ground line: a lone horizontal stroke near the foot of the grid. */
+const GROUND_LINE = /<path d="M[\d.]+ ([\d.]+) H[\d.]+"(?: opacity="[^"]*")?\s*\/>/g;
+
+/**
+ * Scenery loses its own ground line, which made each piece a separate little
+ * picture, and instead casts a short hatched shadow eastward. Every piece on
+ * the map is lit from the same side, so they read as one landscape.
+ */
+function grounded(kind: string, body: string, sy: number) {
+  if (!STANDING.has(kind)) return { body, shadow: "" };
+  let foot = 52;
+  const stripped = body.replace(GROUND_LINE, (line, y) => (Number(y) >= 46 ? ((foot = Number(y)), "") : line));
+  // Peaks and dunes already shade their own east faces; they cast a lighter shadow.
+  const n = kind === "peak" || kind === "peaks" || kind === "dune" || kind === "grass" ? 2 : 4;
+  const y = 60 + (foot - 60) * sy;
+  const hatch = Array.from({ length: n }, (_, i) => `M${35 + i * 5} ${y + 1.5} L${39 + i * 5} ${y - 2.5}`).join(" ");
+  return { body: stripped, shadow: `<path d="${hatch}" opacity=".45"/>` };
+}
 
 /** A second, fainter pass of the same lines, slightly off: the look of a line drawn over twice. */
 const RETRACE = (seed: number) =>
   `<filter id="retrace" x="-10%" y="-10%" width="120%" height="120%"><feTurbulence type="fractalNoise" baseFrequency="0.09" numOctaves="1" seed="${seed + 17}"/><feDisplacementMap in="SourceGraphic" scale="2.4"/></filter>`;
 
-export function drawingSvg(kind: string, ink: string, wash: string, halo: string, seed = 1, clay = false, px = 128, weight = 1, variant = 0): string {
-  const body = D[kind] ?? D.temple;
-  const lines = body.replace(/fill="WASH"/g, 'fill="none"');
+export function drawingSvg(kind: string, ink: string, wash: string, halo: string, seed = 1, clay = false, px = 128, weight = 1, variant = 0, scenery = false): string {
   const v = VARIANT_STYLE[variant % VARIANT_STYLE.length];
+  const { body, shadow } = scenery ? grounded(kind, D[kind] ?? D.temple, v.sy) : { body: D[kind] ?? D.temple, shadow: "" };
+  const lines = body.replace(/fill="WASH"/g, 'fill="none"');
   const w = weight * v.weight;
   const s = seed + variant * 101;
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="${px}" height="${px}">
@@ -367,7 +393,8 @@ export function drawingSvg(kind: string, ink: string, wash: string, halo: string
         <g fill="none" stroke="${ink}" stroke-width="${(clay ? 3.2 : 2.3) * w}">${body.replace(/fill="WASH"/g, `fill="${wash}"`)}</g>
       </g>
       ${clay ? "" : `<g filter="url(#retrace)" fill="none" stroke="${ink}" stroke-width="${1.1 * w}" opacity="0.4" transform="translate(0.7 0.5)">${lines}</g>`}
-    </g></svg>`;
+    </g>
+    ${shadow ? `<g filter="url(#pen)" fill="none" stroke="${ink}" stroke-width="${1.6 * w}" stroke-linecap="round">${shadow}</g>` : ""}</svg>`;
 }
 
 /** Drawings used as background scenery, drawn quieter than landmarks. */

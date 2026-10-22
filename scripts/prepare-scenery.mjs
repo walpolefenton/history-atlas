@@ -113,8 +113,11 @@ const SCALE = {
 };
 const scaled = (kind, shrink = 1) => Math.round((SCALE[kind] ?? 1) * shrink * (0.78 + rand() * 0.5) * 100) / 100;
 
-// Trees grow in clumps and grazing animals move in herds.
-const CLUMPS = { pine: [1, 3], oak: [0, 2], jungle: [1, 3], palm: [1, 3], bison: [1, 3], caribou: [1, 3], wildhorse: [1, 2], giraffe: [0, 1], dune: [1, 3], peaks: [0, 2] };
+// Trees grow in stands and grazing animals move in herds, with open ground
+// between: masses of woodland and mountain, not an even scatter of single pieces.
+const CLUMPS = { pine: [2, 5], oak: [1, 4], jungle: [2, 4], palm: [1, 3], bison: [1, 3], caribou: [1, 3], wildhorse: [1, 2], giraffe: [0, 1], dune: [1, 3], peaks: [1, 3], peak: [1, 2] };
+/** Peaks stand shoulder to shoulder in a row, making a ridge rather than a scatter. */
+const RIDGE = new Set(["peaks", "peak"]);
 
 /** Is this sea point near a coast? Waves gather there, like engraved water lines. */
 const nearCoast = (p, d) => [[d, 0], [-d, 0], [0, d], [0, -d]].some(([dx, dy]) => hit(land, [p[0] + dx, p[1] + dy]));
@@ -136,7 +139,7 @@ for (const { tier, spacing, ocean } of TIERS) {
     const lonStep = spacing / Math.max(0.25, Math.cos((lat * Math.PI) / 180));
     for (let lon = -180 + rand() * lonStep; lon < 180; lon += lonStep) {
       const p = [lon + (rand() - 0.5) * lonStep * 0.7, lat + (rand() - 0.5) * spacing * 0.7];
-      if (rand() < 0.25) continue; // breathing room
+      if (rand() < 0.38) continue; // breathing room: open country between the stands
       if (hit(land, p)) {
         if (hit(ice, p)) continue;
         const t = hit(terrain, p);
@@ -148,8 +151,13 @@ for (const { tier, spacing, ocean } of TIERS) {
         const [lo, hi] = CLUMPS[kind] ?? [0, 0];
         const extra = lo + Math.floor(rand() * (hi - lo + 1));
         for (let j = 0; j < extra; j++) {
-          const q = [p[0] + (rand() - 0.5) * spacing * 0.45, p[1] + (rand() - 0.5) * spacing * 0.3];
-          if (hit(land, q)) point({ type: "point", k: kind, t: Math.min(4, tier + 1), s: scaled(kind, 0.8) }, q);
+          // Ridges extend east and west alternately, each peak overlapping the last;
+          // stands bunch closely around their first tree.
+          const side = j % 2 ? -1 : 1;
+          const q = RIDGE.has(kind)
+            ? [p[0] + side * (Math.floor(j / 2) + 1) * lonStep * (0.16 + rand() * 0.06), p[1] + (rand() - 0.4) * spacing * 0.08]
+            : [p[0] + (rand() - 0.5) * lonStep * 0.3, p[1] + (rand() - 0.5) * spacing * 0.18];
+          if (hit(land, q)) point({ type: "point", k: kind, t: Math.min(4, tier + 1), s: scaled(kind, RIDGE.has(kind) ? 0.9 - j * 0.08 : 0.8) }, q);
         }
       } else if (ocean && Math.abs(p[1]) < 72) {
         if (tier === 2 && rand() < 0.5) continue;

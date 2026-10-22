@@ -9,6 +9,7 @@ import { currentTheme, type MapTheme } from "./theme";
 import { formatYear } from "./format";
 import { capitalIconSvg, eventIconSvg, svgToImage } from "./icons";
 import { DRAWING_KINDS, SCENERY_KINDS, VARIANTS, drawingSvg } from "./drawings";
+import { FURROWS, fieldPlots, furrowSvg } from "./fields";
 
 maplibregl.setWorkerUrl(workerUrl);
 
@@ -142,15 +143,17 @@ async function themeImages(t: MapTheme): Promise<Record<string, HTMLImageElement
     ["pat-clay", patternSvg("clay", t), 32],
     ["pat-land", patternSvg("land", t), 32],
     ...TERRAIN_KINDS.map((k): [string, string, number] => [`pat-${k}`, patternSvg(k, t), 32]),
-    ...DRAWING_KINDS.map((k, i): [string, string, number] => [`draw-${k}`, drawingSvg(k, t.label, t.wash, t.clay ? t.ring : "none", i + 1, t.clay, 256), 256]),
+    // Landmarks share the landscape's pen; their colour wash and size set them apart.
+    ...DRAWING_KINDS.map((k, i): [string, string, number] => [`draw-${k}`, drawingSvg(k, t.clay ? t.label : t.labelMuted, t.wash, t.clay ? t.ring : "none", i + 1, t.clay, 256, t.clay ? 1 : 0.9), 256]),
     // Scenery is drawn in a quieter ink, so it never competes with labels.
     // Scenery comes in several hand-varied versions: scn-oak, scn-oak~1, scn-oak~2...
     ...SCENERY_KINDS.flatMap((k, i) =>
-      Array.from({ length: VARIANTS }, (_, v): [string, string, number] => [v ? `scn-${k}~${v}` : `scn-${k}`, drawingSvg(k, t.labelMuted, t.washSoft, "none", i + 11, t.clay, 192, 1, v), 192]),
+      Array.from({ length: VARIANTS }, (_, v): [string, string, number] => [v ? `scn-${k}~${v}` : `scn-${k}`, drawingSvg(k, t.labelMuted, t.washSoft, "none", i + 11, t.clay, 192, 1, v, true), 192]),
     ),
     // Murals are big and faint; render them large so they stay crisp.
     ...MURAL_KINDS.map((k, i): [string, string, number] => [`mural-${k}`, drawingSvg(k, t.label, t.wash, "transparent", i + 31, t.clay, 512, 0.45), 512]),
     ["pat-paper", paperSvg(t), 128],
+    ...Array.from({ length: FURROWS }, (_, i): [string, string, number] => [`pat-furrow-${i}`, furrowSvg(i, t.labelMuted), 16]),
     ["line-range", rangePatternSvg(t), 192],
     ["line-wall", wallPatternSvg(t), 128],
     ["line-trail", trailPatternSvg(t), 48],
@@ -170,6 +173,13 @@ const TERRAIN_TINT: Record<string, Record<(typeof TERRAIN_KINDS)[number], string
   night: { desert: "#3a3326", mountains: "#2c2a2a", plateau: "#2d2b24", tundra: "#22303a", wetland: "#1f3029" },
   survey: { desert: "#efe2bf", mountains: "#e3d9c6", plateau: "#ebe3cc", tundra: "#e4eaea", wetland: "#dfe8d6" },
   clay: { desert: "#e6c98f", mountains: "#c9b08a", plateau: "#d6bd92", tundra: "#d7d3c4", wetland: "#b9bf8c" },
+};
+
+/** Farmland in two tones, ripe and green, so neighbouring plots read as different crops. */
+const FIELD_TINT: Record<string, [string, string]> = {
+  night: ["#6b5f3e", "#3f5240"],
+  survey: ["#dcc78e", "#b3c193"],
+  clay: ["#d9b46a", "#a7ad6a"],
 };
 
 /** Cities in three tiers of prominence, the best known appearing first. */
@@ -215,7 +225,8 @@ function sceneryLayer(tier: 1 | 2 | 3 | 4): maplibregl.LayerSpecification {
     type: "symbol",
     source: "scenery",
     minzoom: SCENERY_MINZOOM[tier],
-    filter: ["all", ["==", ["get", "type"], "point"], ["==", ["get", "t"], tier]],
+    // Fields are drawn flat on the ground instead (the "fields" layers).
+    filter: ["all", ["==", ["get", "type"], "point"], ["==", ["get", "t"], tier], ["!=", ["get", "k"], "fields"]],
     layout: {
       "icon-image": sceneryImage,
       // Images are 192px at pixel ratio 2: 96 CSS px at size 1. Each piece has its
@@ -315,6 +326,7 @@ function styleFor(land: GeoJSON.FeatureCollection, t: MapTheme, themeName: strin
       "admin1-labels": { type: "geojson", data: EMPTY },
       cities: { type: "geojson", data: EMPTY },
       "scenery-year": { type: "geojson", data: EMPTY },
+      fields: { type: "geojson", data: EMPTY },
       relief: {
         type: "raster-dem",
         tiles: [RELIEF_TILES],
@@ -589,6 +601,33 @@ function styleFor(land: GeoJSON.FeatureCollection, t: MapTheme, themeName: strin
           "line-dasharray": ["case", ["==", ["get", "mode"], "air"], ["literal", [6, 4]], ["literal", [0.5, 3]]],
         },
       },
+      // Farmland: a patchwork of plots lying flat on the land, each tinted a
+      // little differently and furrowed in its own direction.
+      {
+        id: "fields-fill",
+        type: "fill",
+        source: "fields",
+        minzoom: 2.6,
+        paint: {
+          "fill-color": ["case", ["<", ["get", "tone"], 0.5], (FIELD_TINT[themeName] ?? FIELD_TINT.night)[0], (FIELD_TINT[themeName] ?? FIELD_TINT.night)[1]],
+          "fill-opacity": ["interpolate", ["linear"], ["zoom"], 2.6, 0, 3.4, ["+", 0.3, ["*", 0.3, ["get", "tone"]]]],
+        },
+      },
+      {
+        id: "fields-furrows",
+        type: "fill",
+        source: "fields",
+        minzoom: 3.2,
+        paint: { "fill-pattern": ["concat", "pat-furrow-", ["to-string", ["get", "furrow"]]], "fill-opacity": fadeIn(3.2, 4, 0.9) },
+      },
+      {
+        id: "fields-edge",
+        type: "line",
+        source: "fields",
+        minzoom: 2.6,
+        layout: { "line-join": "round" },
+        paint: { "line-color": t.labelMuted, "line-width": ["interpolate", ["linear"], ["zoom"], 2.6, 0.3, 7, 1.1], "line-opacity": fadeIn(2.6, 3.4, 0.4) },
+      },
       {
         id: "roads",
         type: "line",
@@ -625,7 +664,7 @@ function styleFor(land: GeoJSON.FeatureCollection, t: MapTheme, themeName: strin
         type: "symbol",
         source: "scenery-year",
         minzoom: 3.4,
-        filter: ["all", ["has", "village"], ["==", ["geometry-type"], "Point"]],
+        filter: ["all", ["has", "village"], ["==", ["geometry-type"], "Point"], ["!=", ["get", "k"], "fields"]],
         layout: {
           "icon-image": sceneryImage,
           "icon-size": ["interpolate", ["exponential", 1.5], ["zoom"], 3.4, ["*", 0.24, ["get", "s"]], 7, ["*", 0.5, ["get", "s"]], 9, ["*", 0.85, ["get", "s"]]],
@@ -1122,6 +1161,7 @@ export class AtlasMap {
     // States and provinces appear from the year they were created.
     for (const id of ["admin1-fill", "admin1-line", "admin1-label"]) this.map.setFilter(id, ["<=", ["get", "from"], data.year]);
     src("scenery-year").setData(data.scenery ?? EMPTY);
+    src("fields").setData(fieldPlots([...layers.scenery, ...(data.scenery?.features ?? [])]));
     src("drawings").setData({
       type: "FeatureCollection",
       features: drawings.map((d) => ({

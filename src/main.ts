@@ -589,7 +589,12 @@ async function boot() {
     });
     app = new App(meta, curated, atlas, land, drawings, spots);
     // Handy for testing in development; not present in production builds.
-    if (import.meta.env.DEV) Object.assign(window, { __atlas: atlas, __app: app });
+    if (import.meta.env.DEV) {
+      Object.assign(window, { __atlas: atlas, __app: app });
+      // ?cam=lon,lat,zoom jumps the camera, for screenshots of a given view.
+      const cam = new URLSearchParams(location.search).get("cam")?.split(",").map(Number);
+      if (cam?.length === 3) atlas.map.jumpTo({ center: [cam[0], cam[1]], zoom: cam[2] });
+    }
     const search = initSearch(meta, curated, drawings, {
       onPolity: (name, years) => app.selectPolity(name, nearest(years, Number(new URLSearchParams(location.hash.slice(1)).get("y") ?? 1914)), true),
       onEvent: (e) => app.selectEvent(e.id, true),
