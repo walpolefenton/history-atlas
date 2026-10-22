@@ -4,6 +4,8 @@ export interface Meta {
   years: { year: number; polities: number; capitals: number }[];
   /** Polity name -> snapshot years in which it appears on the map. */
   appearances: Record<string, number[]>;
+  /** Each territory's area in km² at each year in appearances, same order (scripts/prepare-today.mjs). */
+  areas?: Record<string, number[]>;
 }
 
 export interface PolityProps {

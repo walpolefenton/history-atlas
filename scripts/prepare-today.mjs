@@ -1,6 +1,7 @@
 // Adds "today" to every territory in public/data/years/*.json: the present-day
 // countries its land lies in, with each one's approximate share, so the panel
-// can say where a historical state is on today's map.
+// can say where a historical state is on today's map. Also records each
+// territory's area in every snapshot in meta.json, for its history chart.
 // Run after prepare-data.mjs: node scripts/prepare-today.mjs
 //
 // Method: a quarter-degree grid of points over the land, each labelled with
@@ -77,6 +78,8 @@ for (const g of grid) {
 
 // --- Each snapshot ------------------------------------------------------------------
 const files = (await readdir("public/data/years")).filter((f) => f.endsWith(".json"));
+/** Each territory's total area in each snapshot, for the history chart in the panel. */
+const areas = {};
 for (const file of files) {
   const path = `public/data/years/${file}`;
   const data = JSON.parse(await readFile(path, "utf8"));
@@ -108,6 +111,16 @@ for (const file of files) {
       .join("|");
   }
   await writeFile(path, JSON.stringify(data));
+  for (const f of data.borders.features) {
+    const a = (areas[f.properties.name] ??= {});
+    a[data.year] = (a[data.year] ?? 0) + f.properties.km2;
+  }
   process.stdout.write(".");
 }
+
+// meta.json gains "areas": for each territory, its area in km² at each of the
+// years listed in "appearances", in the same order.
+const meta = JSON.parse(await readFile("public/data/meta.json", "utf8"));
+meta.areas = Object.fromEntries(Object.entries(meta.appearances).map(([name, years]) => [name, years.map((y) => areas[name]?.[y] ?? 0)]));
+await writeFile("public/data/meta.json", JSON.stringify(meta));
 console.log(`\n${files.length} snapshots annotated`);

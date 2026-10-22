@@ -287,6 +287,7 @@ export function renderPolity(ctx: PanelContext, name: string, focus = false) {
     ${todaySection(parts)}
     <section>
       <h3>On the map</h3>
+      ${historyChart(meta, name, data.year)}
       <p class="small muted">Snapshots where “${esc(name)}” appears under this name:</p>
       ${ranges.map((r) => `<div class="chips">${r.map(yearChip).join("")}</div>`).join("")}
     </section>
@@ -298,6 +299,32 @@ export function renderPolity(ctx: PanelContext, name: string, focus = false) {
     if (current?.data !== data) return;
     fillWiki(w, w?.match === "search" ? `This article was found by search and may not be exactly “${name}”.` : null);
   });
+}
+
+/**
+ * A territory's size across the snapshots it appears in: one bar per snapshot,
+ * scaled to its largest extent, the year on screen picked out. Bars are
+ * buttons, so the chart doubles as a way to move through its history.
+ */
+function historyChart(meta: Meta, name: string, year: number) {
+  const years = meta.appearances[name] ?? [];
+  const areas = meta.areas?.[name];
+  if (!areas || years.length < 2) return "";
+  const max = Math.max(...areas);
+  const peak = years[areas.indexOf(max)];
+  const W = 320, H = 72, gap = years.length > 30 ? 1 : 2;
+  const bw = (W - gap * (years.length - 1)) / years.length;
+  const bars = years
+    .map((y, i) => {
+      const h = Math.max(2, (areas[i] / max) * (H - 4));
+      const x = i * (bw + gap);
+      return `<rect class="hist-bar${y === year ? " current" : ""}" x="${x.toFixed(1)}" y="${(H - h).toFixed(1)}" width="${bw.toFixed(1)}" height="${h.toFixed(1)}" rx="1" data-action="polity" data-name="${esc(name)}" data-year="${y}"><title>${formatYear(y)}: ${formatArea(areas[i])}</title></rect>`;
+    })
+    .join("");
+  return `<figure class="hist" aria-label="Area of ${esc(name)} in each snapshot">
+    <svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" role="img" aria-hidden="true">${bars}</svg>
+    <figcaption class="small muted"><span>${formatYear(years[0])}</span><span>Largest: ${formatArea(max)}, ${formatYear(peak)}</span><span>${formatYear(years[years.length - 1])}</span></figcaption>
+  </figure>`;
 }
 
 /**
