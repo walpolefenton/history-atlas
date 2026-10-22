@@ -1,0 +1,24 @@
+{
+  "name": "history-atlas",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "license": "GPL-3.0-or-later",
+  "scripts": {
+    "fetch:capitals": "node scripts/fetch-capitals.mjs",
+    "prepare:data": "node scripts/prepare-data.mjs",
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "maplibre-gl": "^6.15.0"
+  },
+  "devDependencies": {
+    "@turf/area": "^7.4.0",
+    "@turf/boolean-point-in-polygon": "^7.4.0",
+    "polylabel": "^2.1.0",
+    "typescript": "^7.0.2",
+    "vite": "^8.3.5"
+  }
+}
