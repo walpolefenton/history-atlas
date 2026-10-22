@@ -685,9 +685,18 @@ async function boot() {
     loadCities()
       .then((c) => app.setCities(c))
       .catch((err) => console.warn("Cities unavailable", err));
-    loadAdmin1()
-      .then((a) => app.setAdmin1(a))
-      .catch((err) => console.warn("States and provinces unavailable", err));
+    // States and provinces are a large file and only drawn from zoom 3.6, so
+    // they load the first time the reader zooms in that far.
+    let admin1Requested = false;
+    const maybeLoadAdmin1 = () => {
+      if (admin1Requested || atlas.view()[2] < 3) return;
+      admin1Requested = true;
+      loadAdmin1()
+        .then((a) => app.setAdmin1(a))
+        .catch((err) => console.warn("States and provinces unavailable", err));
+    };
+    atlas.onViewChange(maybeLoadAdmin1);
+    maybeLoadAdmin1();
     loadScenery()
       .then((s) => app.setScenery(s))
       .catch((err) => console.warn("Scenery unavailable", err));
