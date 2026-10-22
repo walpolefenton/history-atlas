@@ -56,18 +56,16 @@ function labelPoint(geom) {
   return [round(p[0]), round(p[1])];
 }
 
-// Stable, well-spread colour per sovereign so colonies share their ruler's hue.
-function colorFor(key) {
+// Stable colour index per sovereign, so colonies share their ruler's colour and
+// a power keeps its colour across eras. The app maps indexes to theme palettes.
+const PALETTE_SIZE = 12;
+function colorIndex(key) {
   let h = 2166136261;
   for (let i = 0; i < key.length; i++) {
     h ^= key.charCodeAt(i);
     h = Math.imul(h, 16777619);
   }
-  h >>>= 0;
-  const hue = (h % 360 + (h >> 9) % 37) % 360;
-  const sat = 32 + ((h >> 3) % 22);
-  const light = 56 + ((h >> 13) % 14);
-  return `hsl(${hue}, ${sat}%, ${light}%)`;
+  return (h >>> 0) % PALETTE_SIZE;
 }
 
 const norm = (s) =>
@@ -195,7 +193,7 @@ for (const { year, filename } of index.years.sort((a, b) => a.year - b.year)) {
       sovereign,
       partOf: f.properties.PARTOF || null,
       precision: f.properties.BORDERPRECISION ?? null,
-      color: colorFor(sovereign),
+      ci: colorIndex(sovereign),
       km2,
       qid: capital?.qid ?? null,
     };
@@ -208,7 +206,7 @@ for (const { year, filename } of index.years.sort((a, b) => a.year - b.year)) {
       capitalCount++;
       capitals.push({
         type: "Feature",
-        properties: { name: capital.capital, qid: capital.capitalQid, of: name, start: capital.start, end: capital.end },
+        properties: { name: capital.capital, qid: capital.capitalQid, of: name, start: capital.start, end: capital.end, rank: km2 },
         geometry: { type: "Point", coordinates: capital.point.map(round) },
       });
     }

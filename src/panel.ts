@@ -1,6 +1,14 @@
 import type { EventType, HistoryEvent, Meta, YearData } from "./types";
 import { EVENT_TYPES, PRECISION_LABEL, escapeHtml as esc, formatArea, formatEventDate, formatYear } from "./format";
 import { eventArticle, polityArticle, type WikiSummary } from "./wiki";
+import { eventIconSvg } from "./icons";
+import { currentTheme } from "./theme";
+
+/** The same pictogram the map uses for this event type, in the current theme. */
+function marker(type: EventType) {
+  const t = currentTheme();
+  return `<span class="marker" aria-hidden="true">${eventIconSvg(type, t.events[type], t.ring)}</span>`;
+}
 
 export interface PanelContext {
   meta: Meta;
@@ -76,7 +84,7 @@ const backButton = `<button type="button" class="back" data-action="overview">â†
 function eventButton(e: HistoryEvent, extra = false) {
   const t = EVENT_TYPES[e.type];
   return `<li${extra ? ' class="extra" hidden' : ""}><button type="button" class="event-row" data-action="event" data-id="${esc(e.id)}">
-    <span class="dot" style="background:${t.color}" aria-hidden="true"></span>
+    ${marker(e.type)}
     <span class="event-row-text"><span class="event-title">${esc(e.title)}</span>
     <span class="muted">${formatEventDate(e)} Â· ${t.label}</span></span>
   </button></li>`;
@@ -101,7 +109,7 @@ export function renderOverview(ctx: PanelContext, focus = false) {
     .map(([k, t]) => {
       const on = !ctx.hiddenTypes.has(k);
       return `<li><button type="button" class="type-toggle" data-action="type" data-type="${k}" aria-pressed="${on}">
-        <span class="dot" style="background:${on ? t.color : "transparent"};border-color:${t.color}" aria-hidden="true"></span>${t.label}</button></li>`;
+        ${marker(k)}${t.label}</button></li>`;
     })
     .join("");
   const more = moreEvents.length
@@ -139,7 +147,7 @@ export function renderOverview(ctx: PanelContext, focus = false) {
     ${more}
     <section>
       <h3>Reading the map</h3>
-      <p class="muted small">Territories ruled by the same power share a colour. Dashed outlines mark approximate borders. Large dots are key events; small dots are other recorded events. Select anything to learn more.</p>
+      <p class="muted small">Territories ruled by the same power share a colour. Dashed outlines mark approximate borders. Large markers are key events; small ones are other recorded events, and more appear as you zoom in. The tower marks a capital. Select anything to learn more.</p>
     </section>
     ${sourcesNote}`,
     focus,
@@ -230,7 +238,7 @@ export function renderEvent(ctx: PanelContext, e: HistoryEvent, focus = false) {
   render(
     ctx,
     `${backButton}
-    <p class="eyebrow"><span class="dot" style="background:${t.color}" aria-hidden="true"></span>${t.label}</p>
+    <p class="eyebrow">${marker(e.type)}${t.label}</p>
     <h2>${esc(e.title)}</h2>
     <p class="lede">${formatEventDate(e)}${e.approx ? ` <span class="small muted">(approximate or traditional date)</span>` : ""}</p>
     ${e.summary ? `<p>${esc(e.summary.charAt(0).toUpperCase() + e.summary.slice(1))}</p>` : ""}

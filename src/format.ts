@@ -25,13 +25,13 @@ export const PRECISION_LABEL: Record<number, { label: string; detail: string }> 
   3: { label: "Precise", detail: "Borders were defined by treaty or international law." },
 };
 
-export const EVENT_TYPES: Record<EventType, { label: string; color: string }> = {
-  conflict: { label: "War & conflict", color: "#e5534b" },
-  diplomacy: { label: "Treaty & diplomacy", color: "#4fa3e0" },
-  political: { label: "Political change", color: "#d4a72c" },
-  culture: { label: "Culture & religion", color: "#a371f7" },
-  exploration: { label: "Exploration", color: "#3fb950" },
-  crisis: { label: "Crisis & disaster", color: "#db6d28" },
+export const EVENT_TYPES: Record<EventType, { label: string }> = {
+  conflict: { label: "War & conflict" },
+  diplomacy: { label: "Treaty & diplomacy" },
+  political: { label: "Political change" },
+  culture: { label: "Culture & religion" },
+  exploration: { label: "Exploration" },
+  crisis: { label: "Crisis & disaster" },
 };
 
 export function escapeHtml(s: string): string {

@@ -5,11 +5,22 @@ import { formatYear } from "./format";
 import { initPanel, renderCompare, renderEvent, renderList, renderOverview, renderPolity, type PanelContext } from "./panel";
 import { initSearch } from "./search";
 import type { EventType, HistoryEvent, Meta, Selection, YearData } from "./types";
+import { applyTheme, loadThemeChoice, saveThemeChoice, type ThemeChoice } from "./theme";
 
 const TICK_YEARS = [-10000, -3000, -1000, -1, 500, 1000, 1500, 1800, 1914, 2010];
 /** The subset still labelled on narrow screens. */
 const COMPACT_TICKS = [-3000, 500, 1500, 2010];
 const PLAY_INTERVAL_MS = 1800;
+/** Broad eras shown as a ribbon under the timeline; each starts at the given year. */
+const ERAS = [
+  { name: "Prehistory", from: -Infinity },
+  { name: "Antiquity", from: -3000 },
+  { name: "Middle Ages", from: 500 },
+  { name: "Early modern", from: 1500 },
+  { name: "Modern", from: 1800 },
+];
+const THEME_LABEL: Record<ThemeChoice, string> = { auto: "Auto", night: "Night", survey: "Survey" };
+const THEME_ORDER: ThemeChoice[] = ["night", "survey", "auto"];
 
 const $ = <T extends HTMLElement>(id: string) => document.getElementById(id) as T;
 
@@ -120,6 +131,10 @@ class App {
     this.slider.value = String(i);
     this.slider.setAttribute("aria-valuetext", formatYear(year));
     $("year-display").textContent = formatYear(year);
+    // Thousands separators only for deep prehistory ("10,000"), never for "1914".
+    $("ym-num").textContent = Math.abs(year) >= 10000 ? Math.abs(year).toLocaleString("en") : String(Math.abs(year));
+    $("ym-era").textContent = year < 0 ? "BCE" : "CE";
+    for (const b of document.querySelectorAll<HTMLElement>(".era")) b.setAttribute("aria-current", String(b.dataset.from !== undefined && eraOf(year) === b.dataset.name));
     document.body.classList.add("loading");
 
     const data = await loadYear(year);
@@ -170,7 +185,7 @@ class App {
     // Show the pane first: MapLibre needs a sized container when it is created.
     document.body.classList.add("comparing");
     if (!this.atlasB) {
-      this.atlasB = new AtlasMap("map-b", this.land, {
+      this.atlasB = await AtlasMap.create("map-b", this.land, {
         onPolityClick: (name) => this.selectPolity(name, undefined, false),
         onEventClick: (id) => this.selectEvent(id, false),
       }, { secondary: true });
@@ -279,6 +294,22 @@ class App {
       })
       .join("");
     $("compare-year").innerHTML = this.years.map((y) => `<option value="${y}">${formatYear(y)}</option>`).join("");
+
+    // Era ribbon: one segment per era, spanning its snapshots on the slider's scale.
+    const firstIndex = ERAS.map((e) => this.years.findIndex((y) => y >= e.from));
+    $("eras").innerHTML = ERAS.map((e, k) => {
+      const start = firstIndex[k];
+      const end = k + 1 < ERAS.length ? firstIndex[k + 1] : n - 1;
+      const left = (start / (n - 1)) * 100;
+      const width = ((end - start) / (n - 1)) * 100;
+      return `<button type="button" class="era" data-name="${e.name}" data-from="${this.years[start]}" style="left:${left}%;width:${width}%">${e.name}</button>`;
+    }).join("");
+    for (const b of document.querySelectorAll<HTMLElement>(".era")) {
+      b.addEventListener("click", () => {
+        this.stopPlay();
+        this.setIndex(this.years.indexOf(Number(b.dataset.from)));
+      });
+    }
   }
 
   private bindControls() {
@@ -297,6 +328,25 @@ class App {
     );
     $("compare-prev").addEventListener("click", () => this.compareIndex !== null && this.setCompareIndex(this.compareIndex - 1));
     $("compare-next").addEventListener("click", () => this.compareIndex !== null && this.setCompareIndex(this.compareIndex + 1));
+
+    const themeBtn = $("btn-theme");
+    let themeChoice = loadThemeChoice();
+    const showTheme = () => {
+      themeBtn.textContent = THEME_LABEL[themeChoice];
+      themeBtn.setAttribute("aria-label", `Map style: ${THEME_LABEL[themeChoice]}. Change style`);
+    };
+    showTheme();
+    themeBtn.addEventListener("click", () => {
+      themeChoice = THEME_ORDER[(THEME_ORDER.indexOf(themeChoice) + 1) % THEME_ORDER.length];
+      saveThemeChoice(themeChoice);
+      applyTheme(themeChoice);
+      showTheme();
+    });
+    // Panel markers are drawn in theme colours, so redraw the panel too.
+    window.addEventListener("atlas-theme", () => this.select(this.selection, false));
+    matchMedia("(prefers-color-scheme: light)").addEventListener("change", () => {
+      if (themeChoice === "auto") applyTheme("auto");
+    });
 
     const proj = $("btn-projection");
     proj.addEventListener("click", () => {
@@ -349,6 +399,10 @@ class App {
   }
 }
 
+function eraOf(year: number) {
+  return [...ERAS].reverse().find((e) => year >= e.from)!.name;
+}
+
 function nearest(ys: number[], target: number) {
   return ys.reduce((best, y) => (Math.abs(y - target) < Math.abs(best - target) ? y : best), ys[0]);
 }
@@ -381,10 +435,11 @@ function parseHash(hash: string): { year?: number; compare?: number; selection: 
 }
 
 async function boot() {
+  applyTheme(loadThemeChoice());
   try {
     const [meta, curated, land] = await Promise.all([loadMeta(), loadEvents(), loadLand()]);
     let app: App;
-    const atlas = new AtlasMap("map", land, {
+    const atlas = await AtlasMap.create("map", land, {
       onPolityClick: (name) => app.selectPolity(name, undefined, false),
       onEventClick: (id) => app.selectEvent(id, false),
     });

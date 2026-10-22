@@ -5,10 +5,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content="An interactive atlas of world history: borders, capitals and major events from prehistory to today." />
     <title>History Atlas</title>
-    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='14' fill='%239a5b13'/%3E%3Cpath d='M2 16h28M16 2c-5 4-5 24 0 28M16 2c5 4 5 24 0 28' stroke='%23fffdf8' stroke-width='2' fill='none'/%3E%3C/svg%3E" />
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='14' fill='%230f2438' stroke='%23d9b26a' stroke-width='2'/%3E%3Cpath d='M2 16h28M16 2c-5 4-5 24 0 28M16 2c5 4 5 24 0 28' stroke='%23d9b26a' stroke-width='1.5' fill='none'/%3E%3C/svg%3E" />
+    <script>
+      // Set the theme before first paint to avoid a flash of the wrong one.
+      (function () {
+        var c = "auto";
+        try { c = localStorage.getItem("atlas-theme") || "auto"; } catch (e) {}
+        if (c === "auto") c = matchMedia("(prefers-color-scheme: light)").matches ? "survey" : "night";
+        document.documentElement.dataset.theme = c;
+      })();
+    </script>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,650&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..700;1,6..96,400&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
   </head>
   <body>
     <a class="skip-link" href="#panel">Skip to details</a>
@@ -16,7 +25,7 @@
     <header class="topbar">
       <div class="brand">
         <h1>History Atlas</h1>
-        <p class="year-display" id="year-display" aria-live="polite"></p>
+        <p class="visually-hidden" id="year-display" aria-live="polite"></p>
       </div>
 
       <div class="search" id="search">
@@ -39,6 +48,7 @@
         <button type="button" id="btn-list" class="tool">All territories</button>
         <button type="button" id="btn-compare" class="tool" aria-pressed="false">Compare</button>
         <button type="button" id="btn-projection" class="tool" aria-pressed="true">Globe</button>
+        <button type="button" id="btn-theme" class="tool">Night</button>
       </div>
     </header>
 
@@ -46,6 +56,7 @@
       <div class="map-pane" id="pane-a">
         <div id="map" role="region" aria-label="Historical world map. Use the arrow keys to pan and plus or minus to zoom. The details panel lists everything on the map as text."></div>
         <p class="map-badge" id="map-a-year" aria-hidden="true"></p>
+        <p class="year-mark" aria-hidden="true"><span id="ym-num"></span><span id="ym-era"></span></p>
       </div>
       <div class="map-pane" id="pane-b">
         <div id="map-b" role="region" aria-label="Comparison map"></div>
@@ -66,6 +77,7 @@
         <button type="button" id="btn-next" class="icon-btn" aria-label="Next snapshot">›</button>
       </div>
       <div class="timeline-track">
+        <div class="eras" id="eras" role="group" aria-label="Jump to era"></div>
         <label for="year-slider" class="visually-hidden">Year</label>
         <input type="range" id="year-slider" min="0" max="0" step="1" value="0" />
         <div class="ticks" id="ticks" aria-hidden="true"></div>

@@ -12,7 +12,8 @@ export interface PolityProps {
   partOf: string | null;
   /** 1 approximate, 2 moderately precise, 3 set by international law. */
   precision: 1 | 2 | 3 | null;
-  color: string;
+  /** Index into the theme palette; shared by everything one power rules. */
+  ci: number;
   km2: number;
   /** Wikidata ID, when the polity was matched to a Wikidata state. */
   qid: string | null;
@@ -24,6 +25,8 @@ export interface CapitalProps {
   of: string;
   start: number | null;
   end: number | null;
+  /** Area of the territory it is the capital of, used to rank markers. */
+  rank: number;
 }
 
 export interface YearData {
