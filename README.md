@@ -24,6 +24,7 @@ npm run fetch:capitals   # capitals with date ranges from Wikidata
 npm run fetch:events     # notable events from Wikidata
 npm run fetch:fonts      # map label typeface (Spectral) into public/fonts/
 npm run prepare:data     # writes public/data/, including physical geography
+node scripts/prepare-scenery.mjs   # the illustrated layer (scenery, murals, ranges, routes)
 ```
 
 ## Using it
@@ -35,6 +36,7 @@ npm run prepare:data     # writes public/data/, including physical geography
 - **Search:** press `/` and search any territory name across all eras, or any event.
 - **Map style:** the last button in the toolbar cycles through Night (a globe in space), Survey (a lithograph atlas), Clay (sculpted relief, after stop-motion animation) and Auto (Night or Survey, following your system).
 - **Look closer:** pen-and-ink drawings of landmarks, curiosities and moments in natural history appear as you zoom in, each with a short caption, the facts and a Wikipedia summary. Map lettering changes with the era: Roman capitals for antiquity, early printing type to 1800, a modern serif after.
+- **The illustrated globe:** thousands of small pen drawings fill the map by terrain, climate and era: peaks, jungles, dunes, animals, waves and whales, villages and townscapes drawn in each region's architecture, figures for how people lived, faint regional murals, mountain ranges drawn as chains of peaks, the Great Wall, and trade routes with the right ships and caravans for each era. Hover or click travellers and figures to learn more. Detail thickens as you zoom in.
 - **Find the Surveyor:** a small figure hides somewhere different in every era. The overview offers a hint and counts how many you've found (stored in your browser only).
 - **Sharing:** the URL holds the year and selection, e.g. `#y=1914&p=Ottoman+Empire`, `#y=1939&e=ww2` or `#y=1914&c=1920` for a comparison.
 
@@ -55,6 +57,7 @@ npm run prepare:data     # writes public/data/, including physical geography
 | `public/data/events.json` | Key events (hand-edited) |
 | `public/data/wd-events.json` | Generated Wikidata events |
 | `public/data/drawings.json` | Landmarks, curiosities and natural history (hand-edited) |
+| `public/data/scenery.json` | Generated illustrated layer (`scripts/prepare-scenery.mjs`) |
 | `public/data/surveyor.json` | The Surveyor's hiding place in each era (hand-edited) |
 | `src/drawings.ts` | The pen-and-ink drawings, as SVG |
 | `src/map.ts` | MapLibre map, layers and interaction |
@@ -80,6 +83,7 @@ Add an entry to `public/data/events.json`:
 - **Wikipedia summaries** are found through Wikidata where possible. Otherwise the exact title is tried, then a search. Matches found by search are labelled as possibly imperfect.
 - **Key events**, drawings and Surveyor notes are hand-written and still being reviewed. Each links to its Wikipedia article.
 - **Colours** come from a coarse cultural-region model (by the location of each power's capital or heartland). They are a visual aid, not a claim about identity.
+- **The illustrated layer** uses a coarse biome model and hand-placed routes and murals. It is decorative but meant to be truthful in broad strokes: routes, ranges and the Great Wall are approximate, and villages are placed at random within each state.
 - **The Green Sahara** is shown for snapshots between 9000 and 3500 BCE, with simplified desert outlines.
 - **Wikidata events** are items with an English Wikipedia article covered by at least 12 language editions. Their dates and locations are as recorded in Wikidata, and some are approximate or wrong.
 - **Compare** matches territories by name, so a renamed state appears as one that disappeared plus one that appeared. The data also sometimes records the same colony under different rulers between snapshots.

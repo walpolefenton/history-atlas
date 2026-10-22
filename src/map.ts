@@ -6,8 +6,9 @@ import "maplibre-gl/dist/maplibre-gl.css";
 import workerUrl from "maplibre-gl/dist/maplibre-gl-worker.mjs?url";
 import type { Drawing, EventType, HistoryEvent, SurveyorSpot, YearData } from "./types";
 import { currentTheme, type MapTheme } from "./theme";
+import { formatYear } from "./format";
 import { capitalIconSvg, eventIconSvg, svgToImage } from "./icons";
-import { DRAWING_KINDS, drawingSvg } from "./drawings";
+import { DRAWING_KINDS, SCENERY_KINDS, drawingSvg } from "./drawings";
 
 maplibregl.setWorkerUrl(workerUrl);
 
@@ -48,6 +49,12 @@ const MAJOR_KM2 = 1_500_000;
 const MINOR_KM2 = 250_000;
 const EVENT_TYPES: EventType[] = ["conflict", "diplomacy", "political", "culture", "exploration", "crisis"];
 const TERRAIN_KINDS = ["desert", "mountains", "plateau", "tundra", "wetland"] as const;
+/** Zoom at which each tier of scattered scenery appears; the globe fills in as you approach. */
+const SCENERY_MINZOOM = { 1: 1.9, 2: 2.8, 3: 3.6, 4: 4.5 } as const;
+/** Kinds drawn as large regional murals (scripts/prepare-scenery.mjs, MURALS). */
+const MURAL_KINDS = ["mammoth", "hippo", "wheat", "bison", "pyramid", "stepped", "temple", "arena", "stupa", "wall", "town-southasia", "onion", "pagoda",
+  "towers", "rider", "town-steppe", "camel", "dune", "town-africa", "terraces", "castle", "cathedral", "minarets", "town-industrial", "town-metro",
+  "jungle", "kangaroo", "pine", "whale", "compass", "wind", "canoe", "longship", "dhow", "junk", "galleon", "steamship", "container"];
 /** Zoom at which each drawing tier appears: 1 from afar, 3 only up close. */
 const TIER_MINZOOM = { 1: 1.4, 2: 2.6, 3: 3.4 } as const;
 const SURVEYOR_MINZOOM = 3.6;
@@ -63,6 +70,7 @@ export interface MapHandlers {
   onEventClick(id: string): void;
   onDrawingClick(id: string): void;
   onSurveyorClick(): void;
+  onRouteClick(name: string): void;
 }
 
 export interface MapOptions {
@@ -98,6 +106,25 @@ function patternSvg(kind: string, t: MapTheme): string {
   }
 }
 
+/** A chain of peaks, repeated along each mountain range's spine. */
+function rangePatternSvg(t: MapTheme) {
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="192" height="64" viewBox="0 0 96 32"><g stroke="${t.labelMuted}" stroke-width="1.3" stroke-linejoin="round" stroke-linecap="round">
+    <path d="M0 29 L9 13 L18 29 Z M16 29 L29 5 L42 29 Z M40 29 L50 14 L60 29 Z M57 29 L71 7 L85 29 Z M83 29 L90 19 L96 29" fill="${t.washSoft}"/>
+    <path d="M25 12 L29 15 L32 11 M67 13 L71 16 L74 12" fill="none"/><path d="M33 17 L37 23 M36 24 L39 29 M76 17 L80 23 M79 25 L82 29 M53 20 L56 26" fill="none" opacity=".6"/></g></svg>`;
+}
+
+/** A length of crenellated wall with a watchtower, repeated along the Great Wall. */
+function wallPatternSvg(t: MapTheme) {
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="128" height="32" viewBox="0 0 64 16"><g stroke="${t.label}" stroke-width="0.9" stroke-linejoin="round">
+    <path d="M0 13 V8 H3 V6 H5 V8 H8 V6 H10 V8 H13 V6 H15 V8 H18 V6 H20 V8 H23 V6 H25 V8 H28 V3 H36 V8 H39 V6 H41 V8 H44 V6 H46 V8 H49 V6 H51 V8 H54 V6 H56 V8 H59 V6 H61 V8 H64 V13 Z" fill="${t.wash}"/>
+    <path d="M30 3 V1 M34 3 V1 M31 8 V10 H33 V8" fill="none"/></g></svg>`;
+}
+
+/** Footprint dots for caravan trails. */
+function trailPatternSvg(t: MapTheme) {
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="48" height="16" viewBox="0 0 24 8"><g fill="${t.labelMuted}"><circle cx="4" cy="3" r="1.1"/><circle cx="9" cy="5" r="1.1"/><circle cx="16" cy="3" r="1.1"/><circle cx="21" cy="5" r="1.1"/></g></svg>`;
+}
+
 async function themeImages(t: MapTheme): Promise<Record<string, HTMLImageElement>> {
   const entries: [string, string, number][] = [
     ...EVENT_TYPES.map((k): [string, string, number] => [`event-${k}`, eventIconSvg(k, t.events[k], t.ring, t.clay), 64]),
@@ -106,6 +133,13 @@ async function themeImages(t: MapTheme): Promise<Record<string, HTMLImageElement
     ["pat-land", patternSvg("land", t), 32],
     ...TERRAIN_KINDS.map((k): [string, string, number] => [`pat-${k}`, patternSvg(k, t), 32]),
     ...DRAWING_KINDS.map((k, i): [string, string, number] => [`draw-${k}`, drawingSvg(k, t.label, t.wash, t.ring, i + 1, t.clay), 128]),
+    // Scenery is drawn in a quieter ink, so it never competes with labels.
+    ...SCENERY_KINDS.map((k, i): [string, string, number] => [`scn-${k}`, drawingSvg(k, t.labelMuted, t.washSoft, t.ring, i + 11, t.clay, 96), 96]),
+    // Murals are big and faint; render them large so they stay crisp.
+    ...MURAL_KINDS.map((k, i): [string, string, number] => [`mural-${k}`, drawingSvg(k, t.label, t.wash, "transparent", i + 31, t.clay, 512, 0.45), 512]),
+    ["line-range", rangePatternSvg(t), 192],
+    ["line-wall", wallPatternSvg(t), 128],
+    ["line-trail", trailPatternSvg(t), 48],
   ];
   const imgs = await Promise.all(entries.map(([, svg, size]) => svgToImage(svg, size)));
   return Object.fromEntries(entries.map(([name], i) => [name, imgs[i]]));
@@ -123,6 +157,25 @@ const TERRAIN_TINT: Record<string, Record<(typeof TERRAIN_KINDS)[number], string
   survey: { desert: "#efe2bf", mountains: "#e3d9c6", plateau: "#ebe3cc", tundra: "#e4eaea", wetland: "#dfe8d6" },
   clay: { desert: "#e6c98f", mountains: "#c9b08a", plateau: "#d6bd92", tundra: "#d7d3c4", wetland: "#b9bf8c" },
 };
+
+function sceneryLayer(tier: 1 | 2 | 3 | 4): maplibregl.LayerSpecification {
+  return {
+    id: `scenery-${tier}`,
+    type: "symbol",
+    source: "scenery",
+    minzoom: SCENERY_MINZOOM[tier],
+    filter: ["all", ["==", ["get", "type"], "point"], ["==", ["get", "t"], tier]],
+    layout: {
+      "icon-image": ["concat", "scn-", ["get", "k"]],
+      // Images are 96px at pixel ratio 2: 48 CSS px at size 1.
+      "icon-size": ["interpolate", ["linear"], ["zoom"], 1.9, 0.42, 4.6, 0.6, 7, 0.95],
+      // Scenery yields to everything placed before it (labels, markers), and
+      // to itself, so the drawing never crowds the reading.
+      "icon-padding": 2,
+    },
+    paint: { "icon-opacity": fadeIn(SCENERY_MINZOOM[tier], SCENERY_MINZOOM[tier] + 0.5, 0.9) },
+  };
+}
 
 function reliefLayer(t: MapTheme): maplibregl.LayerSpecification {
   return {
@@ -166,7 +219,6 @@ function styleFor(land: GeoJSON.FeatureCollection, t: MapTheme, themeName: strin
       "icon-image": ["concat", "draw-", ["get", "kind"]],
       "icon-size": ["interpolate", ["linear"], ["zoom"], 1.4, 0.36, 4, 0.52, 7, 0.85],
       "icon-allow-overlap": true,
-      "icon-ignore-placement": true,
       "icon-anchor": "bottom",
       "text-field": ["step", ["zoom"], "", 4.6, ["get", "name"]],
       "text-font": fonts.italic,
@@ -200,6 +252,8 @@ function styleFor(land: GeoJSON.FeatureCollection, t: MapTheme, themeName: strin
       drawings: { type: "geojson", data: EMPTY },
       surveyor: { type: "geojson", data: EMPTY },
       "borders-prev": { type: "geojson", data: EMPTY },
+      scenery: { type: "geojson", data: EMPTY },
+      "scenery-year": { type: "geojson", data: EMPTY },
       relief: {
         type: "raster-dem",
         tiles: [RELIEF_TILES],
@@ -320,6 +374,124 @@ function styleFor(land: GeoJSON.FeatureCollection, t: MapTheme, themeName: strin
         filter: ["==", ["get", "name"], ""],
         paint: { "line-color": t.accent, "line-width": 2 },
       },
+      // --- The illustrated layer: murals, ranges, routes, scenery. Kept beneath
+      // labels and placed around them, so the map stays readable. ---
+      {
+        id: "murals",
+        type: "symbol",
+        source: "scenery",
+        filter: ["==", ["get", "type"], "mural"],
+        layout: {
+          "icon-image": ["concat", "mural-", ["get", "k"]],
+          // Sized in degrees of longitude, so a mural spans the same region at every zoom.
+          // The image is 512px at pixel ratio 2, so 256 CSS px wide at size 1.
+          "icon-size": ["interpolate", ["exponential", 2], ["zoom"], 0, ["*", ["get", "deg"], 512 / 360 / 256], 8, ["*", ["get", "deg"], (512 * 256) / 360 / 256]],
+          "icon-allow-overlap": true,
+          "icon-ignore-placement": true,
+          "icon-pitch-alignment": "map",
+        },
+        paint: { "icon-opacity": ["interpolate", ["linear"], ["zoom"], 1, t.muralOpacity, 2.8, t.muralOpacity * 0.75, 4, t.muralOpacity * 0.3, 4.8, 0] },
+      },
+      {
+        // Mountain ranges: a chain of upright peak drawings along each spine.
+        id: "ranges",
+        type: "symbol",
+        source: "scenery",
+        filter: ["==", ["get", "type"], "range"],
+        layout: {
+          "symbol-placement": "line",
+          "symbol-spacing": ["interpolate", ["linear"], ["zoom"], 1, 14, 4, 26, 7, 44],
+          "icon-image": "scn-peaks",
+          "icon-size": ["interpolate", ["linear"], ["zoom"], 1, 0.36, 4, 0.62, 7, 1.05],
+          "icon-rotation-alignment": "viewport",
+          "icon-allow-overlap": true,
+          "icon-padding": 0,
+        },
+        paint: { "icon-opacity": 0.95 },
+      },
+      {
+        // The Great Wall: wall segments laid end to end along its course.
+        id: "great-wall",
+        type: "symbol",
+        source: "scenery",
+        filter: ["==", ["get", "type"], "wall"],
+        layout: {
+          "symbol-placement": "line",
+          // Spacing matches the drawn segment width, so the wall reads as continuous.
+          "symbol-spacing": ["interpolate", ["linear"], ["zoom"], 1, 12, 4, 30, 7, 58],
+          "icon-image": "line-wall",
+          "icon-size": ["interpolate", ["linear"], ["zoom"], 1, 0.2, 4, 0.5, 7, 0.95],
+          "icon-rotation-alignment": "map",
+          "icon-allow-overlap": true,
+          "icon-keep-upright": false,
+        },
+      },
+      {
+        id: "routes-land",
+        type: "line",
+        source: "scenery",
+        filter: ["all", ["==", ["get", "type"], "route"], ["==", ["get", "mode"], "land"]],
+        layout: { "line-join": "round" },
+        paint: { "line-pattern": "line-trail", "line-width": ["interpolate", ["linear"], ["zoom"], 1, 3, 5, 7], "line-opacity": 0.85 },
+      },
+      {
+        id: "routes-sea",
+        type: "line",
+        source: "scenery",
+        filter: ["all", ["==", ["get", "type"], "route"], ["!=", ["get", "mode"], "land"]],
+        layout: { "line-cap": "round", "line-join": "round" },
+        paint: {
+          "line-color": t.coast.color,
+          "line-width": ["interpolate", ["linear"], ["zoom"], 1, 0.8, 5, 1.6],
+          "line-opacity": themeName === "survey" ? 0.8 : 0.6,
+          "line-dasharray": ["case", ["==", ["get", "mode"], "air"], ["literal", [6, 4]], ["literal", [0.5, 3]]],
+        },
+      },
+      sceneryLayer(4),
+      sceneryLayer(3),
+      sceneryLayer(2),
+      sceneryLayer(1),
+      {
+        id: "travellers",
+        type: "symbol",
+        source: "scenery",
+        minzoom: 2.4,
+        filter: ["==", ["get", "type"], "traveller"],
+        layout: {
+          "icon-image": ["concat", "scn-", ["get", "k"]],
+          "icon-size": ["interpolate", ["linear"], ["zoom"], 2.4, 0.55, 6, 1],
+          "icon-padding": 1,
+        },
+        paint: { "icon-opacity": fadeIn(2.4, 3) },
+      },
+      {
+        id: "villages",
+        type: "symbol",
+        source: "scenery-year",
+        minzoom: 3.4,
+        filter: ["has", "village"],
+        layout: {
+          "icon-image": ["concat", "scn-", ["get", "k"]],
+          "icon-size": ["interpolate", ["linear"], ["zoom"], 3.4, 0.42, 7, 0.8],
+          "icon-padding": 2,
+          "symbol-sort-key": ["get", "t"],
+        },
+        paint: { "icon-opacity": fadeIn(3.4, 3.9, 0.85) },
+      },
+      {
+        id: "inhabitants",
+        type: "symbol",
+        source: "scenery-year",
+        minzoom: 2.6,
+        filter: ["!", ["has", "village"]],
+        layout: {
+          "icon-image": ["concat", "scn-", ["get", "k"]],
+          "icon-size": ["interpolate", ["linear"], ["zoom"], 2.6, 0.55, 6, 1],
+          "icon-padding": 1,
+          "symbol-sort-key": ["get", "t"],
+        },
+        paint: { "icon-opacity": fadeIn(2.6, 3.1) },
+      },
       // --- Drawings: never hidden by labels, never hiding them. ---
       drawingLayer(1),
       drawingLayer(2),
@@ -421,8 +593,9 @@ function styleFor(land: GeoJSON.FeatureCollection, t: MapTheme, themeName: strin
         source: "capitals",
         minzoom: 3,
         layout: {
-          "icon-image": "capital",
-          "icon-size": ["interpolate", ["linear"], ["zoom"], 3, 0.4, 6, 0.6],
+          // Up close, a capital's tower becomes a townscape of its region and era.
+          "icon-image": ["step", ["zoom"], "capital", 4.4, ["concat", "scn-", ["get", "town"]]],
+          "icon-size": ["interpolate", ["linear"], ["zoom"], 3, 0.4, 4.39, 0.5, 4.4, 0.9, 7, 1.3],
           "icon-padding": 1,
           "symbol-sort-key": ["-", 0, ["get", "rank"]],
           "text-field": ["step", ["zoom"], "", 3.8, ["get", "name"]],
@@ -444,11 +617,11 @@ function styleFor(land: GeoJSON.FeatureCollection, t: MapTheme, themeName: strin
         filter: ["!", ["get", "featured"]],
         layout: {
           "icon-image": ["concat", "event-", ["get", "type"]],
-          "icon-size": ["interpolate", ["linear"], ["zoom"], 2.8, 0.36, 6, 0.52],
+          "icon-size": ["interpolate", ["linear"], ["zoom"], 2.8, 0.32, 6, 0.48],
           "symbol-sort-key": ["-", 0, ["get", "notability"]],
           "icon-padding": 3,
         },
-        paint: { "icon-opacity": fadeIn(2.8, 3.2) },
+        paint: { "icon-opacity": fadeIn(2.8, 3.3, 0.82) },
       },
       {
         id: "events-key",
@@ -508,7 +681,16 @@ const FONT_ROLES: Record<string, keyof Lettering> = {
   "polity-label-major": "major",
 };
 
-const INTERACTIVE = ["surveyor", "drawings-3", "drawings-2", "drawings-1", "events-key", "events-more", "capitals", "polity-fill"];
+const INTERACTIVE = ["surveyor", "drawings-3", "drawings-2", "drawings-1", "events-key", "events-more", "travellers", "inhabitants", "capitals", "polity-fill"];
+
+/** How the figures for each way of life are described on hover. */
+const WAY_OF_LIFE: Record<string, string> = {
+  hunter: "Hunters and gatherers",
+  fisher: "Fishing communities",
+  herder: "Herders and their flocks",
+  rider: "Mounted herders of the steppe",
+  farmer: "Farming communities",
+};
 
 // --- Map ----------------------------------------------------------------------
 
@@ -518,6 +700,8 @@ export interface YearLayers {
   more: HistoryEvent[];
   drawings: Drawing[];
   surveyor: SurveyorSpot | null;
+  /** Static scenery features that belong to this era. */
+  scenery: GeoJSON.Feature[];
 }
 
 export class AtlasMap {
@@ -660,6 +844,8 @@ export class AtlasMap {
       if (id === "surveyor") this.handlers.onSurveyorClick();
       else if (id.startsWith("drawings-")) this.handlers.onDrawingClick(f.properties.id);
       else if (id.startsWith("events-")) this.handlers.onEventClick(f.properties.id);
+      else if (id === "travellers") this.handlers.onRouteClick(f.properties.route);
+      else if (id === "inhabitants") this.handlers.onPolityClick(f.properties.of);
       else if (id === "capitals") this.handlers.onPolityClick(f.properties.of);
       else this.handlers.onPolityClick(f.properties.name);
     });
@@ -673,6 +859,11 @@ export class AtlasMap {
     if (id === "surveyor") text = "You found the Surveyor!\nClick to see what they're looking at";
     else if (id.startsWith("drawings-")) text = `${p.name}\n${p.quip}`;
     else if (id.startsWith("events-")) text = p.title;
+    else if (id === "travellers") text = `${p.route}\n${formatYear(p.from)} – ${p.to === null || p.to === undefined ? "today" : formatYear(p.to)}`;
+    else if (id === "inhabitants") {
+      text = `${WAY_OF_LIFE[p.k] ?? "People"}\n${p.of}`;
+      hover = p.of;
+    }
     else if (id === "capitals") {
       text = `${p.name}\nCapital of ${p.of}`;
       hover = p.of;
@@ -733,6 +924,8 @@ export class AtlasMap {
         geometry: { type: "Point", coordinates: [e.lon, e.lat] },
       })),
     });
+    src("scenery").setData({ type: "FeatureCollection", features: layers.scenery });
+    src("scenery-year").setData(data.scenery ?? EMPTY);
     src("drawings").setData({
       type: "FeatureCollection",
       features: drawings.map((d) => ({

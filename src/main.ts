@@ -1,10 +1,10 @@
 import "./style.css";
 import { AtlasMap, letteringEra, type YearLayers } from "./map";
-import { drawingsForEra, eventsForEra, loadDrawings, loadEvents, loadLand, loadMeta, loadSurveyor, loadWikidataEvents, loadYear } from "./data";
+import { drawingsForEra, eventsForEra, loadDrawings, loadEvents, loadLand, loadMeta, loadScenery, loadSurveyor, loadWikidataEvents, loadYear, sceneryForEra } from "./data";
 import { formatYear } from "./format";
-import { initPanel, renderCompare, renderDrawing, renderEvent, renderList, renderOverview, renderPolity, renderSurveyor, type PanelContext } from "./panel";
+import { initPanel, renderCompare, renderDrawing, renderEvent, renderList, renderOverview, renderPolity, renderRoute, renderSurveyor, type PanelContext } from "./panel";
 import { initSearch } from "./search";
-import type { Drawing, EventType, HistoryEvent, Meta, Selection, SurveyorSpot, YearData } from "./types";
+import type { Drawing, EventType, HistoryEvent, Meta, RouteInfo, Selection, SurveyorSpot, YearData } from "./types";
 import { applyTheme, loadThemeChoice, saveThemeChoice, type ThemeChoice } from "./theme";
 
 const TICK_YEARS = [-10000, -3000, -1000, -1, 500, 1000, 1500, 1800, 1914, 2010];
@@ -49,6 +49,7 @@ interface Era {
   more: HistoryEvent[];
   drawings: Drawing[];
   surveyor: SurveyorSpot | null;
+  scenery: GeoJSON.Feature[];
 }
 
 class App {
@@ -60,6 +61,8 @@ class App {
   private slider = $<HTMLInputElement>("year-slider");
   private hiddenTypes = new Set<EventType>();
   private wdEvents: HistoryEvent[] = [];
+  /** The illustrated layer, loaded after the first map is on screen. */
+  private scenery: GeoJSON.Feature[] = [];
   /** Event requested by URL before the Wikidata events had loaded. */
   private pendingEvent: string | null = null;
   /** Snapshot years in which this viewer has found the Surveyor. */
@@ -87,6 +90,11 @@ class App {
     return this.curated.concat(this.wdEvents);
   }
 
+  setScenery(features: GeoJSON.Feature[]) {
+    this.scenery = features;
+    if (this.data) this.refresh();
+  }
+
   /** Adds the large Wikidata event set once it has loaded in the background. */
   setWikidataEvents(events: HistoryEvent[]) {
     this.wdEvents = events;
@@ -108,11 +116,12 @@ class App {
         .sort((a, b) => (b.notability ?? 0) - (a.notability ?? 0)),
       drawings: drawingsForEra(this.drawings, data.year, next),
       surveyor: this.spots[String(data.year)] ?? null,
+      scenery: sceneryForEra(this.scenery, data.year, next),
     };
   }
 
   private layers(era: Era): YearLayers {
-    return { data: era.data, featured: era.key, more: era.more, drawings: era.drawings, surveyor: era.surveyor };
+    return { data: era.data, featured: era.key, more: era.more, drawings: era.drawings, surveyor: era.surveyor, scenery: era.scenery };
   }
 
   private context(): PanelContext {
@@ -191,6 +200,11 @@ class App {
       const id = sel.id;
       if (!era.drawings.some((d) => d.id === id)) sel = { kind: "none" };
     } else if (sel.kind === "surveyor") sel = { kind: "none" };
+    else if (sel.kind === "route") {
+      const name = sel.name;
+      const r = this.route(name);
+      if (!r || r.from >= (era.next ?? Infinity) || (r.to !== null && r.to < year)) sel = { kind: "none" };
+    }
     if (this.compareIndex !== null && sel.kind === "none") sel = { kind: "compare" };
     this.select(sel, false);
 
@@ -225,6 +239,7 @@ class App {
         onEventClick: (id) => this.selectEvent(id, false),
         onDrawingClick: (id) => this.selectDrawing(id, false),
         onSurveyorClick: () => {},
+        onRouteClick: (name) => this.selectRoute(name),
       }, { secondary: true });
       this.atlas.syncWith(this.atlasB);
     }
@@ -275,6 +290,11 @@ class App {
       if (d) renderDrawing(ctx, d, focusPanel);
       else renderOverview(ctx, focusPanel);
     } else if (sel.kind === "surveyor") renderSurveyor(ctx, focusPanel);
+    else if (sel.kind === "route") {
+      const r = this.route(sel.name);
+      if (r) renderRoute(ctx, r, focusPanel);
+      else renderOverview(ctx, focusPanel);
+    }
     else renderOverview(ctx, focusPanel);
 
     const polity = sel.kind === "polity" ? sel.name : null;
@@ -335,6 +355,15 @@ class App {
     }
     // Fly in far enough for the drawing's tier to be visible.
     if (fly) this.atlas.flyToPoint(d.lon, d.lat, d.tier === 3 ? 4.2 : d.tier === 2 ? 3.4 : 3);
+  }
+
+  private route(name: string): RouteInfo | null {
+    const f = this.scenery.find((x) => x.properties?.type === "route" && x.properties.name === name);
+    return f ? (f.properties as RouteInfo) : null;
+  }
+
+  selectRoute(name: string) {
+    this.select({ kind: "route", name }, true);
   }
 
   /** The viewer clicked the hidden Surveyor. */
@@ -513,6 +542,7 @@ async function boot() {
       onEventClick: (id) => app.selectEvent(id, false),
       onDrawingClick: (id) => app.selectDrawing(id, false),
       onSurveyorClick: () => app.foundSurveyor(),
+      onRouteClick: (name) => app.selectRoute(name),
     });
     app = new App(meta, curated, atlas, land, drawings, spots);
     // Handy for testing in development; not present in production builds.
@@ -523,6 +553,9 @@ async function boot() {
       onDrawing: (d) => app.selectDrawing(d.id, true),
     });
     await app.start();
+    loadScenery()
+      .then((s) => app.setScenery(s))
+      .catch((err) => console.warn("Scenery unavailable", err));
     // The full event set is large; load it after the first map is on screen.
     loadWikidataEvents()
       .then((wd) => {

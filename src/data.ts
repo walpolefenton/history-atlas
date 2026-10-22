@@ -13,6 +13,7 @@ export const loadLand = () => getJson<GeoJSON.FeatureCollection>("land.json");
 export const loadEvents = () => getJson<{ events: HistoryEvent[] }>("events.json").then((d) => d.events);
 export const loadDrawings = () => getJson<{ drawings: Drawing[] }>("drawings.json").then((d) => d.drawings);
 export const loadSurveyor = () => getJson<{ spots: Record<string, SurveyorSpot> }>("surveyor.json").then((d) => d.spots);
+export const loadScenery = () => getJson<GeoJSON.FeatureCollection>("scenery.json").then((d) => d.features);
 export const loadWikidataEvents = () => getJson<{ events: HistoryEvent[] }>("wd-events.json").then((d) => d.events);
 
 const yearCache = new Map<number, Promise<YearData>>();
@@ -25,6 +26,15 @@ export function loadYear(year: number): Promise<YearData> {
     yearCache.set(year, p);
   }
   return p;
+}
+
+/** Scenery for an era: timeless features plus those whose years overlap it. */
+export function sceneryForEra(features: GeoJSON.Feature[], from: number, to: number | null): GeoJSON.Feature[] {
+  return features.filter((f) => {
+    const p = f.properties as { from?: number; to?: number | null } | null;
+    if (p?.from === undefined) return true;
+    return (to === null || p.from < to) && (p.to === null || p.to === undefined || p.to >= from);
+  });
 }
 
 /** Drawings of things that existed at any point during a snapshot's era. */

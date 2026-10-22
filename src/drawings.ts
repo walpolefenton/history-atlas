@@ -175,6 +175,25 @@ const D: Record<string, string> = {
     <path d="M14 54 Q12 40 18 32 Q20 24 24 18 L26 9 L29 15 L33 13 L32 21 Q34 30 32 40 Q36 48 34 54 Z" fill="WASH"/>
     <path d="M26 9 L34 3 M29 12 L35 7"/><path d="M14 54 Q6 52 6 44"/><circle cx="28" cy="15" r="0.7"/><path d="M2 54 H62"/>`,
 
+  // --- More landmarks and curiosities -------------------------------------------------
+  aqueduct: `<path d="M4 18 H60 V24 H4 Z" fill="WASH"/><path d="M4 24 V52 M60 24 V52"/>
+    <path d="M4 52 V34 Q10 26 16 34 V52 M16 52 V34 Q22 26 28 34 V52 M28 52 V34 Q34 26 40 34 V52 M40 52 V34 Q46 26 52 34 V52 M52 52 V34 Q56 28 60 32"/>
+    <path d="M4 24 Q7 21 10 24 Q13 21 16 24 Q19 21 22 24 Q25 21 28 24 Q31 21 34 24 Q37 21 40 24 Q43 21 46 24 Q49 21 52 24 Q55 21 58 24"/><path d="M2 56 Q16 52 32 55 T62 54" opacity=".6"/>`,
+  geoglyph: `<path d="M32 30 L30 10 L33 22 L34 10 L35 30" /><path d="M32 30 Q20 24 8 28 Q20 30 26 34 M34 30 Q46 22 58 26 Q46 30 40 34"/>
+    <path d="M28 34 Q32 46 32 58 M36 34 Q33 46 33 58"/><path d="M32 30 Q36 36 32 40 Q28 36 32 30 Z" fill="WASH"/><path d="M4 60 H60" opacity=".4"/>`,
+  easel: `<path d="M20 56 L30 8 L40 56 M30 8 V56"/><path d="M16 14 H46 V40 H16 Z" fill="WASH"/>
+    <path d="M26 22 Q31 18 36 22 Q37 30 31 32 Q25 30 26 22 Z"/><path d="M22 40 Q31 34 40 40"/><path d="M50 30 L58 22 M56 20 L60 24"/>`,
+  telescope: `<path d="M12 36 L44 14 L48 20 L16 42 Z" fill="WASH"/><path d="M44 14 L50 10 L54 16 L48 20"/><path d="M12 36 L8 38 L11 43 L16 42"/>
+    <path d="M30 28 L24 56 M30 28 L36 56 M30 28 V56"/><circle cx="54" cy="44" r="5"/><circle cx="54" cy="44" r="1"/><circle cx="46" cy="40" r="0.8"/><circle cx="60" cy="38" r="0.8"/>`,
+  coffee: `<path d="M18 22 H42 L40 50 Q30 54 20 50 Z" fill="WASH"/><path d="M42 26 Q52 26 50 36 Q48 42 40 42"/><path d="M14 22 H46"/>
+    <path d="M30 22 V16 Q30 12 34 12"/><path d="M24 10 Q22 6 25 3 M30 9 Q28 5 31 2 M36 10 Q34 6 37 3" opacity=".6"/><path d="M12 54 H48"/>`,
+  pickaxe: `<path d="M12 18 Q32 8 52 18 Q32 14 12 18 Z" fill="WASH"/><path d="M32 14 L22 56"/><path d="M42 26 L52 56 M46 24 L38 24 L40 30 L48 30 Z"/>
+    <path d="M8 56 H58"/><circle cx="16" cy="52" r="1.4" fill="WASH"/><circle cx="44" cy="52" r="1.2" fill="WASH"/>`,
+  flask: `<path d="M26 8 H38 M28 8 V24 L14 50 Q12 56 18 56 H46 Q52 56 50 50 L36 24 V8"/><path d="M20 42 H44 L48 50 Q49 54 46 54 H18 Q15 54 16 50 Z" fill="WASH"/>
+    <circle cx="28" cy="48" r="2"/><circle cx="36" cy="46" r="1.5"/><path d="M46 14 Q52 12 54 18" opacity=".6"/>`,
+  bridge: `<path d="M16 50 V12 M48 50 V12"/><path d="M14 12 H18 M46 12 H50"/><path d="M2 40 Q16 12 16 12 Q32 34 48 12 Q48 12 62 40"/>
+    <path d="M2 40 H62 V44 H2 Z" fill="WASH"/><path d="M22 40 V24 M28 40 V29 M36 40 V29 M42 40 V24 M8 40 V30 M56 40 V30" opacity=".6"/><path d="M2 54 Q10 51 18 54 T34 54 T50 54 T62 54" opacity=".6"/>`,
+
   // --- Scenery: the land ----------------------------------------------------------
   peak: `<path d="M8 50 L30 16 L52 50" fill="WASH"/><path d="M23 27 L30 31 L36 25"/><path d="M36 30 L41 37 M38 38 L44 46 M42 32 L46 40" opacity=".6"/>`,
   peaks: `<path d="M3 52 L18 28 L28 42 L40 18 L61 52 Z" fill="WASH"/><path d="M14 34 L18 37 L21 33 M35 26 L40 30 L44 25"/><path d="M45 32 L50 40 M48 42 L53 50 M24 40 L27 46" opacity=".6"/>`,
@@ -187,7 +206,7 @@ const D: Record<string, string> = {
   pine: `<path d="M22 12 L12 30 H17 L9 44 H35 L27 30 H32 Z M44 22 L37 34 H40 L34 46 H54 L48 34 H51 Z" fill="WASH"/><path d="M22 44 V54 M44 46 V54"/><path d="M6 54 H60"/>`,
   oak: `<path d="M19 34 Q13 26 21 20 Q23 10 33 12 Q43 8 46 18 Q54 22 50 32 Q50 40 40 38 Q32 42 26 38 Q18 40 19 34 Z" fill="WASH"/>
     <path d="M32 38 V54 M32 46 L26 42 M32 44 L38 40"/><path d="M14 54 H50"/>`,
-  grass: `<path d="M10 50 L12 41 M12 50 L15 39 M14 50 L18 42 M30 52 L31 43 M32 52 L35 41 M34 52 L38 44 M48 50 L50 42 M50 50 L53 40 M52 50 L56 43"/>`,
+  grass: `<path d="M14 50 Q10 44 6 41 M14 50 Q13 42 14 35 M14 50 Q17 43 22 39 M40 52 Q36 46 31 44 M40 52 Q40 44 41 37 M40 52 Q43 45 49 42 M54 50 Q52 46 50 44 M54 50 Q56 45 59 43"/><path d="M4 52 H60" opacity=".35"/>`,
   bison: `<path d="M10 40 Q10 22 26 22 Q32 15 40 22 Q48 22 52 30 Q56 32 54 38 L50 40 H14 Q10 40 10 40 Z" fill="WASH"/>
     <path d="M16 40 V50 M22 40 V50 M42 40 V50 M48 40 V50"/><path d="M52 30 Q55 26 53 24"/><path d="M50 38 Q50 44 47 45"/><path d="M28 26 L30 32 M34 24 L36 31" opacity=".6"/>`,
   caribou: `<path d="M14 36 Q14 28 24 28 H40 Q44 24 46 22 L50 26 L46 30 Q46 36 40 38 H18 Q14 38 14 36 Z" fill="WASH"/>
@@ -278,14 +297,14 @@ export const DRAWING_KINDS = Object.keys(D);
  * SVG for a drawing. The halo pass draws the same lines wide in the background
  * colour first, so the drawing stays legible over any territory.
  */
-export function drawingSvg(kind: string, ink: string, wash: string, halo: string, seed = 1, clay = false): string {
+export function drawingSvg(kind: string, ink: string, wash: string, halo: string, seed = 1, clay = false, px = 128, weight = 1): string {
   const body = D[kind] ?? D.temple;
   const haloBody = body.replace(/fill="WASH"/g, 'fill="none"');
-  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="128" height="128">
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="${px}" height="${px}">
     <defs>${clay ? CLAY_FILTER(seed) : FILTER(seed)}</defs>
     <g filter="url(#pen)" stroke-linecap="round" stroke-linejoin="round">
-      <g fill="none" stroke="${halo}" stroke-width="${clay ? 7.5 : 6}" opacity="0.85">${haloBody}</g>
-      <g fill="none" stroke="${ink}" stroke-width="${clay ? 3.2 : 2.3}">${body.replace(/fill="WASH"/g, `fill="${wash}"`)}</g>
+      <g fill="none" stroke="${halo}" stroke-width="${(clay ? 7.5 : 6) * weight}" opacity="0.85">${haloBody}</g>
+      <g fill="none" stroke="${ink}" stroke-width="${(clay ? 3.2 : 2.3) * weight}">${body.replace(/fill="WASH"/g, `fill="${wash}"`)}</g>
     </g></svg>`;
 }
 

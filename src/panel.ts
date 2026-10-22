@@ -1,4 +1,4 @@
-import type { Drawing, EventType, HistoryEvent, Meta, SurveyorSpot, YearData } from "./types";
+import type { Drawing, EventType, HistoryEvent, Meta, RouteInfo, SurveyorSpot, YearData } from "./types";
 import { EVENT_TYPES, PRECISION_LABEL, escapeHtml as esc, formatArea, formatEventDate, formatYear } from "./format";
 import { eventArticle, polityArticle, type WikiSummary } from "./wiki";
 import { eventIconSvg } from "./icons";
@@ -524,6 +524,31 @@ export function renderSurveyor(ctx: PanelContext, focus = false) {
     focus,
   );
   eventArticle(spot.wiki).then((w) => {
+    if (current?.data !== ctx.data) return;
+    fillWiki(w, null);
+  });
+}
+
+// --- Routes ---------------------------------------------------------------------
+
+const ROUTE_MODE = { land: "Overland route", sea: "Sea route", air: "Air route" } as const;
+const ROUTE_DRAWING = { land: "camel", sea: "galleon", air: "airliner" } as const;
+
+export function renderRoute(ctx: PanelContext, r: RouteInfo, focus = false) {
+  const span = `${formatYear(r.from)} – ${r.to === null ? "today" : formatYear(r.to)}`;
+  render(
+    ctx,
+    `${backButton}
+    <figure class="drawing-hero">${drawingImg(ROUTE_DRAWING[r.mode], "drawing-large")}</figure>
+    <p class="eyebrow">${ROUTE_MODE[r.mode]}</p>
+    <h2>${esc(r.name)}</h2>
+    <p class="lede">${span}</p>
+    <p>${esc(r.note)}</p>
+    <p class="small muted">The dotted line traces the route approximately; the travellers along it are drawn in the style of the era.</p>
+    <section aria-live="polite" id="wiki"><p class="muted">Loading Wikipedia summary…</p></section>`,
+    focus,
+  );
+  eventArticle(r.wiki).then((w) => {
     if (current?.data !== ctx.data) return;
     fillWiki(w, null);
   });

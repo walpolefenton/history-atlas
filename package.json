@@ -8,7 +8,7 @@
     "fetch:capitals": "node scripts/fetch-capitals.mjs",
     "fetch:events": "node scripts/fetch-events.mjs",
     "resolve:names": "node scripts/resolve-names.mjs",
-    "prepare:data": "node scripts/prepare-data.mjs && node scripts/prepare-physical.mjs",
+    "prepare:data": "node scripts/prepare-data.mjs && node scripts/prepare-physical.mjs && node scripts/prepare-scenery.mjs",
     "fetch:fonts": "node scripts/fetch-fonts.mjs",
     "dev": "vite",
     "build": "tsc --noEmit && vite build",

@@ -73,6 +73,10 @@ export interface MapTheme {
   ink: string;
   /** Watercolour wash inside the pen drawings. */
   wash: string;
+  /** A paler wash for background scenery. */
+  washSoft: string;
+  /** Peak opacity of the large regional murals. */
+  muralOpacity: number;
   /** Shaded relief from elevation data; strength 0 turns it off. */
   relief: { exaggeration: number; shadow: string; highlight: string; accent: string };
   /** Clay styling: sculpted seams on borders, a fingerprint grain, moulded markers. */
@@ -115,6 +119,8 @@ export const THEMES = {
     ring: "#08101c",
     ink: "225,215,190",
     wash: "rgba(217, 178, 106, 0.42)",
+    washSoft: "rgba(217, 178, 106, 0.16)",
+    muralOpacity: 0.32,
     relief: { exaggeration: 0.25, shadow: "rgba(0, 0, 0, 0.5)", highlight: "rgba(180, 210, 240, 0.12)", accent: "rgba(0, 0, 0, 0.3)" },
     clay: false,
   },
@@ -150,6 +156,8 @@ export const THEMES = {
     ring: "#fbf9f3",
     ink: "90,75,55",
     wash: "rgba(168, 54, 42, 0.2)",
+    washSoft: "rgba(120, 90, 60, 0.08)",
+    muralOpacity: 0.3,
     relief: { exaggeration: 0.22, shadow: "rgba(80, 70, 60, 0.35)", highlight: "rgba(255, 255, 255, 0.25)", accent: "rgba(80, 70, 60, 0.2)" },
     clay: false,
   },
@@ -188,6 +196,8 @@ THEMES.clay = {
   ring: "#f6ecda",
   ink: "70,45,25",
   wash: "rgba(224, 120, 42, 0.55)",
+  washSoft: "rgba(224, 160, 90, 0.3)",
+  muralOpacity: 0.34,
   relief: { exaggeration: 0.7, shadow: "rgba(60, 30, 10, 0.62)", highlight: "rgba(255, 246, 228, 0.55)", accent: "rgba(90, 50, 20, 0.4)" },
   clay: true,
 };

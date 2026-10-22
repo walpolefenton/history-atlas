@@ -88,6 +88,82 @@ function regionOf([lon, lat]) {
 
 const colorIndex = (sovereign, heartland) => REGIONS.indexOf(regionOf(heartland)) * SHADES + (hash(sovereign) % SHADES);
 
+/** The townscape drawn at a capital, by region and era (see src/drawings.ts). */
+function townFor([lon, lat], year) {
+  const region = regionOf([lon, lat]);
+  if (year >= 1930) return "town-metro";
+  if (year >= 1830 && (region === "europe" || (region === "americas" && year >= 1870))) return "town-industrial";
+  if (region === "americas") return year < 1550 ? "town-americas" : "town-europe";
+  // Early Mesopotamian and Elamite cities get the stepped temple-mound drawing: a ziggurat.
+  if (year < 500 && (region === "europe" || region === "mena")) return year < -800 && region === "mena" ? "town-americas" : "town-ancient";
+  if (region === "mena") return year >= 650 ? "town-islamic" : "town-ancient";
+  if (region === "europe") return "town-europe";
+  if (region === "steppe") return lat > 52 && lon < 60 ? "town-europe" : "town-steppe";
+  if (region === "eastAsia") return "town-eastasia";
+  if (region === "southAsia" || region === "seAsiaOceania") return "town-southasia";
+  if (region === "africa") return "town-africa";
+  return "town-ancient";
+}
+
+// --- Inhabitants: figures showing how people lived, for territories that were
+// cultures rather than states (named for a way of life in the source data).
+const WAYS_OF_LIFE = [
+  [/fish|fichers/i, "fisher"],
+  [/hunter|gatherer|forager|whale|seal|mammal/i, "hunter"],
+  [/pastoral|herder|nomad|steppe|horse/i, "herder"],
+  [/farmer|agricult|cereal|horticult|cultivat|rice|maize|millet/i, "farmer"],
+];
+let sceneSeed = 7;
+const sceneRand = () => ((sceneSeed = (Math.imul(sceneSeed, 1664525) + 1013904223) >>> 0) / 2 ** 32);
+
+/** Random points inside a territory, for scattering figures and villages. */
+function pointsInside(geometry, count) {
+  const polys = geometry.type === "Polygon" ? [geometry.coordinates] : geometry.coordinates;
+  let [w, so, e, n] = [180, 90, -180, -90];
+  for (const rings of polys) for (const [x, y] of rings[0]) ((w = Math.min(w, x)), (e = Math.max(e, x)), (so = Math.min(so, y)), (n = Math.max(n, y)));
+  const out = [];
+  for (let tries = 0; out.length < count && tries < count * 40; tries++) {
+    const p = [w + sceneRand() * (e - w), so + sceneRand() * (n - so)];
+    if (booleanPointInPolygon(p, geometry)) out.push(p.map((v) => Math.round(v * 100) / 100));
+  }
+  return out;
+}
+
+/** Villages for settled states (not the cultures handled by inhabitants()). */
+function villages(name, geometry, km2, year) {
+  if (year < -3000 || WAYS_OF_LIFE.some(([re]) => re.test(name))) return [];
+  const count = Math.min(10, Math.round(km2 / 350_000));
+  return pointsInside(geometry, count).map((p, i) => ({
+    type: "Feature",
+    properties: { k: townFor(p, year), t: i < 2 ? 3 : 4, of: name, village: true },
+    geometry: { type: "Point", coordinates: p },
+  }));
+}
+
+function inhabitants(name, geometry, km2, lp, year) {
+  const rule = WAYS_OF_LIFE.find(([re]) => re.test(name));
+  let kind = rule?.[1];
+  // Before 1000 BCE every mapped territory is a culture: hunters before farming
+  // reached them, farmers after, herders on the steppe.
+  if (!kind && year < -1000) kind = year <= -8000 || lp[1] > 56 ? "hunter" : regionOf(lp) === "steppe" ? "herder" : "farmer";
+  if (!kind) return [];
+  if (kind === "herder" && regionOf(lp) === "steppe") kind = "rider";
+  const count = Math.min(6, Math.max(1, Math.round(km2 / 1_200_000)));
+  const polys = geometry.type === "Polygon" ? [geometry.coordinates] : geometry.coordinates;
+  let [w, so, e, n] = [180, 90, -180, -90];
+  for (const rings of polys) for (const [x, y] of rings[0]) ((w = Math.min(w, x)), (e = Math.max(e, x)), (so = Math.min(so, y)), (n = Math.max(n, y)));
+  const out = [];
+  for (let tries = 0; out.length < count && tries < count * 40; tries++) {
+    const p = [w + sceneRand() * (e - w), so + sceneRand() * (n - so)];
+    if (booleanPointInPolygon(p, geometry)) out.push(p);
+  }
+  return out.map((p, i) => ({
+    type: "Feature",
+    properties: { k: kind, t: i === 0 ? 2 : 3, of: name },
+    geometry: { type: "Point", coordinates: p.map((v) => Math.round(v * 100) / 100) },
+  }));
+}
+
 const norm = (s) =>
   (s ?? "")
     .normalize("NFD")
@@ -201,6 +277,7 @@ for (const { year, filename } of index.years.sort((a, b) => a.year - b.year)) {
   const borders = [];
   const labels = [];
   const capitals = [];
+  const scenery = [];
 
   // Each power's heartland: its capital if known, else the middle of its own
   // territory, else of its largest holding. (Russia's middle is in Siberia;
@@ -244,7 +321,7 @@ for (const { year, filename } of index.years.sort((a, b) => a.year - b.year)) {
       capitalCount++;
       capitals.push({
         type: "Feature",
-        properties: { name: capital.capital, qid: capital.capitalQid, of: name, start: capital.start, end: capital.end, rank: km2 },
+        properties: { name: capital.capital, qid: capital.capitalQid, of: name, start: capital.start, end: capital.end, rank: km2, town: townFor(capital.point, year) },
         geometry: { type: "Point", coordinates: capital.point.map(round) },
       });
     }
@@ -256,6 +333,12 @@ for (const { year, filename } of index.years.sort((a, b) => a.year - b.year)) {
   // Large territories first so their labels win collisions.
   labels.sort((a, b) => b.properties.km2 - a.properties.km2);
 
+  raw.features.forEach((f, i) => {
+    if (!info[i]?.lp) return;
+    const people = inhabitants(f.properties.NAME, f.geometry, info[i].km2, info[i].lp, year);
+    scenery.push(...(people.length ? people : villages(f.properties.NAME, f.geometry, info[i].km2, year)));
+  });
+
   await writeFile(
     `${OUT}/years/${year}.json`,
     JSON.stringify({
@@ -263,6 +346,7 @@ for (const { year, filename } of index.years.sort((a, b) => a.year - b.year)) {
       borders: { type: "FeatureCollection", features: borders },
       labels: { type: "FeatureCollection", features: labels },
       capitals: { type: "FeatureCollection", features: capitals },
+      scenery: { type: "FeatureCollection", features: scenery },
     }),
   );
   years.push({ year, polities: borders.length, capitals: capitals.length });

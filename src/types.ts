@@ -27,6 +27,8 @@ export interface CapitalProps {
   end: number | null;
   /** Area of the territory it is the capital of, used to rank markers. */
   rank: number;
+  /** Townscape drawing for this capital's region and era. */
+  town: string;
 }
 
 export interface YearData {
@@ -34,6 +36,8 @@ export interface YearData {
   borders: FeatureCollection<Polygon | MultiPolygon, PolityProps>;
   labels: FeatureCollection<Point, { name: string; km2: number }>;
   capitals: FeatureCollection<Point, CapitalProps>;
+  /** Figures showing how people lived in territories that were cultures, not states. */
+  scenery: FeatureCollection<Point, { k: string; t: number; of: string }>;
 }
 
 export type EventType = "conflict" | "diplomacy" | "political" | "culture" | "exploration" | "crisis";
@@ -95,4 +99,15 @@ export type Selection =
   | { kind: "list" }
   | { kind: "compare" }
   | { kind: "drawing"; id: string }
-  | { kind: "surveyor" };
+  | { kind: "surveyor" }
+  | { kind: "route"; name: string };
+
+/** A trade route or sea lane from the scenery layer. */
+export interface RouteInfo {
+  name: string;
+  mode: "land" | "sea" | "air";
+  from: number;
+  to: number | null;
+  note: string;
+  wiki: string;
+}
