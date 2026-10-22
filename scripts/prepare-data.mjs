@@ -270,7 +270,15 @@ function rowGroups(name) {
   for (const q of candidates.byName[name] ?? []) groups.push({ source: "altName", rows: statesByQid.get(q) ?? [] });
   return groups;
 }
-const matchStats = { alias: 0, label: 0, altName: 0 };
+const matchStats = { alias: 0, label: 0, altName: 0, manual: 0 };
+
+// Hand-checked capitals for states Wikidata misses (data-src/capitals.json).
+const manualCapitals = existsSync("data-src/capitals.json") ? JSON.parse(await readFile("data-src/capitals.json", "utf8")).capitals : {};
+function manualCapital(name, year, geometry) {
+  const c = (manualCapitals[name] ?? []).find((r) => year >= r.from && (r.to === null || year <= r.to));
+  if (!c || !nearPolygon([c.lon, c.lat], geometry)) return null;
+  return { qid: null, capital: c.capital, capitalQid: null, point: [c.lon, c.lat], start: c.from, end: c.to };
+}
 
 // Snapshot years are coarse, so allow some tolerance on a state's lifetime;
 // less for modern states, whose dates are known precisely.
@@ -310,7 +318,9 @@ function findCapital(name, year, geometry) {
       return c;
     }
   }
-  return null;
+  const m = manualCapital(name, year, geometry);
+  if (m) matchStats.manual++;
+  return m;
 }
 
 // --- Snapshots --------------------------------------------------------------

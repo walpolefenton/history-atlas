@@ -291,7 +291,9 @@ export function renderPolity(ctx: PanelContext, name: string, focus = false) {
     <dl class="facts">
       <div><dt>Capital</dt><dd>${
         capital
-          ? `${esc(capital.name)} <a class="small" href="https://www.wikidata.org/wiki/${capital.qid}" target="_blank" rel="noopener">(source)</a>`
+          ? capital.qid
+            ? `${esc(capital.name)} <a class="small" href="https://www.wikidata.org/wiki/${capital.qid}" target="_blank" rel="noopener">(source)</a>`
+            : `${esc(capital.name)} <span class="small muted">(hand-checked)</span>`
           : `<span class="muted">Not recorded</span>`
       }</dd></div>
       <div><dt>Approx. area</dt><dd>${formatArea(km2)}</dd></div>

@@ -84,7 +84,7 @@ Add an entry to `public/data/events.json`:
 ## Accuracy and known limits
 
 - **Borders** come from historical-basemaps, which its authors describe as a work in progress. Its `BORDERPRECISION` value is shown in the app, and approximate borders are drawn dashed.
-- **Capitals** are matched to territories by name (via Wikidata labels, alternative names and curated aliases), then checked by date and location. About 20% of territory snapshots have one. Many territories are cultural regions with no capital. Matching is strict for modern states, so a few colonial-era capitals are missing rather than wrong. To improve coverage, add entries to `data-src/aliases.json`.
+- **Capitals** are matched to territories by name (via Wikidata labels, alternative names and curated aliases), then checked by date and location. About 20% of territory snapshots have one. Many territories are cultural regions with no capital. Matching is strict for modern states, so a few colonial-era capitals are missing rather than wrong. To improve coverage, add entries to `data-src/aliases.json`, or hand-checked capitals with dates to `data-src/capitals.json` (still verified against the borders).
 - **Wikipedia summaries** are found through Wikidata where possible. Otherwise the exact title is tried, then a search. Matches found by search are labelled as possibly imperfect.
 - **Key events**, drawings and Surveyor notes are hand-written and still being reviewed. Each links to its Wikipedia article.
 - **Colours** come from a coarse cultural-region model (by the location of each power's capital or heartland). They are a visual aid, not a claim about identity.

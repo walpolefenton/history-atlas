@@ -1,0 +1,52 @@
+{
+  "note": "Hand-checked capitals for territories that Wikidata matching misses. Used only after the Wikidata sources fail, and still shown only when the capital lies within the territory in that snapshot. from/to are inclusive snapshot years (null = open). Where a capital moved, list each period.",
+  "capitals": {
+    "Egypt": [
+      { "from": -4000, "to": -2200, "capital": "Memphis", "lat": 29.85, "lon": 31.25 },
+      { "from": -2199, "to": -1000, "capital": "Thebes", "lat": 25.7, "lon": 32.64 },
+      { "from": -999, "to": -500, "capital": "Sais", "lat": 30.97, "lon": 30.77 },
+      { "from": 1500, "to": null, "capital": "Cairo", "lat": 30.04, "lon": 31.24 }
+    ],
+    "Hadramaut": [
+      { "from": -400, "to": 400, "capital": "Shabwa", "lat": 15.37, "lon": 47.02 },
+      { "from": 900, "to": 1900, "capital": "Tarim", "lat": 16.06, "lon": 49.0 }
+    ],
+    "Suren Kingdom": [{ "from": -100, "to": 400, "capital": "Zaranj", "lat": 30.96, "lon": 61.86 }],
+    "Kalinga": [{ "from": -300, "to": 1100, "capital": "Sisupalgarh", "lat": 20.23, "lon": 85.86 }],
+    "Madagascar": [{ "from": 1600, "to": 1900, "capital": "Antananarivo", "lat": -18.91, "lon": 47.53 }],
+    "Tibet": [{ "from": 600, "to": null, "capital": "Lhasa", "lat": 29.65, "lon": 91.11 }],
+    "Yemen": [{ "from": 900, "to": null, "capital": "Sanaa", "lat": 15.37, "lon": 44.19 }],
+    "Mali": [
+      { "from": 1200, "to": 1600, "capital": "Niani", "lat": 11.4, "lon": -8.38 },
+      { "from": 1900, "to": null, "capital": "Bamako", "lat": 12.64, "lon": -8.0 }
+    ],
+    "Tiahuanaco Empire": [{ "from": 500, "to": 1100, "capital": "Tiwanaku", "lat": -16.55, "lon": -68.67 }],
+    "Volga Bulgars": [{ "from": 800, "to": 1240, "capital": "Bolghar", "lat": 54.98, "lon": 49.06 }],
+    "Bulgar Khanate": [{ "from": 800, "to": 1400, "capital": "Bolghar", "lat": 54.98, "lon": 49.06 }],
+    "Khazars": [{ "from": 700, "to": 1000, "capital": "Atil", "lat": 46.35, "lon": 48.03 }],
+    "Palas": [{ "from": 750, "to": 1160, "capital": "Pataliputra", "lat": 25.6, "lon": 85.14 }],
+    "Hafsid Caliphate": [{ "from": 1229, "to": 1574, "capital": "Tunis", "lat": 36.8, "lon": 10.18 }],
+    "Congo": [
+      { "from": 1400, "to": 1860, "capital": "M'banza-Kongo", "lat": -6.27, "lon": 14.24 },
+      { "from": 1880, "to": null, "capital": "Brazzaville", "lat": -4.27, "lon": 15.28 }
+    ],
+    "Hausa States": [{ "from": 1400, "to": 1810, "capital": "Kano", "lat": 12.0, "lon": 8.52 }],
+    "Darfur": [{ "from": 1600, "to": 1916, "capital": "El Fasher", "lat": 13.63, "lon": 25.35 }],
+    "Luba": [{ "from": 1585, "to": 1900, "capital": "Kabongo", "lat": -7.33, "lon": 25.6 }],
+    "Senegal": [{ "from": 1660, "to": null, "capital": "Saint-Louis", "lat": 16.03, "lon": -16.5 }],
+    "Malaya": [{ "from": 1650, "to": 1900, "capital": "Malacca", "lat": 2.19, "lon": 102.25 }, { "from": 1901, "to": null, "capital": "Kuala Lumpur", "lat": 3.14, "lon": 101.69 }],
+    "Dutch East Indies": [{ "from": 1619, "to": 1949, "capital": "Batavia", "lat": -6.13, "lon": 106.81 }],
+    "Portuguese East Africa": [{ "from": 1600, "to": 1898, "capital": "Mozambique Island", "lat": -15.03, "lon": 40.73 }],
+    "Lozi": [{ "from": 1700, "to": 1900, "capital": "Lealui", "lat": -15.22, "lon": 22.98 }],
+    "Mozambique": [{ "from": 1600, "to": 1898, "capital": "Mozambique Island", "lat": -15.03, "lon": 40.73 }, { "from": 1899, "to": null, "capital": "Lourenço Marques (Maputo)", "lat": -25.97, "lon": 32.57 }],
+    "Germany": [{ "from": 1871, "to": null, "capital": "Berlin", "lat": 52.52, "lon": 13.4 }],
+    "Algeria": [{ "from": 1830, "to": null, "capital": "Algiers", "lat": 36.75, "lon": 3.06 }],
+    "Botswana": [{ "from": 1895, "to": 1965, "capital": "Mafeking", "lat": -25.85, "lon": 25.64 }, { "from": 1966, "to": null, "capital": "Gaborone", "lat": -24.65, "lon": 25.91 }],
+    "Nigeria": [{ "from": 1914, "to": 1990, "capital": "Lagos", "lat": 6.45, "lon": 3.39 }, { "from": 1991, "to": null, "capital": "Abuja", "lat": 9.06, "lon": 7.49 }],
+    "Xinjiang": [{ "from": 1884, "to": null, "capital": "Ürümqi", "lat": 43.83, "lon": 87.62 }],
+    "Tanzania, United Republic of": [{ "from": 1890, "to": null, "capital": "Dar es Salaam", "lat": -6.79, "lon": 39.28 }],
+    "Burma": [{ "from": 1948, "to": 2005, "capital": "Rangoon", "lat": 16.87, "lon": 96.2 }, { "from": 2006, "to": null, "capital": "Naypyidaw", "lat": 19.75, "lon": 96.13 }],
+    "China": [{ "from": 1945, "to": 1948, "capital": "Nanjing", "lat": 32.06, "lon": 118.8 }, { "from": 1949, "to": null, "capital": "Beijing", "lat": 39.9, "lon": 116.4 }],
+    "Ostrogoths": [{ "from": 493, "to": 553, "capital": "Ravenna", "lat": 44.42, "lon": 12.2 }]
+  }
+}
