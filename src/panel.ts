@@ -374,6 +374,33 @@ function todaySection(parts: { properties: { km2: number; today?: string } }[]) 
 
 // --- Event ------------------------------------------------------------------
 
+/** "This took place in X, ruled by Y", from the territory under a point in this snapshot. */
+function whereLine(ctx: PanelContext, lon: number, lat: number, lead: string) {
+  const where = territoryAt(ctx, lon, lat);
+  if (!where) return "";
+  return `<p class="small muted">${lead} <button type="button" class="link" data-action="polity" data-name="${esc(where.name)}">${esc(where.name)}</button>${
+    where.sovereign !== where.name ? `, ruled by <button type="button" class="link" data-action="polity" data-name="${esc(where.sovereign)}">${esc(where.sovereign)}</button>` : ""
+  }, as mapped in ${formatYear(ctx.data.year)}.</p>`;
+}
+
+/** Other events of the same era within about 600 km, nearest first. */
+function nearbyEvents(ctx: PanelContext, e: HistoryEvent) {
+  const km = (a: HistoryEvent) => {
+    const r = Math.PI / 180;
+    const x = (a.lon - e.lon) * r * Math.cos(((a.lat + e.lat) / 2) * r);
+    const y = (a.lat - e.lat) * r;
+    return Math.hypot(x, y) * 6371;
+  };
+  const near = [...ctx.eraEvents, ...ctx.moreEvents]
+    .filter((x) => x.id !== e.id)
+    .map((x) => ({ x, d: km(x) }))
+    .filter(({ d }) => d < 600)
+    .sort((a, b) => a.d - b.d)
+    .slice(0, 5);
+  if (!near.length) return "";
+  return `<section><h3>Nearby in this era</h3><ul class="event-list">${near.map(({ x }) => eventButton(x)).join("")}</ul></section>`;
+}
+
 export function renderEvent(ctx: PanelContext, e: HistoryEvent, focus = false) {
   const t = EVENT_TYPES[e.type];
   render(
@@ -383,6 +410,8 @@ export function renderEvent(ctx: PanelContext, e: HistoryEvent, focus = false) {
     <h2>${esc(e.title)}</h2>
     <p class="lede">${formatEventDate(e)}${e.approx ? ` <span class="small muted">(approximate or traditional date)</span>` : ""}</p>
     ${e.summary ? `<p>${esc(e.summary.charAt(0).toUpperCase() + e.summary.slice(1))}</p>` : ""}
+    ${whereLine(ctx, e.lon, e.lat, "This took place in")}
+    ${nearbyEvents(ctx, e)}
     <p class="small muted">${
       e.source === "wikidata"
         ? `Source: <a href="https://www.wikidata.org/wiki/${esc(e.id)}" target="_blank" rel="noopener">Wikidata ${esc(e.id)}</a>. Dates and location are as recorded there and may be approximate.`

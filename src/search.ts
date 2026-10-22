@@ -1,4 +1,7 @@
 import type { Drawing, HistoryEvent, Meta } from "./types";
+import { drawingImage } from "./images";
+import { currentTheme } from "./theme";
+import { eventIconSvg, modernEventSvg } from "./icons";
 import { escapeHtml as esc, formatEventDate, formatYear } from "./format";
 
 type Result =
@@ -65,12 +68,35 @@ export function initSearch(meta: Meta, events: HistoryEvent[], drawings: Drawing
     return { title: r.name, sub: `Territory · ${first === last ? formatYear(first) : `${formatYear(first)} – ${formatYear(last)}`}` };
   }
 
+  /** A small picture for each result: the place's photograph, the event's glyph, or a map swatch. */
+  function visual(r: Result) {
+    if (r.kind === "drawing") {
+      const img = drawingImage(r.drawing.id);
+      return img ? `<img class="sr-pic" alt="" src="${esc(img.thumb)}" loading="lazy" />` : `<span class="sr-pic sr-swatch"></span>`;
+    }
+    if (r.kind === "event") {
+      const t = currentTheme();
+      const svg = t.modern ? modernEventSvg(r.event.type, t.events[r.event.type], t.ring) : eventIconSvg(r.event.type, t.events[r.event.type], t.ring, t.clay);
+      return `<span class="sr-pic sr-glyph">${svg}</span>`;
+    }
+    // A territory: a small outlined region, like a cut-out of the map.
+    return `<span class="sr-pic sr-swatch sr-territory"><svg viewBox="0 0 34 34" aria-hidden="true"><path d="M8 12 L15 7 L22 10 L27 8 L28 16 L25 22 L27 27 L18 27 L13 24 L7 25 L9 18 Z" /></svg></span>`;
+  }
+
+  /** The title with the letters that matched the query in bold. */
+  function highlight(title: string) {
+    const k = fold(input.value.trim());
+    const at = fold(title).indexOf(k);
+    if (!k || at < 0) return esc(title);
+    return `${esc(title.slice(0, at))}<b>${esc(title.slice(at, at + k.length))}</b>${esc(title.slice(at + k.length))}`;
+  }
+
   function draw() {
     list.innerHTML = results
       .map((r, i) => {
         const d = describe(r);
-        return `<li role="option" id="sr-${i}" aria-selected="${i === active}" data-i="${i}">
-          <span class="sr-title">${esc(d.title)}</span><span class="sr-sub">${esc(d.sub)}</span></li>`;
+        return `<li role="option" id="sr-${i}" aria-selected="${i === active}" data-i="${i}">${visual(r)}
+          <span class="sr-text"><span class="sr-title">${highlight(d.title)}</span><span class="sr-sub">${esc(d.sub)}</span></span></li>`;
       })
       .join("");
     const open = results.length > 0;

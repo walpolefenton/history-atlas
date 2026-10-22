@@ -250,7 +250,8 @@ button { font: inherit; color: inherit; }
 }
 .search li {
   display: flex;
-  flex-direction: column;
+  align-items: center;
+  gap: 12px;
   padding: 8px 10px;
   border-radius: var(--r-sm);
   cursor: pointer;
@@ -736,6 +737,16 @@ body[data-lettering="printed"] #ym-num { font-family: "IM Fell English", var(--f
 
 .share-row { display: flex; flex-wrap: wrap; gap: 8px; }
 .share-row .tool { border: 1px solid var(--line); }
+
+/* Search results: a small picture, then the title and its kind. */
+.sr-text { display: flex; flex-direction: column; min-width: 0; }
+.sr-title b { font-weight: 650; color: var(--accent); }
+.sr-pic { flex: none; width: 34px; height: 34px; border-radius: 50%; object-fit: cover; }
+.sr-glyph svg { width: 34px; height: 34px; display: block; }
+.sr-swatch { background: var(--raised); box-shadow: inset 0 0 0 1px var(--line); }
+.sr-territory { border-radius: 8px; background: var(--raised); }
+.sr-territory svg { width: 34px; height: 34px; display: block; }
+.sr-territory path { fill: var(--accent-soft); stroke: var(--accent); stroke-width: 1.3; stroke-linejoin: round; }
 
 /* Where a territory is today: country, a share bar, the percentage. */
 .today-list { list-style: none; margin: 0 0 6px; padding: 0; display: grid; gap: 6px; }
