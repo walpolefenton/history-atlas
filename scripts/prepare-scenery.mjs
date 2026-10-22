@@ -92,17 +92,21 @@ function landScenery(p, kind) {
     if (isAmericas(p)) return lat > 20 && lon < -98 ? { cactus: 3, grass: 2 } : { palm: 3, oak: 3, jungle: 1 };
     return { palm: 4, oak: 3 };
   }
+  // The great farmed plains carry fields rather than forest.
+  if (inBox(p, 110, 22, 122, 40) || inBox(p, 75, 22, 90, 31) || inBox(p, 30, 22, 33, 31.5) || inBox(p, 42, 30, 48, 36)) return { fields: 5, oak: 1, none: 2 };
   if (inBox(p, -112, 30, -95, 52)) return { grass: 3, bison: 2 };
   if (inBox(p, 35, 42, 120, 52)) return { grass: 3, wildhorse: 1.5, rider: 0.3 };
   if (isAustralia(p)) return { grass: 2, kangaroo: 1.2, oak: 2 };
   if (inBox(p, -70, -42, -55, -25)) return { grass: 4 };
-  return { oak: 6, grass: 1 };
+  if (inBox(p, -5, 43, 30, 55)) return { oak: 4, fields: 2, grass: 1, none: 2 };
+  return { oak: 6, grass: 2, none: 1 };
 }
 
 // --- Scattered scenery ---------------------------------------------------------------------
 
 /** Base drawing scale by kind: big things drawn big. Each piece then varies a little. */
 const SCALE = {
+  fields: 1.4,
   peaks: 1.5, peak: 1.15, jungle: 1.4, pine: 1.15, oak: 1.1, palm: 1.05, dune: 1.3, cactus: 0.85, grass: 0.7,
   bison: 1, caribou: 0.9, giraffe: 1.15, elephant: 1.2, kangaroo: 0.9, penguin: 0.75, polarbear: 1, wildhorse: 0.9,
   camel: 1, rider: 1, fisher: 1, waves: 0.95, whale: 1.6, fish: 0.8,
@@ -110,7 +114,7 @@ const SCALE = {
 const scaled = (kind, shrink = 1) => Math.round((SCALE[kind] ?? 1) * shrink * (0.78 + rand() * 0.5) * 100) / 100;
 
 // Trees grow in clumps and grazing animals move in herds.
-const CLUMPS = { pine: [2, 4], oak: [1, 3], jungle: [2, 4], palm: [1, 3], bison: [1, 3], caribou: [1, 3], wildhorse: [1, 2], giraffe: [0, 1], dune: [1, 3], peaks: [0, 2] };
+const CLUMPS = { pine: [1, 3], oak: [0, 2], jungle: [1, 3], palm: [1, 3], bison: [1, 3], caribou: [1, 3], wildhorse: [1, 2], giraffe: [0, 1], dune: [1, 3], peaks: [0, 2] };
 
 /** Is this sea point near a coast? Waves gather there, like engraved water lines. */
 const nearCoast = (p, d) => [[d, 0], [-d, 0], [0, d], [0, -d]].some(([dx, dy]) => hit(land, [p[0] + dx, p[1] + dy]));
@@ -122,7 +126,9 @@ const TIERS = [
   { tier: 4, spacing: 0.9, ocean: false },
 ];
 const features = [];
-const point = (props, [lon, lat]) => features.push({ type: "Feature", properties: props, geometry: { type: "Point", coordinates: [round(lon), round(lat)] } });
+// Each piece picks one of four hand-varied versions of its drawing (v).
+const point = (props, [lon, lat]) =>
+  features.push({ type: "Feature", properties: { ...props, v: Math.floor(rand() * 4) }, geometry: { type: "Point", coordinates: [round(lon), round(lat)] } });
 
 for (const { tier, spacing, ocean } of TIERS) {
   for (let lat = -78 + spacing / 2; lat < 82; lat += spacing) {
@@ -136,7 +142,9 @@ for (const { tier, spacing, ocean } of TIERS) {
         const t = hit(terrain, p);
         const kind = pick(landScenery(p, t ? TERRAIN[t.properties.FEATURECLA] : null) ?? {});
         if (!kind || kind === "none") continue;
-        point({ type: "point", k: kind, t: tier, s: scaled(kind) }, p);
+        if (tier === 4 && rand() < 0.4) continue; // keep the closest zoom from becoming a thicket
+        // Fields only appear once farming had reached the region.
+        point({ type: "point", k: kind, t: tier, s: scaled(kind), ...(kind === "fields" ? { from: -3000, to: null } : {}) }, p);
         const [lo, hi] = CLUMPS[kind] ?? [0, 0];
         const extra = lo + Math.floor(rand() * (hi - lo + 1));
         for (let j = 0; j < extra; j++) {

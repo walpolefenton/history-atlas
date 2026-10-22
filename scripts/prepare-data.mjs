@@ -13,6 +13,7 @@
 //   wd-events.json     notable events from Wikidata, minus those already curated
 import { readFile, writeFile, mkdir } from "node:fs/promises";
 import { existsSync } from "node:fs";
+import { wobble } from "./lib/handdrawn.mjs";
 import polylabel from "polylabel";
 import { area } from "@turf/area";
 import { booleanPointInPolygon } from "@turf/boolean-point-in-polygon";
@@ -183,12 +184,12 @@ function villages(name, geometry, km2, year, capitalPoint) {
   const out = [];
   spots.forEach((p, i) => {
     const kind = townFor(p, year);
-    out.push({ type: "Feature", properties: { k: kind, t: i < 2 ? 3 : 4, of: name, village: true, s: 0.9 + sceneRand() * 0.4 }, geometry: { type: "Point", coordinates: p } });
+    out.push({ type: "Feature", properties: { k: kind, t: i < 2 ? 3 : 4, of: name, village: true, s: 0.9 + sceneRand() * 0.4, v: Math.floor(sceneRand() * 4) }, geometry: { type: "Point", coordinates: p } });
     // Farmland around settled villages, though not on the steppe.
     if (kind !== "town-steppe" && sceneRand() < 0.6) {
       const f = [p[0] + 0.35 + sceneRand() * 0.3, p[1] - 0.15 - sceneRand() * 0.25];
       if (booleanPointInPolygon(f, geometry)) {
-        out.push({ type: "Feature", properties: { k: "fields", t: 4, of: name, village: true, s: 1 + sceneRand() * 0.5 }, geometry: { type: "Point", coordinates: f.map((v) => Math.round(v * 100) / 100) } });
+        out.push({ type: "Feature", properties: { k: "fields", t: 4, of: name, village: true, s: 1 + sceneRand() * 0.5, v: Math.floor(sceneRand() * 4) }, geometry: { type: "Point", coordinates: f.map((v) => Math.round(v * 100) / 100) } });
       }
     }
   });
@@ -214,7 +215,7 @@ function inhabitants(name, geometry, km2, lp, year) {
   }
   return out.map((p, i) => ({
     type: "Feature",
-    properties: { k: kind, t: i === 0 ? 2 : 3, of: name },
+    properties: { k: kind, t: i === 0 ? 2 : 3, of: name, v: Math.floor(sceneRand() * 4) },
     geometry: { type: "Point", coordinates: p.map((v) => Math.round(v * 100) / 100) },
   }));
 }
@@ -367,7 +368,9 @@ for (const { year, filename } of index.years.sort((a, b) => a.year - b.year)) {
       km2,
       qid: capital?.qid ?? null,
     };
-    borders.push({ type: "Feature", properties: props, geometry: { type: f.geometry.type, coordinates: roundCoords(f.geometry.coordinates) } });
+    // Borders get a slight hand-drawn wobble (scripts/lib/handdrawn.mjs).
+    const drawn = wobble(f.geometry);
+    borders.push({ type: "Feature", properties: props, geometry: { type: drawn.type, coordinates: roundCoords(drawn.coordinates) } });
 
     const lp = info[i].lp;
     if (lp) labels.push({ type: "Feature", properties: { name, km2 }, geometry: { type: "Point", coordinates: lp } });

@@ -1,6 +1,7 @@
 // Pictogram markers, drawn once as SVG and used both on the map (as images)
-// and in the panel (inline). Events are round medallions; capitals are a
-// castle tower, so the two never read as the same kind of thing.
+// and in the panel (inline). In Night and Survey they are pen drawings over a
+// faint wash, like everything else on the map; in Clay, moulded beads.
+// Events are round; capitals are a castle tower, so they never read alike.
 import type { EventType } from "./types";
 
 const GLYPHS: Record<EventType, string> = {
@@ -32,7 +33,16 @@ const CLAY_DEFS = `<defs>
   <filter id="lump" x="-15%" y="-15%" width="130%" height="130%"><feTurbulence type="fractalNoise" baseFrequency="0.05" numOctaves="2" seed="7"/><feDisplacementMap in="SourceGraphic" scale="2.2"/></filter>
 </defs>`;
 
+const PEN = `<filter id="pen" x="-10%" y="-10%" width="120%" height="120%"><feTurbulence type="fractalNoise" baseFrequency="0.06" numOctaves="1" seed="5"/><feDisplacementMap in="SourceGraphic" scale="2"/></filter>`;
+
 export function eventIconSvg(type: EventType, color: string, ring: string, clay = false) {
+  if (!clay) {
+    // The glyph in the event's colour, over a loose wash and a hand-drawn ring.
+    const glyph = GLYPHS[type].replace(/#fff/g, color);
+    return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64"><defs>${PEN}</defs>
+      <g filter="url(#pen)"><circle cx="32" cy="32" r="27" fill="${color}" opacity="0.18"/>
+      <circle cx="32" cy="32" r="27" fill="none" stroke="${color}" stroke-width="2" opacity="0.7"/>${glyph}</g></svg>`;
+  }
   if (clay) {
     return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">${CLAY_DEFS}
       <ellipse cx="33" cy="36" rx="27" ry="25" fill="#3c2010" opacity="0.28"/>
@@ -48,6 +58,10 @@ const TOWER =
   "M21 52 V29 H18 V18 H24 V22 H29 V18 H35 V22 H40 V18 H46 V29 H43 V52 Z M29 52 V44 A3 3 0 0 1 35 44 V52 Z";
 
 export function capitalIconSvg(color: string, ring: string, clay = false) {
+  if (!clay) {
+    return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64"><defs>${PEN}</defs>
+      <g filter="url(#pen)"><path d="${TOWER}" fill="${color}" fill-opacity="0.25" fill-rule="evenodd" stroke="${color}" stroke-width="3" stroke-linejoin="round"/></g></svg>`;
+  }
   if (clay) {
     return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">${CLAY_DEFS}
       <path d="${TOWER}" fill="#3c2010" opacity="0.28" transform="translate(2 3)"/>

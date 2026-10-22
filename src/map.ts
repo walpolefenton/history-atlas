@@ -8,7 +8,7 @@ import type { Admin1Data, Drawing, EventType, HistoryEvent, SurveyorSpot, YearDa
 import { currentTheme, type MapTheme } from "./theme";
 import { formatYear } from "./format";
 import { capitalIconSvg, eventIconSvg, svgToImage } from "./icons";
-import { DRAWING_KINDS, SCENERY_KINDS, drawingSvg } from "./drawings";
+import { DRAWING_KINDS, SCENERY_KINDS, VARIANTS, drawingSvg } from "./drawings";
 
 maplibregl.setWorkerUrl(workerUrl);
 
@@ -108,6 +108,14 @@ function patternSvg(kind: string, t: MapTheme): string {
   }
 }
 
+/** Watercolour paper: a faint, seamlessly tiling grain laid over the territories. */
+function paperSvg(t: MapTheme) {
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128">
+    <filter id="g" x="0" y="0" width="100%" height="100%"><feTurbulence type="fractalNoise" baseFrequency="0.035 0.05" numOctaves="3" seed="9" stitchTiles="stitch"/>
+    <feColorMatrix values="0 0 0 0 ${t.clay ? 0.35 : 0.2}  0 0 0 0 ${t.clay ? 0.22 : 0.17}  0 0 0 0 0.12  0 0 0 0.55 -0.18"/></filter>
+    <rect width="128" height="128" filter="url(#g)"/></svg>`;
+}
+
 /** A chain of peaks, repeated along each mountain range's spine. */
 function rangePatternSvg(t: MapTheme) {
   return `<svg xmlns="http://www.w3.org/2000/svg" width="192" height="64" viewBox="0 0 96 32"><g stroke="${t.labelMuted}" stroke-width="1.3" stroke-linejoin="round" stroke-linecap="round">
@@ -134,11 +142,15 @@ async function themeImages(t: MapTheme): Promise<Record<string, HTMLImageElement
     ["pat-clay", patternSvg("clay", t), 32],
     ["pat-land", patternSvg("land", t), 32],
     ...TERRAIN_KINDS.map((k): [string, string, number] => [`pat-${k}`, patternSvg(k, t), 32]),
-    ...DRAWING_KINDS.map((k, i): [string, string, number] => [`draw-${k}`, drawingSvg(k, t.label, t.wash, t.ring, i + 1, t.clay, 256), 256]),
+    ...DRAWING_KINDS.map((k, i): [string, string, number] => [`draw-${k}`, drawingSvg(k, t.label, t.wash, t.clay ? t.ring : "none", i + 1, t.clay, 256), 256]),
     // Scenery is drawn in a quieter ink, so it never competes with labels.
-    ...SCENERY_KINDS.map((k, i): [string, string, number] => [`scn-${k}`, drawingSvg(k, t.labelMuted, t.washSoft, t.ring, i + 11, t.clay, 192), 192]),
+    // Scenery comes in several hand-varied versions: scn-oak, scn-oak~1, scn-oak~2...
+    ...SCENERY_KINDS.flatMap((k, i) =>
+      Array.from({ length: VARIANTS }, (_, v): [string, string, number] => [v ? `scn-${k}~${v}` : `scn-${k}`, drawingSvg(k, t.labelMuted, t.washSoft, "none", i + 11, t.clay, 192, 1, v), 192]),
+    ),
     // Murals are big and faint; render them large so they stay crisp.
     ...MURAL_KINDS.map((k, i): [string, string, number] => [`mural-${k}`, drawingSvg(k, t.label, t.wash, "transparent", i + 31, t.clay, 512, 0.45), 512]),
+    ["pat-paper", paperSvg(t), 128],
     ["line-range", rangePatternSvg(t), 192],
     ["line-wall", wallPatternSvg(t), 128],
     ["line-trail", trailPatternSvg(t), 48],
@@ -171,13 +183,15 @@ function cityLayer(tier: number, minzoom: number, minLinks: number, fonts: Lette
     minzoom,
     filter: ["all", [">=", ["get", "links"], minLinks], ["<", ["get", "links"], upper === Infinity ? 1e9 : upper]],
     layout: {
-      "icon-image": ["case", ["get", "ancient"], "scn-city-ruin", "scn-city"],
-      "icon-size": ["interpolate", ["linear"], ["zoom"], 2.2, 0.12, 7, 0.22],
+      // A ring from afar; up close, a little townscape of its region and era.
+      "icon-image": ["step", ["zoom"], ["case", ["get", "ancient"], "scn-city-ruin", "scn-city"], 5, ["case", ["get", "ancient"], "scn-city-ruin", ["concat", "scn-", ["get", "town"], ["case", [">", ["get", "v"], 0], ["concat", "~", ["to-string", ["get", "v"]]], ""]]]],
+      "icon-size": ["interpolate", ["linear"], ["zoom"], 2.2, 0.12, 4.99, 0.2, 5, 0.32, 7, 0.55, 9, 0.9],
+      "icon-anchor": ["step", ["zoom"], "center", 5, "bottom"],
       "text-field": ["get", "name"],
       "text-font": fonts.regular,
       "text-size": ["interpolate", ["linear"], ["zoom"], 2.2, tier === 1 ? 10.5 : 9.5, 7, tier === 1 ? 14 : 12],
-      "text-anchor": "left",
-      "text-offset": [0.7, 0],
+      "text-anchor": ["step", ["zoom"], "left", 5, "top"],
+      "text-offset": ["step", ["zoom"], ["literal", [0.7, 0]], 5, ["literal", [0, 0.3]]],
       "text-optional": true,
       "symbol-sort-key": ["-", 0, ["get", "links"]],
       "icon-padding": 1,
@@ -192,6 +206,9 @@ function cityLayer(tier: number, minzoom: number, minLinks: number, fonts: Lette
   };
 }
 
+/** The image for a scenery feature, choosing its hand-varied version (property v). */
+const sceneryImage = ["concat", "scn-", ["get", "k"], ["case", [">", ["coalesce", ["get", "v"], 0], 0], ["concat", "~", ["to-string", ["get", "v"]]], ""]] as maplibregl.ExpressionSpecification;
+
 function sceneryLayer(tier: 1 | 2 | 3 | 4): maplibregl.LayerSpecification {
   return {
     id: `scenery-${tier}`,
@@ -200,15 +217,19 @@ function sceneryLayer(tier: 1 | 2 | 3 | 4): maplibregl.LayerSpecification {
     minzoom: SCENERY_MINZOOM[tier],
     filter: ["all", ["==", ["get", "type"], "point"], ["==", ["get", "t"], tier]],
     layout: {
-      "icon-image": ["concat", "scn-", ["get", "k"]],
+      "icon-image": sceneryImage,
       // Images are 192px at pixel ratio 2: 96 CSS px at size 1. Each piece has its
-      // own scale (s), and pieces grow as you zoom so the land fills in.
-      "icon-size": ["interpolate", ["exponential", 1.5], ["zoom"], 1.9, ["*", 0.21, ["get", "s"]], 4.6, ["*", 0.34, ["get", "s"]], 7, ["*", 0.62, ["get", "s"]], 9, ["*", 0.95, ["get", "s"]]],
-      // Scenery yields to everything placed before it (labels, markers), and
-      // to itself, so the drawing never crowds the reading.
-      "icon-padding": 2,
+      // own scale (s) and grows nearly as fast as the ground does when you zoom,
+      // so the drawing reads as painted on the land rather than pinned over it.
+      "icon-size": ["interpolate", ["exponential", 1.5], ["zoom"], 1.9, ["*", 0.2, ["get", "s"]], 4.6, ["*", 0.34, ["get", "s"]], 7, ["*", 0.58, ["get", "s"]], 9, ["*", 0.85, ["get", "s"]]],
+      // Painted, not placed: scenery never hides, never shuffles, and never
+      // blocks a label (it sits underneath, in a quiet ink).
+      "icon-allow-overlap": true,
+      "icon-ignore-placement": true,
+      "icon-anchor": "bottom",
     },
-    paint: { "icon-opacity": fadeIn(SCENERY_MINZOOM[tier], SCENERY_MINZOOM[tier] + 0.5, 0.9) },
+    // Fade in on arrival; ease back a little up close, so labels stay the clearest thing.
+    paint: { "icon-opacity": ["interpolate", ["linear"], ["zoom"], SCENERY_MINZOOM[tier], 0, SCENERY_MINZOOM[tier] + 0.5, 0.9, Math.max(6, SCENERY_MINZOOM[tier] + 0.6), 0.9, 8, 0.7] },
   };
 }
 
@@ -362,6 +383,45 @@ function styleFor(land: GeoJSON.FeatureCollection, t: MapTheme, themeName: strin
         },
       },
       {
+        id: "coast-ink",
+        type: "line",
+        source: "land",
+        layout: { "line-join": "round" },
+        paint: { "line-color": t.label, "line-width": ["interpolate", ["linear"], ["zoom"], 1, 0.4, 6, 1.2], "line-opacity": themeName === "night" ? 0.35 : 0.6 },
+      },
+      {
+        id: "coast-ink-retrace",
+        type: "line",
+        source: "land",
+        layout: { "line-join": "round" },
+        paint: {
+          "line-color": t.label,
+          "line-width": ["interpolate", ["linear"], ["zoom"], 1, 0.3, 6, 0.7],
+          "line-opacity": themeName === "night" ? 0.18 : 0.3,
+          "line-offset": ["interpolate", ["linear"], ["zoom"], 1, 0.8, 6, 2.2],
+        },
+      },
+      {
+        // Watercolour pooling: each wash darkens along its edge, bleeding a
+        // little into its neighbour, as paint does on paper.
+        id: "polity-edge",
+        type: "line",
+        source: "borders",
+        layout: { "line-join": "round" },
+        paint: {
+          "line-color": paletteExpr(t) as maplibregl.ExpressionSpecification,
+          "line-width": ["interpolate", ["linear"], ["zoom"], 1, 1.5, 4, 5, 7, 10],
+          "line-blur": ["interpolate", ["linear"], ["zoom"], 1, 1, 4, 3.5, 7, 7],
+          "line-opacity": t.clay ? 0.35 : 0.75,
+        },
+      },
+      {
+        id: "polity-paper",
+        type: "fill",
+        source: "borders",
+        paint: { "fill-pattern": "pat-paper", "fill-opacity": t.clay ? 0.5 : themeName === "survey" ? 0.55 : 0.85 },
+      },
+      {
         // The previous year's territories, faded out over the new ones when
         // the year changes, so borders seem to melt into their next shape.
         id: "polity-fill-prev",
@@ -422,6 +482,18 @@ function styleFor(land: GeoJSON.FeatureCollection, t: MapTheme, themeName: strin
         source: "admin1",
         filter: ["==", ["get", "name"], ""],
         paint: { "line-color": t.hover, "line-width": 1.2, "line-opacity": 0.7 },
+      },
+      {
+        id: "polity-line-retrace",
+        type: "line",
+        source: "borders",
+        layout: { "line-join": "round" },
+        paint: {
+          "line-color": t.border,
+          "line-width": ["interpolate", ["linear"], ["zoom"], 1, 0.25, 5, 0.6],
+          "line-opacity": 0.45,
+          "line-offset": ["interpolate", ["linear"], ["zoom"], 1, 0.6, 6, 1.8],
+        },
       },
       {
         id: "polity-hover",
@@ -542,7 +614,7 @@ function styleFor(land: GeoJSON.FeatureCollection, t: MapTheme, themeName: strin
         minzoom: 2.4,
         filter: ["==", ["get", "type"], "traveller"],
         layout: {
-          "icon-image": ["concat", "scn-", ["get", "k"]],
+          "icon-image": sceneryImage,
           "icon-size": ["interpolate", ["exponential", 1.5], ["zoom"], 2.4, 0.26, 6, 0.55, 9, 1.1],
           "icon-padding": 1,
         },
@@ -555,7 +627,7 @@ function styleFor(land: GeoJSON.FeatureCollection, t: MapTheme, themeName: strin
         minzoom: 3.4,
         filter: ["all", ["has", "village"], ["==", ["geometry-type"], "Point"]],
         layout: {
-          "icon-image": ["concat", "scn-", ["get", "k"]],
+          "icon-image": sceneryImage,
           "icon-size": ["interpolate", ["exponential", 1.5], ["zoom"], 3.4, ["*", 0.24, ["get", "s"]], 7, ["*", 0.5, ["get", "s"]], 9, ["*", 0.85, ["get", "s"]]],
           "icon-padding": 2,
           "symbol-sort-key": ["get", "t"],
@@ -569,7 +641,7 @@ function styleFor(land: GeoJSON.FeatureCollection, t: MapTheme, themeName: strin
         minzoom: 2.6,
         filter: ["all", ["!", ["has", "village"]], ["!", ["has", "road"]]],
         layout: {
-          "icon-image": ["concat", "scn-", ["get", "k"]],
+          "icon-image": sceneryImage,
           "icon-size": ["interpolate", ["exponential", 1.5], ["zoom"], 2.6, 0.27, 6, 0.55, 9, 1.05],
           "icon-padding": 1,
           "symbol-sort-key": ["get", "t"],

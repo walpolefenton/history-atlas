@@ -430,7 +430,7 @@ export function renderCompare(ctx: PanelContext, focus = false) {
 /** The pen drawing as an inline image, in the current theme. */
 function drawingImg(kind: string, cls = "drawing-thumb") {
   const t = currentTheme();
-  const svg = drawingSvg(kind, t.label, t.wash, t.ring, 3, t.clay);
+  const svg = drawingSvg(kind, t.label, t.wash, t.clay ? t.ring : "none", 3, t.clay);
   return `<img class="${cls}" alt="" src="data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}" />`;
 }
 

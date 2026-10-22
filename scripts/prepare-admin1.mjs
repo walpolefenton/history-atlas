@@ -14,6 +14,7 @@
 import { readFile, writeFile } from "node:fs/promises";
 import polylabel from "polylabel";
 import { area } from "@turf/area";
+import { wobble } from "./lib/handdrawn.mjs";
 
 const DEFAULT_FROM = 1994;
 
@@ -68,7 +69,7 @@ for (const f of src.features) {
   }
   const km2 = Math.round(area(f.geometry) / 1e6);
   const props = { name: p.name, country: p.admin, kind: p.type_en || "Region", qid: p.wikidataid || null, from, km2, rank: p.labelrank ?? 6 };
-  shapes.push({ type: "Feature", properties: props, geometry: f.geometry });
+  shapes.push({ type: "Feature", properties: props, geometry: wobble(f.geometry) });
   labels.push({ type: "Feature", properties: { name: p.name, km2, rank: props.rank, from }, geometry: { type: "Point", coordinates: labelPoint(f.geometry) } });
 }
 labels.sort((a, b) => b.properties.km2 - a.properties.km2);

@@ -1,4 +1,5 @@
 import type { Admin1Data, City, Drawing, HistoryEvent, Meta, SurveyorSpot, YearData } from "./types";
+import { townFor } from "./towns";
 
 const base = import.meta.env.BASE_URL + "data/";
 
@@ -29,7 +30,8 @@ export function citiesForEra(cities: City[], from: number, exclude: Set<string>)
     .filter((c) => !exclude.has(c.qid) && c.from <= from && (c.to === null || c.to >= from))
     .map((c) => ({
       type: "Feature",
-      properties: { qid: c.qid, name: cityNameAt(c, from), links: c.links, ancient: c.ancient ?? false },
+      // town: the townscape drawn for it up close; v: which hand-varied version.
+      properties: { qid: c.qid, name: cityNameAt(c, from), links: c.links, ancient: c.ancient ?? false, town: townFor([c.lon, c.lat], from), v: c.links % 4 },
       geometry: { type: "Point", coordinates: [c.lon, c.lat] },
     }));
 }

@@ -335,14 +335,38 @@ export const DRAWING_KINDS = Object.keys(D);
  * SVG for a drawing. The halo pass draws the same lines wide in the background
  * colour first, so the drawing stays legible over any territory.
  */
-export function drawingSvg(kind: string, ink: string, wash: string, halo: string, seed = 1, clay = false, px = 128, weight = 1): string {
+/** Number of hand-varied versions drawn of each scenery kind. */
+export const VARIANTS = 4;
+
+/**
+ * How each version differs: mirrored, squatter or taller, lighter or heavier
+ * line. With a different wobble seed each, no two neighbours look stamped.
+ */
+const VARIANT_STYLE = [
+  { transform: "", weight: 1 },
+  { transform: "translate(64 0) scale(-1 1)", weight: 0.9 },
+  { transform: "translate(32 60) scale(1.12 0.88) translate(-32 -60)", weight: 0.85 },
+  { transform: "translate(64 0) scale(-1 1) translate(32 60) scale(0.9 1.12) translate(-32 -60)", weight: 1.15 },
+];
+
+/** A second, fainter pass of the same lines, slightly off: the look of a line drawn over twice. */
+const RETRACE = (seed: number) =>
+  `<filter id="retrace" x="-10%" y="-10%" width="120%" height="120%"><feTurbulence type="fractalNoise" baseFrequency="0.09" numOctaves="1" seed="${seed + 17}"/><feDisplacementMap in="SourceGraphic" scale="2.4"/></filter>`;
+
+export function drawingSvg(kind: string, ink: string, wash: string, halo: string, seed = 1, clay = false, px = 128, weight = 1, variant = 0): string {
   const body = D[kind] ?? D.temple;
-  const haloBody = body.replace(/fill="WASH"/g, 'fill="none"');
+  const lines = body.replace(/fill="WASH"/g, 'fill="none"');
+  const v = VARIANT_STYLE[variant % VARIANT_STYLE.length];
+  const w = weight * v.weight;
+  const s = seed + variant * 101;
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="${px}" height="${px}">
-    <defs>${clay ? CLAY_FILTER(seed) : FILTER(seed)}</defs>
-    <g filter="url(#pen)" stroke-linecap="round" stroke-linejoin="round">
-      <g fill="none" stroke="${halo}" stroke-width="${(clay ? 7.5 : 6) * weight}" opacity="0.85">${haloBody}</g>
-      <g fill="none" stroke="${ink}" stroke-width="${(clay ? 3.2 : 2.3) * weight}">${body.replace(/fill="WASH"/g, `fill="${wash}"`)}</g>
+    <defs>${clay ? CLAY_FILTER(s) : FILTER(s)}${clay ? "" : RETRACE(s)}</defs>
+    <g transform="${v.transform}" stroke-linecap="round" stroke-linejoin="round">
+      <g filter="url(#pen)">
+        ${halo === "none" ? "" : `<g fill="none" stroke="${halo}" stroke-width="${(clay ? 7.5 : 6) * w}" opacity="0.85">${lines}</g>`}
+        <g fill="none" stroke="${ink}" stroke-width="${(clay ? 3.2 : 2.3) * w}">${body.replace(/fill="WASH"/g, `fill="${wash}"`)}</g>
+      </g>
+      ${clay ? "" : `<g filter="url(#retrace)" fill="none" stroke="${ink}" stroke-width="${1.1 * w}" opacity="0.4" transform="translate(0.7 0.5)">${lines}</g>`}
     </g></svg>`;
 }
 
