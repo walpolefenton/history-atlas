@@ -1,5 +1,5 @@
 import "./style.css";
-import { AtlasMap, letteringEra, type YearLayers } from "./map";
+import { AtlasMap, letteringEra, type LayerGroup, type YearLayers } from "./map";
 import { citiesForEra, drawingsForEra, eventsForEra, loadAdmin1, loadCities, loadDrawings, loadEvents, loadLand, loadMeta, loadScenery, loadSurveyor, loadWikidataEvents, loadYear, sceneryForEra } from "./data";
 import { formatYear } from "./format";
 import { initPanel, renderAdmin, renderCity, renderCompare, renderDrawing, renderEvent, renderList, renderOverview, renderPolity, renderRoute, renderSurveyor, type PanelContext } from "./panel";
@@ -26,6 +26,17 @@ const THEME_ORDER: ThemeChoice[] = ["atlas", "atlas-dark", "night", "survey", "c
 const $ = <T extends HTMLElement>(id: string) => document.getElementById(id) as T;
 
 const FOUND_KEY = "atlas-surveyor-found";
+const LAYERS_KEY = "atlas-hidden-layers";
+const INTRO_KEY = "atlas-intro-seen";
+
+/** Layer groups the reader switched off last time, if storage allows. */
+function loadHiddenLayers(): Set<LayerGroup> {
+  try {
+    return new Set(JSON.parse(localStorage.getItem(LAYERS_KEY) ?? "[]"));
+  } catch {
+    return new Set();
+  }
+}
 function loadFound(): Set<number> {
   try {
     return new Set(JSON.parse(localStorage.getItem(FOUND_KEY) ?? "[]"));
@@ -62,6 +73,7 @@ class App {
   private loadToken = 0;
   private slider = $<HTMLInputElement>("year-slider");
   private hiddenTypes = new Set<EventType>();
+  private hiddenLayers = loadHiddenLayers();
   private wdEvents: HistoryEvent[] = [];
   /** The illustrated layer, loaded after the first map is on screen. */
   private scenery: GeoJSON.Feature[] = [];
@@ -152,6 +164,7 @@ class App {
       drawings: era.drawings,
       surveyor: { spot: era.surveyor, found: this.found.has(this.data.year), count: this.found.size, total: Object.keys(this.spots).length },
       hiddenTypes: this.hiddenTypes,
+      hiddenLayers: this.hiddenLayers,
       compare: this.compareData,
       actions: {
         selectPolity: (name, year) => this.selectPolity(name, year, true),
@@ -162,6 +175,7 @@ class App {
         setCompareYear: (year) => this.setCompareIndex(this.years.indexOf(year)),
         selectDrawing: (id) => this.selectDrawing(id, true),
         showSurveyor: () => this.select({ kind: "surveyor" }, true),
+        toggleLayer: (g) => this.toggleLayer(g),
       },
     };
   }
@@ -170,6 +184,10 @@ class App {
     this.buildTimeline();
     this.bindControls();
     const s = parseHash(location.hash);
+    for (const g of this.hiddenLayers) this.atlas.setLayerGroup(g, false);
+    // A shared link opens on the same view.
+    if (s.view) this.atlas.setView(s.view);
+    this.atlas.onViewChange(() => this.updateUrl());
     if (s.selection.kind === "event") {
       const id = s.selection.id;
       if (!this.curated.some((e) => e.id === id)) this.pendingEvent = id;
@@ -337,7 +355,26 @@ class App {
     this.atlasB?.highlight(polity, event);
     $("btn-list").setAttribute("aria-pressed", String(sel.kind === "list"));
     $("btn-overview").setAttribute("aria-pressed", String(sel.kind === "none"));
-    history.replaceState(null, "", toHash(this.data.year, sel, this.compareIndex === null ? null : this.years[this.compareIndex]));
+    this.updateUrl();
+  }
+
+  /** Keeps the URL in step with the year, selection, comparison and camera, so any view can be shared. */
+  private updateUrl() {
+    if (!this.data) return;
+    history.replaceState(null, "", toHash(this.data.year, this.selection, this.compareIndex === null ? null : this.years[this.compareIndex], this.atlas.view()));
+  }
+
+  private toggleLayer(g: LayerGroup) {
+    if (this.hiddenLayers.has(g)) this.hiddenLayers.delete(g);
+    else this.hiddenLayers.add(g);
+    this.atlas.setLayerGroup(g, !this.hiddenLayers.has(g));
+    this.atlasB?.setLayerGroup(g, !this.hiddenLayers.has(g));
+    try {
+      localStorage.setItem(LAYERS_KEY, JSON.stringify([...this.hiddenLayers]));
+    } catch {
+      /* not critical */
+    }
+    this.select(this.selection, false);
   }
 
   async selectPolity(name: string, year: number | undefined, fly: boolean) {
@@ -501,8 +538,18 @@ class App {
       else if (e.key === "/") {
         e.preventDefault();
         $("search-input").focus();
+      } else if (e.key === "?") toggleHelp();
+      else if (e.key === "Escape" && !document.querySelector("dialog[open]")) this.select(this.compareIndex !== null ? { kind: "compare" } : { kind: "none" }, true);
+      else if (e.key === "l" || e.key === "L") this.select(this.selection.kind === "list" ? { kind: "none" } : { kind: "list" }, true);
+      else if (e.key === "c" || e.key === "C") $("btn-compare").click();
+      else if (e.key === "p" || e.key === "P" || e.key === " ") {
+        if (e.key === " " && t !== document.body) return;
+        e.preventDefault();
+        this.togglePlay();
       }
     });
+    $("btn-help").addEventListener("click", () => toggleHelp());
+    showIntro();
 
     initPanel();
   }
@@ -536,6 +583,35 @@ class App {
   }
 }
 
+/** The keyboard and reading guide, as a native dialog (Esc closes it). */
+function toggleHelp() {
+  const d = $<HTMLDialogElement>("help");
+  if (d.open) d.close();
+  else d.showModal();
+}
+
+/** A short orientation on the first visit, dismissed for good once closed. */
+function showIntro() {
+  try {
+    if (localStorage.getItem(INTRO_KEY)) return;
+  } catch {
+    return;
+  }
+  const el = $("intro");
+  el.hidden = false;
+  const close = () => {
+    el.hidden = true;
+    try {
+      localStorage.setItem(INTRO_KEY, "1");
+    } catch {
+      /* not critical */
+    }
+  };
+  el.querySelector("button")!.addEventListener("click", close);
+  // Any real use of the map counts as having read it.
+  window.setTimeout(close, 20000);
+}
+
 function eraOf(year: number) {
   return [...ERAS].reverse().find((e) => year >= e.from)!.name;
 }
@@ -546,8 +622,9 @@ function nearest(ys: number[], target: number) {
 
 // --- Shareable URLs: #y=1914&p=Serbia | #y=1914&e=ww1 | #y=1914&v=list | #y=1914&c=1920
 
-function toHash(year: number, sel: Selection, compare: number | null) {
+function toHash(year: number, sel: Selection, compare: number | null, view?: [number, number, number]) {
   const q = new URLSearchParams({ y: String(year) });
+  if (view) q.set("m", view.join(","));
   if (compare !== null) q.set("c", String(compare));
   if (sel.kind === "polity") q.set("p", sel.name);
   if (sel.kind === "event") q.set("e", sel.id);
@@ -556,7 +633,7 @@ function toHash(year: number, sel: Selection, compare: number | null) {
   return "#" + q.toString();
 }
 
-function parseHash(hash: string): { year?: number; compare?: number; selection: Selection } {
+function parseHash(hash: string): { year?: number; compare?: number; view?: [number, number, number]; selection: Selection } {
   const q = new URLSearchParams(hash.slice(1));
   const num = (k: string) => {
     const v = q.get(k);
@@ -571,7 +648,9 @@ function parseHash(hash: string): { year?: number; compare?: number; selection: 
         : q.get("v") === "list"
           ? { kind: "list" }
           : { kind: "none" };
-  return { year: num("y"), compare: num("c"), selection };
+  const m = q.get("m")?.split(",").map(Number);
+  const view = m?.length === 3 && m.every((v) => Number.isFinite(v)) ? (m as [number, number, number]) : undefined;
+  return { year: num("y"), compare: num("c"), view, selection };
 }
 
 async function boot() {

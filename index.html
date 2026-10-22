@@ -49,6 +49,7 @@
         <button type="button" id="btn-compare" class="tool" aria-pressed="false">Compare</button>
         <button type="button" id="btn-projection" class="tool" aria-pressed="true">Globe</button>
         <button type="button" id="btn-theme" class="tool">Night</button>
+        <button type="button" id="btn-help" class="tool tool-icon" aria-label="Help and keyboard shortcuts" title="Help (?)">?</button>
       </div>
     </header>
 
@@ -69,6 +70,28 @@
       </div>
       <aside id="panel" class="panel" tabindex="-1" aria-label="Details"></aside>
     </main>
+
+    <div class="intro" id="intro" role="note" hidden>
+      <p><strong>Welcome to History Atlas.</strong> Drag the timeline or press ▶ to watch borders change. Click any territory, event or place to learn about it, and search with <kbd>/</kbd>.</p>
+      <button type="button" class="link">Got it</button>
+    </div>
+
+    <dialog id="help" aria-labelledby="help-title">
+      <h2 id="help-title">Using the atlas</h2>
+      <dl class="keys">
+        <div><dt><kbd>[</kbd> <kbd>]</kbd></dt><dd>Previous or next snapshot</dd></div>
+        <div><dt><kbd>P</kbd> or <kbd>Space</kbd></dt><dd>Play or pause through time</dd></div>
+        <div><dt><kbd>/</kbd></dt><dd>Search territories, events and places</dd></div>
+        <div><dt><kbd>L</kbd></dt><dd>All territories, as a list</dd></div>
+        <div><dt><kbd>C</kbd></dt><dd>Compare two years side by side</dd></div>
+        <div><dt><kbd>Esc</kbd></dt><dd>Back to the overview</dd></div>
+        <div><dt>Arrow keys, <kbd>+</kbd> <kbd>−</kbd></dt><dd>Pan and zoom the map (when it has focus)</dd></div>
+        <div><dt><kbd>?</kbd></dt><dd>Show this guide</dd></div>
+      </dl>
+      <h3>Reading the map</h3>
+      <p>Each colour family is a broad cultural region, and territories ruled by one power share a colour. Dashed outlines mark approximate borders. Large markers are key events; smaller dots are other recorded events and appear as you zoom in. The link in your address bar always holds the current year, selection and view, so you can share exactly what you see.</p>
+      <form method="dialog"><button type="submit" class="tool">Close</button></form>
+    </dialog>
 
     <footer class="timeline" aria-label="Timeline">
       <div class="timeline-controls">

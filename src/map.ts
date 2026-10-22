@@ -1167,6 +1167,15 @@ const WAY_OF_LIFE: Record<string, string> = {
 
 // --- Map ----------------------------------------------------------------------
 
+/** Layers the reader can switch off from the overview. */
+export type LayerGroup = "landmarks" | "cities" | "provinces" | "minorEvents";
+const LAYER_GROUPS: Record<LayerGroup, string[]> = {
+  landmarks: ["drawings-1", "drawings-2", "drawings-3"],
+  cities: ["cities-1", "cities-2", "cities-3"],
+  provinces: ["admin1-fill", "admin1-line", "admin1-label", "admin1-hover"],
+  minorEvents: ["events-more"],
+};
+
 export interface YearLayers {
   data: YearData;
   featured: HistoryEvent[];
@@ -1193,6 +1202,8 @@ export class AtlasMap {
   private green = false;
   /** Borders currently on screen, for the cross-fade to the next year. */
   private shown: YearData | null = null;
+  /** Layer groups the reader has switched off; kept across theme changes. */
+  private hiddenGroups = new Set<LayerGroup>();
 
   static async create(container: string, land: GeoJSON.FeatureCollection, handlers: MapHandlers, options: MapOptions = {}) {
     return new AtlasMap(container, land, handlers, options, await themeImages(currentTheme()));
@@ -1277,6 +1288,7 @@ export class AtlasMap {
       if (this.last) this.setYear(this.last);
       if (this.admin1) this.setAdmin1(this.admin1);
       this.highlight(this.selection.polity, this.selection.event);
+      this.applyLayerGroups();
     });
   }
 
@@ -1490,5 +1502,32 @@ export class AtlasMap {
   setGlobe(globe: boolean) {
     this.globe = globe;
     this.map.setProjection({ type: globe ? "globe" : "mercator" });
+  }
+
+  /** Shows or hides a group of layers the reader can switch off (see LAYER_GROUPS). */
+  setLayerGroup(group: LayerGroup, visible: boolean) {
+    if (visible) this.hiddenGroups.delete(group);
+    else this.hiddenGroups.add(group);
+    this.applyLayerGroups();
+  }
+
+  private applyLayerGroups() {
+    for (const [group, ids] of Object.entries(LAYER_GROUPS) as [LayerGroup, string[]][])
+      for (const id of ids) if (this.map.getLayer(id)) this.map.setLayoutProperty(id, "visibility", this.hiddenGroups.has(group) ? "none" : "visible");
+  }
+
+  /** The camera as [lon, lat, zoom], rounded for a tidy URL. */
+  view(): [number, number, number] {
+    const c = this.map.getCenter();
+    return [Math.round(c.lng * 100) / 100, Math.round(c.lat * 100) / 100, Math.round(this.map.getZoom() * 100) / 100];
+  }
+
+  setView([lon, lat, zoom]: [number, number, number]) {
+    this.map.jumpTo({ center: [lon, lat], zoom });
+  }
+
+  /** Calls back whenever the camera comes to rest. */
+  onViewChange(cb: () => void) {
+    this.map.on("moveend", cb);
   }
 }

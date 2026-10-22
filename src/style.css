@@ -731,6 +731,38 @@ body[data-lettering="printed"] #ym-num { font-family: "IM Fell English", var(--f
 .today-bar span { display: block; height: 100%; border-radius: 3px; background: var(--accent); opacity: 0.75; }
 .today-pct { text-align: right; font-variant-numeric: tabular-nums; color: var(--muted); font-size: 13px; }
 
+/* Layer switches: a check box drawn as a small square that fills when on. */
+.layer-toggles { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; }
+.layer-toggle { display: flex; align-items: center; gap: 8px; width: 100%; padding: 4px 0; border: 0; background: none; color: var(--text); font: inherit; font-size: 14px; text-align: left; cursor: pointer; }
+.layer-toggle::before { content: ""; flex: none; width: 14px; height: 14px; border-radius: 3px; border: 1.5px solid var(--muted); }
+.layer-toggle[aria-pressed="true"]::before { background: var(--accent); border-color: var(--accent); box-shadow: inset 0 0 0 2px var(--surface-solid); }
+.layer-toggle[aria-pressed="false"] { color: var(--muted); }
+
+.tool-icon { width: 36px; padding: 0; font-weight: 600; }
+
+/* First-visit note, floating over the bottom of the map. */
+.intro {
+  position: absolute; left: 50%; bottom: calc(var(--timeline-h) + 16px); transform: translateX(calc(-50% - var(--panel-w) / 2));
+  z-index: 6; display: flex; align-items: center; gap: 16px; max-width: min(560px, calc(100vw - var(--panel-w) - 60px));
+  padding: 12px 18px; background: var(--surface-solid); color: var(--text); border: 1px solid var(--line); border-radius: var(--r-md, 12px); box-shadow: var(--shadow);
+  font-size: 14px; line-height: 1.45;
+}
+.intro p { margin: 0; }
+.intro .link { white-space: nowrap; }
+.intro[hidden] { display: none; }
+kbd { display: inline-block; min-width: 1.5em; padding: 0 5px; border: 1px solid var(--line); border-bottom-width: 2px; border-radius: 4px; font: 600 12px/1.6 var(--font-ui); text-align: center; background: var(--raised); }
+
+/* The help guide. */
+#help { width: min(520px, calc(100vw - 32px)); padding: 24px 28px; border: 1px solid var(--line); border-radius: var(--r-lg); background: var(--surface-solid); color: var(--text); box-shadow: var(--shadow); }
+#help::backdrop { background: rgba(10, 15, 20, 0.45); }
+#help h2 { margin: 0 0 14px; font: 500 26px/1.2 var(--font-display); }
+#help h3 { margin: 18px 0 6px; font-size: 14px; }
+#help p { margin: 0 0 16px; color: var(--muted); font-size: 14px; line-height: 1.55; }
+.keys { margin: 0; display: grid; gap: 8px; }
+.keys div { display: grid; grid-template-columns: 150px 1fr; gap: 12px; align-items: baseline; font-size: 14px; }
+.keys dt { white-space: nowrap; }
+.keys dd { margin: 0; }
+
 /* The bottom-sheet handle only exists on phones. */
 .sheet-handle { display: none; }
 
@@ -744,6 +776,9 @@ body[data-lettering="printed"] #ym-num { font-family: "IM Fell English", var(--f
   .toolbar { order: 3; width: 100%; overflow-x: auto; scrollbar-width: none; flex-wrap: nowrap; }
   .toolbar::-webkit-scrollbar { display: none; }
   .tool { flex: none; height: 34px; padding: 0 12px; font-size: 13px; }
+  .tool-icon { width: 34px; padding: 0; }
+  .intro { left: 12px; right: 12px; transform: none; max-width: none; bottom: calc(40% + 12px); }
+  .keys div { grid-template-columns: 110px 1fr; }
 
   /* The panel becomes a bottom sheet: it peeks over the map and opens upward. */
   .panel {

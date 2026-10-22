@@ -1,3 +1,4 @@
+import type { LayerGroup } from "./map";
 import type { AdminProps, City, Drawing, EventType, HistoryEvent, Meta, RouteInfo, SurveyorSpot, YearData } from "./types";
 import { cityNameAt } from "./data";
 import { EVENT_TYPES, PRECISION_LABEL, escapeHtml as esc, formatArea, formatEventDate, formatYear } from "./format";
@@ -24,6 +25,8 @@ export interface PanelContext {
   /** Wikidata events of this era, most widely covered first. */
   moreEvents: HistoryEvent[];
   hiddenTypes: Set<EventType>;
+  /** Layer groups the reader has switched off. */
+  hiddenLayers: Set<LayerGroup>;
   /** The second snapshot, when compare mode is on. */
   compare: YearData | null;
   /** Landmarks and curiosities that existed during this era. */
@@ -38,6 +41,7 @@ export interface PanelContext {
     setCompareYear(year: number): void;
     selectDrawing(id: string): void;
     showSurveyor(): void;
+    toggleLayer(group: LayerGroup): void;
   };
 }
 
@@ -58,6 +62,7 @@ export function initPanel() {
     else if (action === "overview") current.actions.showOverview();
     else if (action === "sheet") setSheetOpen(!document.body.classList.contains("sheet-open"));
     else if (action === "type") current.actions.toggleType(type as EventType);
+    else if (action === "layer") current.actions.toggleLayer(el.dataset.layer as LayerGroup);
     else if (action === "compare-year") current.actions.setCompareYear(Number(year));
     else if (action === "drawing") current.actions.selectDrawing(id!);
     else if (action === "drawing-surveyor") current.actions.showSurveyor();
@@ -181,6 +186,19 @@ export function renderOverview(ctx: PanelContext, focus = false) {
     <section>
       <h3>Show event types</h3>
       <ul class="legend">${legend}</ul>
+    </section>
+    <section>
+      <h3>Show on the map</h3>
+      <ul class="layer-toggles">${(
+        [
+          ["landmarks", "Landmarks and places"],
+          ["cities", "Cities"],
+          ["provinces", "States and provinces"],
+          ["minorEvents", "Other recorded events"],
+        ] as [LayerGroup, string][]
+      )
+        .map(([g, label]) => `<li><button type="button" class="layer-toggle" data-action="layer" data-layer="${g}" aria-pressed="${!ctx.hiddenLayers.has(g)}">${label}</button></li>`)
+        .join("")}</ul>
     </section>
     <section>
       <h3>Key events, ${eraRange(ctx)}</h3>
