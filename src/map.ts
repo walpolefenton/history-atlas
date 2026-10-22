@@ -176,7 +176,7 @@ const MARKS: Record<string, { grid: number; density: number; alpha: number; mark
   },
   // Mountains: broad hills in profile, as on old maps, their east slopes hatched.
   mountains: {
-    grid: 5, density: 0.85, alpha: 0.5,
+    grid: 5, density: 0.8, alpha: 0.38,
     mark: (x, y, k) => `M${x - 10 * k} ${y} Q${x - 4 * k} ${y - 12 * k} ${x} ${y - 12 * k} Q${x + 4 * k} ${y - 12 * k} ${x + 10 * k} ${y}`,
     shade: (x, y, k) =>
       [2, 4.5, 7].map((o) => `M${x + o * k} ${y - (12 - o * 1.2) * k + 1} l${1.2 * k} ${(9 - o * 1.1) * k}`).join(" "),

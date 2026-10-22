@@ -1,6 +1,6 @@
 // Pictogram markers, drawn once as SVG and used both on the map (as images)
-// and in the panel (inline). In Night and Survey they are pen drawings over a
-// faint wash, like everything else on the map; in Clay, moulded beads.
+// and in the panel (inline). In Night and Survey they are engraved seals; in
+// the Atlas themes, solid discs; in Clay, moulded beads.
 // Events are round; capitals are a castle tower, so they never read alike.
 import type { EventType } from "./types";
 
@@ -33,15 +33,16 @@ const CLAY_DEFS = `<defs>
   <filter id="lump" x="-15%" y="-15%" width="130%" height="130%"><feTurbulence type="fractalNoise" baseFrequency="0.05" numOctaves="2" seed="7"/><feDisplacementMap in="SourceGraphic" scale="2.2"/></filter>
 </defs>`;
 
-const PEN = `<filter id="pen" x="-10%" y="-10%" width="120%" height="120%"><feTurbulence type="fractalNoise" baseFrequency="0.06" numOctaves="1" seed="5"/><feDisplacementMap in="SourceGraphic" scale="2"/></filter>`;
 
 export function eventIconSvg(type: EventType, color: string, ring: string, clay = false) {
   if (!clay) {
-    // The glyph in the event's colour, over a loose wash and a hand-drawn ring.
-    const glyph = GLYPHS[type].replace(/#fff/g, color);
-    return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64"><defs>${PEN}</defs>
-      <g filter="url(#pen)"><circle cx="32" cy="32" r="27" fill="${color}" opacity="0.18"/>
-      <circle cx="32" cy="32" r="27" fill="none" stroke="${color}" stroke-width="2" opacity="0.7"/>${glyph}</g></svg>`;
+    // An engraved seal: the detailed glyph in the event's colour on a pale
+    // wash, inside a fine double ring.
+    const glyph = MODERN_GLYPHS[type].replace(/#fff/g, color).replace(/COLOR/g, ring);
+    return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+      <circle cx="32" cy="32" r="28" fill="${ring}" opacity="0.85"/><circle cx="32" cy="32" r="28" fill="${color}" opacity="0.14"/>
+      <circle cx="32" cy="32" r="28" fill="none" stroke="${color}" stroke-width="1.6"/><circle cx="32" cy="32" r="24.6" fill="none" stroke="${color}" stroke-width="0.7" opacity="0.6"/>
+      <g transform="translate(32 32) scale(0.8) translate(-32 -32)">${glyph}</g></svg>`;
   }
   if (clay) {
     return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">${CLAY_DEFS}
@@ -109,8 +110,11 @@ const TOWER =
 
 export function capitalIconSvg(color: string, ring: string, clay = false) {
   if (!clay) {
-    return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64"><defs>${PEN}</defs>
-      <g filter="url(#pen)"><path d="${TOWER}" fill="${color}" fill-opacity="0.25" fill-rule="evenodd" stroke="${color}" stroke-width="3" stroke-linejoin="round"/></g></svg>`;
+    // A crisp tower: a pale wash, a fine outline, the masonry coursed.
+    return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+      <path d="${TOWER}" fill="${ring}" stroke="${ring}" stroke-width="5" stroke-linejoin="round" opacity="0.8"/>
+      <path d="${TOWER}" fill="${color}" fill-opacity="0.22" fill-rule="evenodd" stroke="${color}" stroke-width="2" stroke-linejoin="round"/>
+      <path d="M21 35 H43 M21 41 H29 M35 41 H43 M21 47 H29 M35 47 H43 M25 29 V35 M39 29 V35" stroke="${color}" stroke-width="0.9" opacity="0.55"/></svg>`;
   }
   if (clay) {
     return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">${CLAY_DEFS}

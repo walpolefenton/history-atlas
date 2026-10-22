@@ -177,9 +177,11 @@ const D: Record<string, string> = {
     <circle cx="51.6" cy="27.4" r="0.5"/><path d="M45.6 23.6 Q48.6 26 47.6 31 Q45.4 33.4 44 31" opacity=".5"/>
     <path d="M16 41.6 L15.6 54.6 H20.6 L21 42 Z M23 42 L23.4 54 H28 V42 Z M36.6 42 V54.6 H41.6 L41.4 42 Z M42 41.6 L43 54 H47.6 L46.6 40.6 Z" fill="WASH"/>
     ${times(14, (i) => `<path d="M${16 + i * 2.4} ${38 + (i % 3)} l-.6 ${3 + (i % 2)}" opacity=".45"/>`)}<path d="M12.4 37 Q9 40 9.6 45"/><path d="M4 55 H62" opacity=".45"/>`,
-  serpent: `<path d="M4 44 Q10 29 16 44 M20 44 Q26 27 32 44 M36 44 Q42 31 48 44"/>
-    <path d="M47 44 Q50 29 57 31 Q61 35 56 38 L51 39" fill="WASH"/><circle cx="55" cy="33.5" r="0.8"/><path d="M58 37 L62 39 M58 37 L61 41"/>
-    <path d="M9 37 L11 34 M25 35 L27 32 M41 37 L43 34"/><path d="M2 49 Q8 46 14 49 T26 49 T38 49 T50 49 T62 49"/>`,
+  // A sea serpent from a sixteenth-century chart: the maned head, the coils breaking the surface.
+  serpent: `<path d="M44 40 Q46 26 52 22 Q58 19 61 23 Q62.6 26 60 27.4 L56.6 27 Q54 30 54 40 Z" fill="WASH"/><circle cx="57" cy="23.4" r="0.6"/><path d="M60 27.4 L63 30 M59 27.6 L60.6 31" />
+    <path d="M52 22 Q49 18 50 14 Q53 18 54 20.6 M50.4 24 Q46 22 45.4 18 Q49 21 51 22.4" opacity=".6"/>
+    ${[[6, 18], [22, 34]].map(([a, b]) => `<path d="M${a} 40 Q${(a + b) / 2} 22 ${b} 40" fill="WASH"/>${times(4, (i) => `<path d="M${a + 2 + i * 3} ${32 - Math.sin(((i + 0.5) / 4) * Math.PI) * 6} l1.4 -1.6" opacity=".5"/>`)}`).join("")}
+    <path d="M2 41 Q8 39.6 14 41 T26 41 T38 41 T50 41 T62 41 M6 46 Q12 44.6 18 46 T30 46 T42 46 T54 46" opacity=".45"/>`,
   // A Viking longship: the dragon prow, a row of shields, the striped square sail, oars out.
   longship: `<path d="M32 42 V9"/><path d="M15 12 H49 L50 33 Q32 36 14 33 Z" fill="WASH"/>${times(5, (i) => `<path d="M${19 + i * 6.6} 12.6 Q${18.6 + i * 6.6} 23 ${19.4 + i * 6.6} 34" opacity=".45"/>`)}
     <path d="M32 9 L14.4 33 M32 9 L49.6 33" opacity=".25"/>
@@ -215,12 +217,18 @@ const D: Record<string, string> = {
     <path d="M9 42.4 Q32 46.2 54.4 41.4" opacity=".5"/>${times(6, (i) => `<path d="M${17 + i * 5.6} ${r1(44.6 + Math.sin((i / 5) * Math.PI) * 0.8)} h1.8 v1.6 h-1.8 Z" opacity=".7"/>`)}
     <path d="M6.6 36.4 H13.4 M6.6 38.8 H13.6" opacity=".55"/>
     <path d="M2 52 Q8 50.6 14 52 T26 52 T38 52 T50 52 T62 52 M8 56 Q14 54.6 20 56 T32 56 T44 56 T56 56" opacity=".45"/>`,
-  balloon: `<path d="M32 5 Q13 5 15 23 Q17 33 26 40 H38 Q47 33 49 23 Q51 5 32 5 Z" fill="WASH"/>
-    <path d="M32 5 V40 M23 8 Q20 24 27 40 M41 8 Q44 24 37 40"/><path d="M16 22 Q32 27 48 22"/>
-    <path d="M26 40 L28 47 M38 40 L36 47"/><path d="M27 47 H37 V53 H27 Z"/>`,
-  train: `<path d="M14 44 V32 H42 V44 Z M42 44 V24 H54 V44 Z" fill="WASH"/><path d="M18 32 L16 19 H26 L24 32"/>
-    <path d="M14 44 L7 51 H14"/><circle cx="21" cy="47" r="5"/><circle cx="33" cy="47" r="5"/><circle cx="48" cy="46" r="6"/>
-    <path d="M45 28 H51 V34 H45 Z"/><circle cx="19" cy="12" r="3.5"/><circle cx="12" cy="7" r="4.5"/><path d="M2 53 H62"/>`,
+  // The Montgolfier balloon of 1783: the decorated envelope, the gallery hung beneath, the fire basket.
+  balloon: `<path d="M32 4 Q49 4 49 22 Q49 33 39 41 L37 47 H27 L25 41 Q15 33 15 22 Q15 4 32 4 Z" fill="WASH"/>
+    <path d="M15.6 18 Q32 22 48.4 18 M15.4 26 Q32 30 48.6 26" opacity=".55"/><path d="M32 4 Q24 14 25 41 M32 4 Q40 14 39 41 M32 4 V47" opacity=".35"/>
+    ${times(5, (i) => `<circle cx="${21 + i * 5.5}" cy="${r1(22.4 + Math.sin((i / 4) * Math.PI) * 1.4)}" r="0.9" opacity=".7"/>`)}
+    <path d="M27 47 L24 54 M37 47 L40 54"/><path d="M22 54 H42 V57.4 H22 Z" fill="WASH"/><path d="M30 47 Q29.4 50 32 51.6 Q34.6 50 34 47" opacity=".6"/>`,
+  // A steam locomotive of the 1860s (a 4-4-0): the flared stack, the cowcatcher, the cab and the tender.
+  train: `<path d="M18 40 V30 H42 V40 Z" fill="WASH"/><path d="M42 40 V22 H53 V40 Z" fill="WASH"/><path d="M40.6 22 H54.4"/><path d="M45 32 V26 H50.6 V32" opacity=".7"/>
+    <path d="M21 30 L19.4 20 H25.4 L24 30 Z" fill="WASH"/><path d="M17.6 20 H27.2 L25.4 17 H19.4 Z" fill="WASH"/><path d="M30 30 Q30 26.6 32.4 26.6 Q34.8 26.6 34.8 30"/><path d="M38 30 V27.6 H40 V30"/>
+    <path d="M18 40 L12 46 H18"/><path d="M12 46 L14.6 40 M14.4 46 L16 41.4" opacity=".55"/><path d="M54 33 H62 V44 H54 Z" fill="WASH"/>
+    ${[[22, 3], [29, 3], [39, 5.4], [49.6, 5.4]].map(([x, r]) => `<circle cx="${x}" cy="${46 - r + 0.4}" r="${r}"/><circle cx="${x}" cy="${46 - r + 0.4}" r="0.7"/>`).join("")}<circle cx="57" cy="44.4" r="2"/><circle cx="60.6" cy="44.4" r="2"/>
+    <path d="M39 41 L49.6 41" /><path d="M2 46.6 H62 M4 48.6 H60" opacity=".55"/>${times(10, (i) => `<path d="M${5 + i * 6} 46.6 v2" opacity=".4"/>`)}
+    <path d="M22 16 Q18 10 22 7 Q26 3 32 5 Q38 2 42 6" opacity=".4"/>`,
   // An ocean liner of the 1910s: four raked funnels, lifeboats along the boat deck, rows of portholes.
   steamship: `<path d="M3 38 H58 L61 36.6 L56.4 47.6 Q32 50 7 48 L3 38 Z" fill="WASH"/><path d="M3.6 41.4 H58.6" opacity=".5"/>
     ${times(16, (i) => `<circle cx="${8 + i * 3.1}" cy="44.2" r="0.55"/>`)}
@@ -230,11 +238,20 @@ const D: Record<string, string> = {
     <path d="M7 34 L9 22 M55 38 L53 24" opacity=".5"/><path d="M9 22 L53 24" opacity=".25"/>
     <path d="M21 17 Q19 13 22.6 11.4 Q25.6 8.4 29.6 10.4 M29 17 Q28 13.6 31 12.4" opacity=".4"/>
     <path d="M2 52 Q8 50.6 14 52 T26 52 T38 52 T50 52 T62 52 M8 56 Q14 54.6 20 56 T32 56 T44 56 T56 56" opacity=".45"/>`,
-  biplane: `<path d="M8 25 H52 V29 H8 Z M8 37 H52 V41 H8 Z" fill="WASH"/><path d="M14 29 V37 M24 29 V37 M36 29 V37 M46 29 V37"/>
-    <path d="M52 33 H60 M56 27 V39"/><path d="M2 31 H8 M4 28 V35"/><circle cx="31" cy="23" r="2.5"/><path d="M31 25.5 V29"/>`,
-  airship: `<ellipse cx="32" cy="25" rx="26" ry="10" fill="WASH"/><path d="M14 18 Q12 25 14 32 M23 16 Q21 25 23 34 M32 15 V35 M41 16 Q43 25 41 34 M50 18 Q52 25 50 32"/>
-    <path d="M55 21 L62 15 V35 L55 29"/><path d="M26 35 H38 V40 H26 Z"/>`,
-  rocket: `<circle cx="27" cy="27" r="9" fill="WASH"/><path d="M33 33 L60 47 M31 35 L52 56 M35 30 L61 38 M28 36 L40 61"/><path d="M21 23 Q24 20 28 21"/>`,
+  // The Wright Flyer of 1903: the double wing, the canard elevator out front, the twin propellers.
+  biplane: `<path d="M8 22 H50 V24.6 H8 Z M8 36 H50 V38.6 H8 Z" fill="WASH"/>${times(6, (i) => `<path d="M${10 + i * 7.6} 24.6 V36"/>`)}<path d="M10 24.6 L17.6 36 M17.6 24.6 L10 36 M40.4 24.6 L48 36 M48 24.6 L40.4 36" opacity=".4"/>
+    <path d="M50 26 H58 M50 34 H58 M56 24 V36"/><path d="M55 23.4 H61 V25 H55 Z" fill="WASH"/>
+    <path d="M8 30 H2 M3 27 V33"/><path d="M4.6 27 h-2.4 v6 h2.4" opacity=".55"/><path d="M26 31 h7 v4 h-7 Z" fill="WASH"/>
+    <ellipse cx="20" cy="30.6" rx="1" ry="5" opacity=".7"/><ellipse cx="38" cy="30.6" rx="1" ry="5" opacity=".7"/><path d="M14 44 Q30 41 46 44" opacity=".3"/>`,
+  // The Hindenburg: the long ribbed hull, the cruciform tail fins, the gondola beneath.
+  airship: `<path d="M4 30 Q6 21 24 20 H44 Q57 21 60 30 Q57 39 44 40 H24 Q6 39 4 30 Z" fill="WASH"/>${times(9, (i) => `<path d="M${12 + i * 5.4} ${r1(20.6 - (i < 2 ? 1 - i * 0.5 : 0))} Q${10.6 + i * 5.4} 30 ${12 + i * 5.4} ${r1(39.4 + (i < 2 ? 1 - i * 0.5 : 0))}" opacity=".3"/>`)}
+    <path d="M4.6 30 H59.6" opacity=".35"/><path d="M6 25 L1 17 H6 L13 22 Z M6 35 L1 43 H6 L13 38 Z" fill="WASH"/>
+    <path d="M38 40 Q42 44.4 47 40" fill="WASH"/><path d="M42 41 V42.6 M44 41 V42.4" opacity=".55"/><path d="M28 39.6 l1.4 2 h2.4 l1.2 -2" opacity=".6"/>`,
+  // Sputnik 1: the polished sphere with its four swept-back antennae, in orbit above the curve of the Earth.
+  rocket: `<path d="M2 62 Q32 44 62 62" fill="WASH"/><path d="M2 58 Q32 40 62 58" opacity=".35"/>
+    <path d="M6 30 Q30 2 60 18" opacity=".35"/><circle cx="26" cy="22" r="6.4" fill="WASH"/><path d="M21 19 Q24 16.4 28 17.4" opacity=".55"/>
+    <path d="M30.8 25 L56 40 M31.6 23.4 L58 30 M29.6 26.4 L48 47.6 M31.8 21.4 L58.6 22.6"/>${[[56, 40], [58, 30], [48, 47.6], [58.6, 22.6]].map(([x, y]) => `<circle cx="${x}" cy="${y}" r="0.6"/>`).join("")}
+    ${[[8, 8], [48, 6], [14, 40], [56, 12], [4, 22]].map(([x, y]) => `<path d="M${x - 1} ${y} H${x + 1} M${x} ${y - 1} V${y + 1}" opacity=".5"/>`).join("")}`,
   // A stratovolcano erupting: the crater, an ash plume rising and leaning with the wind, lava streaks down the flank.
   volcano: `<path d="M4 54 L24 26 Q32 23.6 40 26 L60 54 Z" fill="WASH"/><path d="M24 26 Q32 28.4 40 26" />
     <path d="M30 26.6 Q28 36 31 44 M34 26.6 Q38 34 37 42 M27 27 L22 38" opacity=".55"/>
@@ -253,23 +270,26 @@ const D: Record<string, string> = {
     <circle cx="57.4" cy="25.2" r="2.1" fill="WASH"/><path d="M55.4 28.4 Q57.6 27.4 59.6 28.6 L60.4 40 Q57.4 41 54.6 40 Z" fill="WASH"/>
     <path d="M56 40.4 L55.2 55.6 H57.2 L57.6 41 M58.4 41 L59.4 55.6 H61.4 L60.2 40.4"/><path d="M55.6 30.4 L51.6 33.4 Q49 30 49 28.4"/>
     <path d="M1 55.8 H63" opacity=".5"/>`,
-  press: `<path d="M14 54 V10 H50 V54"/><path d="M14 16 H50"/><path d="M32 16 V30"/><path d="M20 24 H44"/>
-    <path d="M22 30 H42 V36 H22 Z" fill="WASH"/><path d="M18 42 H46 V46 H18 Z"/><path d="M24 40 L40 40" opacity=".6"/><path d="M8 54 H56"/>`,
+  // Gutenberg's press: the oak frame, the great wooden screw and its bar, the platen over the type forme.
+  press: `<path d="M14 56 V8 H19 V56 Z M45 56 V8 H50 V56 Z" fill="WASH"/><path d="M11 8 H53 V12.6 H11 Z M14 24 H50 V27.6 H14 Z" fill="WASH"/>
+    <path d="M30 12.6 V24 M34 12.6 V24"/>${times(6, (i) => `<path d="M30 ${14 + i * 1.8} L34 ${15.2 + i * 1.8}" opacity=".6"/>`)}<path d="M32 18 L52 14.6 L53 16.4 L33 20" fill="WASH"/>
+    <path d="M22 27.6 V32 H42 V27.6" fill="WASH"/><path d="M8 40 H56 V44 H8 Z" fill="WASH"/><path d="M22 40 V37.6 H42 V40" fill="WASH"/>${times(8, (i) => `<path d="M${23.4 + i * 2.4} 38 v1.6" opacity=".6"/>`)}
+    <path d="M10 44 V56 M54 44 V56"/><path d="M42 37.6 L56 34 L57 37.2 L44 40" opacity=".55"/><path d="M4 56.4 H60" opacity=".45"/>`,
   // The dodo of Mauritius, gone by about 1662: the great hooked bill, stubby wings, the curled tail plume.
   dodo: `<path d="M18 40 Q16 30 24 26 Q30 23 36 25 Q42 27 43 34 Q44 42 38 46 Q30 49 23 47 Q18.6 45 18 40 Z" fill="WASH"/>
     <path d="M36 25.6 Q37 19 41.6 17.6 Q46.4 17 48 21 L55.6 23 Q57.6 24.6 56 27.4 Q53 29.6 50.6 27 L47.6 27.4 Q45 29 43 31.4" fill="WASH"/><path d="M48 21 Q51 23.6 55.6 23" opacity=".55"/>
     <circle cx="44" cy="21" r="0.6"/><path d="M41.4 18 Q43 16.6 45.4 17.4" opacity=".5"/>
     <path d="M18.4 34 Q13.6 31 12.6 26.4 Q15.6 28 17 26 Q16.6 30 19.6 32" fill="WASH"/><path d="M27 33 Q30 37 34 36 Q31 31.6 27 33 Z" fill="WASH"/>
     <path d="M27 47.4 L26.6 54 M26.6 54 L23.6 55 M26.6 54 L29.4 55 M34 47 L35 54 M35 54 L32 55 M35 54 L38 55"/><path d="M14 55.4 H50" opacity=".45"/>`,
-  footprints: `<ellipse cx="12" cy="50" rx="2.6" ry="4.5" fill="WASH"/><ellipse cx="20" cy="44" rx="2.6" ry="4.5" fill="WASH"/>
-    <ellipse cx="26" cy="35" rx="2.6" ry="4.5" fill="WASH"/><ellipse cx="34" cy="30" rx="2.6" ry="4.5" fill="WASH"/>
-    <ellipse cx="40" cy="21" rx="2.6" ry="4.5" fill="WASH"/><ellipse cx="48" cy="16" rx="2.6" ry="4.5" fill="WASH"/>
-    <path d="M52 9 L58 4" opacity=".5"/>`,
-  kraken: `<path d="M10 46 Q4 30 14 22 Q20 18 18 26 Q14 34 20 44"/><path d="M26 46 Q24 20 36 12 Q42 10 39 17 Q32 26 34 46" fill="WASH"/>
-    <path d="M44 46 Q46 32 56 30 Q61 30 58 35 Q52 38 52 46"/>
-    <circle cx="15" cy="30" r="1"/><circle cx="31" cy="24" r="1"/><circle cx="32" cy="32" r="1"/><circle cx="51" cy="36" r="1"/>
-    <path d="M2 50 Q8 47 14 50 T26 50 T38 50 T50 50 T62 50"/>`,
-
+  // Footprints across the Bering land bridge: a family's bare feet, the tracks of a mammoth alongside.
+  footprints: `${times(7, (i) => { const x = 8 + i * 7.6, y = 52 - i * 6.6 + (i % 2) * 3; const a = -30; return `<g transform="translate(${r1(x)} ${r1(y)}) rotate(${a})"><path d="M0 -3.6 Q1.6 -3.6 1.6 -1 Q1.6 1.4 1 3.4 Q0 4.4 -1 3.4 Q-1.6 1.4 -1.4 -1 Q-1.4 -3.6 0 -3.6 Z" fill="WASH"/>${times(5, (t) => `<circle cx="${r1(-1.2 + t * 0.6)}" cy="${r1(-4.8 + Math.abs(t - 1) * 0.3)}" r="0.4"/>`)}</g>`; })}
+    ${times(5, (i) => `<circle cx="${18 + i * 9}" cy="${58 - i * 7.6}" r="2.6" opacity=".5"/>`)}<path d="M2 60 Q30 54 62 20" opacity=".2"/>`,
+  // The kraken of the old charts: a merchant ship in the coils of a giant squid.
+  kraken: `<path d="M22 32 Q32 37 44 32 L41.6 37 Q32 40.4 24.4 37 Z" fill="WASH"/><path d="M32 33 V14 M26 33 V20"/><path d="M27.6 15 H37 V27 Q32 29 27 27 Z M22 21 H30 V30 Q26 31 22 30 Z" fill="WASH"/>
+    <path d="M10 56 Q6 42 14 36 Q20 32 22 38 Q22 44 18 44 M54 56 Q60 40 52 34 Q46 30 44 36 Q43 42 47 42" />
+    <path d="M18 56 Q16 44 24 40 Q28 38 28 44 M46 56 Q50 46 42 41 Q38 39 37.4 44" /><path d="M24 40 L26 42 M14 36 l2 1 M52 34 l-2 1.4" opacity=".5"/>
+    <path d="M30 56 Q30 48 34 46 Q38 46 37 50" opacity=".8"/><circle cx="32.6" cy="50.4" r="1.6" fill="WASH"/>
+    <path d="M2 46 Q8 44.6 14 46 T26 46 T38 46 T50 46 T62 46 M2 52 Q8 50.6 14 52 T26 52 T38 52 T50 52 T62 52" opacity=".45"/>`,
   // A sheaf of einkorn wheat, bound at the waist, the ears heavy with grain and bristling with awns.
   wheat: `${times(7, (i) => { const a = -0.5 + (i * 1) / 6; const tx = 32 + Math.sin(a) * 20, ty = 34 - Math.cos(a) * 20; const ex = 32 + Math.sin(a) * 27, ey = 34 - Math.cos(a) * 27; const deg = (a * 180) / Math.PI; return `<path d="M${r1(32 - Math.sin(a) * 7)} 56 L32 38 L${r1(tx)} ${r1(ty)}"${i % 2 ? ' opacity=".7"' : ""}/><ellipse cx="${r1((tx + ex) / 2)}" cy="${r1((ty + ey) / 2)}" rx="1.6" ry="4" transform="rotate(${r1(deg)} ${r1((tx + ex) / 2)} ${r1((ty + ey) / 2)})" fill="WASH"/><path d="M${r1(ex)} ${r1(ey)} l${r1(Math.sin(a) * 4 - 1)} ${r1(-Math.cos(a) * 4)} M${r1(ex)} ${r1(ey)} l${r1(Math.sin(a) * 4 + 1)} ${r1(-Math.cos(a) * 4)}" opacity=".55"/>`; })}
     <path d="M28.4 37.6 Q32 40 35.6 37.6 V40.6 Q32 43 28.4 40.6 Z" fill="WASH"/><path d="M22 56.4 H42" opacity=".45"/>`,
@@ -313,19 +333,23 @@ const D: Record<string, string> = {
   // Tulips: the cupped blooms on their stems, broad leaves at the base.
   tulip: `${[[24, 16, 0], [38, 22, 1], [31, 28, 2]].map(([x, y, i]) => `<path d="M${x} 54 Q${x + (i - 1) * 2} ${y + 14} ${x} ${y + 8}"/><path d="M${x - 4} ${y + 1} Q${x - 4.4} ${y + 7} ${x} ${y + 8} Q${x + 4.4} ${y + 7} ${x + 4} ${y + 1} L${x + 2} ${y + 3} L${x} ${y - 0.6} L${x - 2} ${y + 3} Z" fill="WASH"/><path d="M${x} ${y - 0.4} V${y + 7.6}" opacity=".4"/>`).join("")}
     <path d="M24 54 Q16 46 15 38 Q20 44 26 50 Z M38 54 Q46 47 47 40 Q42 45 36 50 Z" fill="WASH"/><path d="M16 54.4 H48" opacity=".45"/>`,
-  frost: `<path d="M8 40 L14 30 L20 40 Z M44 40 L50 30 L56 40 Z" fill="WASH"/><path d="M14 30 V27 L17 28 L14 29 M50 30 V27 L53 28 L50 29"/>
-    <circle cx="32" cy="20" r="3.5"/><path d="M29 16 H35 M30 16 V12 H34 V16"/><path d="M32 23.5 L30 34 M31 27 L24 24 M31 27 L38 30 M30 34 L25 42 M30 34 L37 41"/>
-    <path d="M22 43 H28 M35 42 H41"/><path d="M2 46 H62"/><path d="M10 50 L16 48 M40 52 L48 49" opacity=".6"/>
-    <path d="M52 6 V16 M47.5 8.5 L56.5 13.5 M47.5 13.5 L56.5 8.5"/>`,
+  // The Thames frost fair of 1683–84: booths on the ice, skaters, St Paul's beyond.
+  frost: `<path d="M44 26 V18 Q44 12 49 11 Q54 12 54 18 V26 Z" fill="WASH"/><path d="M49 11 V7 M47.6 8.6 H50.4"/><path d="M40 26 H58" opacity=".6"/><path d="M38 30 H60" opacity=".35"/>
+    ${[[6, 34], [18, 33]].map(([x, y]) => `<path d="M${x} ${y + 10} V${y + 4} L${x + 5} ${y} L${x + 10} ${y + 4} V${y + 10} Z" fill="WASH"/><path d="M${x + 5} ${y} V${y - 3} L${x + 7.6} ${y - 2} L${x + 5} ${y - 1}"/><path d="M${x + 3.6} ${y + 10} V${y + 6} H${x + 6.4} V${y + 10}" opacity=".6"/>`).join("")}
+    ${[[34, 40, 1], [44, 43, -1]].map(([x, y, s]) => `<circle cx="${x}" cy="${y - 8}" r="1.3" fill="WASH"/><path d="M${x} ${y - 6.6} L${x + s * 0.6} ${y - 2} L${x - s * 2} ${y + 2} M${x + s * 0.6} ${y - 2} L${x + s * 3} ${y + 1.4} M${x} ${y - 5} L${x - s * 3} ${y - 4} M${x} ${y - 5} L${x + s * 3} ${y - 6}"/><path d="M${x - s * 3.4} ${y + 2.4} h${s * 3} M${x + s * 2} ${y + 1.8} h${s * 3}" opacity=".7"/>`).join("")}
+    <path d="M2 46 H62"/><path d="M6 50 L16 46 M28 51 L40 47 M48 50 L58 46" opacity=".35"/><path d="M4 54 Q20 52 36 54 T62 53.4" opacity=".3"/>`,
   // The passenger pigeon, once in flocks of billions, on a branch.
   bird: `<path d="M4 46 Q20 43 34 45.6 Q46 47.6 60 45" /><path d="M24 45 L28 49 M42 46.6 L45 50" opacity=".55"/>
     <path d="M22 36 Q24 30 31 29.6 Q35 26 39 27.4 Q42 28.6 42 31.4 L45.6 31.6 L42.4 33 Q40.6 38 34 40 Q28 41.4 22 40 Z" fill="WASH"/>
     <path d="M22 37 L6 41.6 L7.6 39 L4.6 39.4 L21.6 35.6" fill="WASH"/><path d="M27 33.6 Q32 32 37 34 M25.6 36.4 Q31 35.4 35.6 37.4" opacity=".45"/>
     <circle cx="39.4" cy="30" r="0.55"/><path d="M33 40 L32 44.6 M36 39.4 L36.6 44.6"/>
     ${times(5, (i) => `<path d="M${8 + i * 11} ${12 + (i % 2) * 5} q2 -1.6 4 0 q2 -1.6 4 0" opacity=".4"/>`)}`,
-  dust: `<path d="M2 54 V20 Q8 10 18 16 Q24 6 34 14 Q40 10 44 18 Q48 24 44 30 Q52 34 48 42 Q54 46 50 54 Z" fill="WASH"/>
-    <path d="M10 26 Q16 22 20 28 M22 20 Q28 16 32 22 M14 38 Q22 34 28 40 M30 32 Q36 28 40 34 M20 48 Q28 44 34 50" opacity=".7"/>
-    <path d="M50 54 V44 L55 39 L60 44 V54"/><path d="M53 54 V49 H57 V54"/><path d="M2 54 H62"/>`,
+  // The Dust Bowl, 1930s: a black wall of dust rolling over a farmstead and its windmill.
+  dust: `<path d="M2 50 V20 Q8 10 18 14 Q24 6 34 10 Q42 4 50 12 Q58 12 62 20 V50 Z" fill="WASH"/>
+    <path d="M6 24 Q14 18 22 22 M26 18 Q34 13 42 18 M46 22 Q52 18 58 24 M8 34 Q18 30 28 34 M34 32 Q44 28 54 33" opacity=".45"/>
+    <path d="M38 50 V40 L43 36 L48 40 V50 Z M48 50 V43 H56 V50 Z" fill="WASH"/><path d="M41.6 50 V45 H44.4 V50" opacity=".6"/>
+    <path d="M14 50 L16 30 M18 50 L16 30"/><circle cx="16" cy="29" r="1"/>${times(8, (i) => `<path d="M16 29 L${r1(16 + 5 * Math.cos((i * Math.PI) / 4))} ${r1(29 + 5 * Math.sin((i * Math.PI) / 4))}" opacity=".6"/>`)}
+    <path d="M2 50.4 H62"/>`,
   // The thylacine, the Tasmanian tiger: dog-like, the stiff tail, the stripes across the back.
   thylacine: `<path d="M12 33 Q12.6 28 20 27.4 H40 Q44 27 47 24.6 L49.4 21.4 L50.6 24 Q53.6 24.4 58 27.4 Q59 28.8 57.6 29.4 L52.6 30 Q50.6 33 47 34.6 Q45 37.4 42.6 38 L17 38.6 Q12.6 37.4 12 33 Z" fill="WASH"/>
     ${times(9, (i) => `<path d="M${22 + i * 2.6} 27.6 Q${21.4 + i * 2.6} 30.6 ${22.4 + i * 2.6} 32.6" opacity=".65"/>`)}
@@ -344,18 +368,35 @@ const D: Record<string, string> = {
     <path d="M2 16.4 H62 V18 H2 Z" fill="WASH"/>
     ${[5, 19, 33, 47].map((x) => `<path d="M${x - 1.2} 46.5 A7.2 7.2 0 0 1 ${x + 13.2} 46.5" opacity=".35"/>`).join("")}
     <path d="M2 59 Q8 57.6 14 59 T26 59 T38 59 T50 59 T62 59" opacity=".45"/>`,
-  geoglyph: `<path d="M32 30 L30 10 L33 22 L34 10 L35 30" /><path d="M32 30 Q20 24 8 28 Q20 30 26 34 M34 30 Q46 22 58 26 Q46 30 40 34"/>
-    <path d="M28 34 Q32 46 32 58 M36 34 Q33 46 33 58"/><path d="M32 30 Q36 36 32 40 Q28 36 32 30 Z" fill="WASH"/><path d="M4 60 H60" opacity=".4"/>`,
-  easel: `<path d="M20 56 L30 8 L40 56 M30 8 V56"/><path d="M16 14 H46 V40 H16 Z" fill="WASH"/>
-    <path d="M26 22 Q31 18 36 22 Q37 30 31 32 Q25 30 26 22 Z"/><path d="M22 40 Q31 34 40 40"/><path d="M50 30 L58 22 M56 20 L60 24"/>`,
-  telescope: `<path d="M12 36 L44 14 L48 20 L16 42 Z" fill="WASH"/><path d="M44 14 L50 10 L54 16 L48 20"/><path d="M12 36 L8 38 L11 43 L16 42"/>
-    <path d="M30 28 L24 56 M30 28 L36 56 M30 28 V56"/><circle cx="54" cy="44" r="5"/><circle cx="54" cy="44" r="1"/><circle cx="46" cy="40" r="0.8"/><circle cx="60" cy="38" r="0.8"/>`,
-  coffee: `<path d="M18 22 H42 L40 50 Q30 54 20 50 Z" fill="WASH"/><path d="M42 26 Q52 26 50 36 Q48 42 40 42"/><path d="M14 22 H46"/>
-    <path d="M30 22 V16 Q30 12 34 12"/><path d="M24 10 Q22 6 25 3 M30 9 Q28 5 31 2 M36 10 Q34 6 37 3" opacity=".6"/><path d="M12 54 H48"/>`,
-  pickaxe: `<path d="M12 18 Q32 8 52 18 Q32 14 12 18 Z" fill="WASH"/><path d="M32 14 L22 56"/><path d="M42 26 L52 56 M46 24 L38 24 L40 30 L48 30 Z"/>
-    <path d="M8 56 H58"/><circle cx="16" cy="52" r="1.4" fill="WASH"/><circle cx="44" cy="52" r="1.2" fill="WASH"/>`,
-  flask: `<path d="M26 8 H38 M28 8 V24 L14 50 Q12 56 18 56 H46 Q52 56 50 50 L36 24 V8"/><path d="M20 42 H44 L48 50 Q49 54 46 54 H18 Q15 54 16 50 Z" fill="WASH"/>
-    <circle cx="28" cy="48" r="2"/><circle cx="36" cy="46" r="1.5"/><path d="M46 14 Q52 12 54 18" opacity=".6"/>`,
+  // The Nazca hummingbird, drawn as the geoglyph is: one unbroken line, seen from above.
+  geoglyph: `<path d="M32 4 L32.8 20 Q36 21 36 24 L52 18 L54 20 L50 22 L56 22 L56 24 L50 25 L56 27 L54 29 L38 27 Q39 31 37 34 L44 50 L41 51 L36 40 L38 58 L35 58 L33.4 40 L30.6 40 L29 58 L26 58 L28 40 L23 51 L20 50 L27 34 Q25 31 26 27 L10 29 L8 27 L14 25 L8 24 L8 22 L14 22 L10 20 L12 18 L28 24 Q28 21 31.2 20 Z"/>
+    <path d="M2 61 L62 3" opacity=".2"/><path d="M4 8 L60 60" opacity=".15"/>`,
+  // The Mona Lisa on Leonardo's easel: the half-length figure, the folded hands, a winding landscape behind.
+  easel: `<path d="M20 58 L28 6 H36 L44 58 M32 6 V58 M23 50 H41"/><path d="M16 12 H48 V44 H16 Z" fill="WASH"/><path d="M18 14 H46 V42 H18 Z" opacity=".5"/>
+    <path d="M18 26 Q22 24 24 28 M40 24 Q43 22 46 25" opacity=".4"/><path d="M19 32 Q24 30 26 34 M38 31 Q42 29 46 33" opacity=".3"/>
+    <ellipse cx="32" cy="23" rx="3.6" ry="4.4" fill="WASH"/><path d="M28.4 22 Q28 17 32 17.4 Q36 17 35.6 22 M28.6 23 Q28 28 29 30 M35.4 23 Q36 28 35 30" />
+    <path d="M24 42 Q24 32 32 30 Q40 32 40 42" fill="WASH"/><path d="M28 39 Q32 37 36 39.4" opacity=".6"/><path d="M50 40 L58 32 M56 30 L60 34"/>`,
+  // Galileo's telescope on its stand, turned to Jupiter and the four moons he discovered in 1610.
+  telescope: `<path d="M9 40 L45 18 L47.6 22 L11.6 44.4 Z" fill="WASH"/><path d="M45 18 L50 15 L52.6 19 L47.6 22" fill="WASH"/><path d="M9 40 L6.6 41.4 L9 45.6 L11.6 44.4"/>
+    <path d="M17 35 L19.6 39.4 M37 22.6 L39.6 27" opacity=".5"/><path d="M28 31.6 L22 56 M28 31.6 L34 56 M28 31.6 V56"/><path d="M25 44 H31" opacity=".5"/>
+    <circle cx="55" cy="8" r="3.6" fill="WASH"/><path d="M51.8 7 H58.2 M51.6 9 H58.4" opacity=".45"/>${[43, 48, 61.4, 63].map((x, i) => `<circle cx="${x}" cy="${8 + (i % 2 ? 0.6 : -0.4)}" r="0.6"/>`).join("")}
+    <path d="M16 56.4 H40" opacity=".45"/>`,
+  // Coffee in the Ottoman style: the long-handled cezve, two small cups, steam rising.
+  coffee: `<path d="M16 50 L18 34 H30 L32 50 Q24 52.6 16 50 Z" fill="WASH"/><path d="M17 34 Q24 31.6 31 34"/><path d="M31 37 L48 30 L48.6 31.6 L31.4 39.4"/><path d="M15.4 35 L13 33.6" />
+    <path d="M18.4 40 H29.6 M17.8 45 H30.4" opacity=".4"/>
+    ${[[42, 1], [52, 0.9]].map(([x, k]) => `<path d="M${x - 4 * k} ${46} Q${x - 4 * k} ${52} ${x} ${52} Q${x + 4 * k} ${52} ${x + 4 * k} 46 Z" fill="WASH"/><path d="M${x - 6 * k} 52.6 H${x + 6 * k}"/>`).join("")}
+    <path d="M22 28 Q20 24 23 21 Q26 18 24 14 M27 28 Q25.6 25 28 22.6" opacity=".5"/><path d="M8 54 H60" opacity=".45"/>`,
+  // The gold rush: a miner's pan with nuggets in the gravel, the pick and shovel beside it.
+  pickaxe: `<path d="M6 46 Q8 52 24 52 Q40 52 42 46 Z" fill="WASH"/><path d="M4 46 H44"/><path d="M12 48 q4 1 8 0 M24 49 q4 1 8 -.6" opacity=".4"/>
+    <circle cx="18" cy="47.6" r="1.2" fill="WASH"/><circle cx="29" cy="48.4" r="0.9" fill="WASH"/><circle cx="23" cy="49.4" r="0.7"/>
+    <path d="M44 54 L56 12"/><path d="M44.6 18 Q52 10 60.6 13.6 Q53 13.6 48 17.6 Z" fill="WASH"/><path d="M50 12.6 Q46 12 42 15" />
+    <path d="M30 40 L38 8"/><path d="M27 38 Q26 44 30 46 Q34 45 34 40 L31 39 Z" fill="WASH"/><path d="M36.6 8 H40"/><path d="M2 56 H62" opacity=".45"/>`,
+  // Penicillin: the Petri dish with its mould colony and the clear ring round it, beside a culture flask.
+  flask: `<ellipse cx="22" cy="46" rx="16" ry="5" fill="WASH"/><path d="M6 46 V48.6 Q22 56 38 48.6 V46"/>
+    <path d="M18 45 Q20 42.6 23 43.4 Q26 44.6 25 46.6 Q22 48 19 47.6 Q17 46.6 18 45 Z" fill="WASH"/><ellipse cx="21.6" cy="45.6" rx="7" ry="2.4" opacity=".45"/>
+    ${[[10, 44.6], [31, 44], [33, 47], [12, 47.4]].map(([x, y]) => `<circle cx="${x}" cy="${y}" r="0.7"/>`).join("")}
+    <path d="M44 14 H52 M45.6 14 V26 L38 46 Q37 50 41 50 H55 Q59 50 58 46 L50.4 26 V14"/><path d="M40.4 40 H55.6 L57 45.6 Q57.4 48 55 48 H41 Q38.6 48 39 45.6 Z" fill="WASH"/>
+    <circle cx="46" cy="44" r="0.8"/><circle cx="51" cy="42.6" r="0.6"/><path d="M4 56 H62" opacity=".45"/>`,
   // A suspension bridge (the Golden Gate): tall portal towers, the main cable swinging between them, the deck on its suspenders.
   bridge: `${[15, 49].map((x) => `<path d="M${x - 2.6} 54 V9 H${x + 2.6} V54 Z" fill="WASH"/><path d="M${x - 2.6} 15 H${x + 2.6} M${x - 2.6} 22 H${x + 2.6} M${x - 2.6} 29 H${x + 2.6} M${x} 9.4 V53" opacity=".45"/>`).join("")}
     <path d="M2 31 Q8 21 15 10 Q32 41 49 10 Q56 21 62 31"/>
@@ -364,19 +405,32 @@ const D: Record<string, string> = {
     <path d="M2 37.5 H62 V40.2 H2 Z" fill="WASH"/>${times(20, (i) => `<path d="M${3 + i * 3} 40.2 l1.5 1.6 l1.5 -1.6" opacity=".35"/>`)}
     <path d="M2 57 Q8 55.6 14 57 T26 57 T38 57 T50 57 T62 57" opacity=".4"/>`,
 
-  // --- Culture of places ------------------------------------------------------------------
-  derrick: `<path d="M22 56 L30 8 H34 L42 56 Z" fill="WASH"/><path d="M24 44 H40 M26 32 H38 M28 20 H36 M24 44 L38 32 M40 44 L26 32 M26 32 L36 20 M38 32 L28 20"/>
-    <path d="M32 8 V3"/><path d="M14 56 H50"/><path d="M33 3 Q40 -2 44 4 Q48 0 50 6" opacity=".6"/>`,
-  trumpet: `<path d="M8 30 H40 Q52 22 58 18 V42 Q52 38 40 30" fill="WASH"/><path d="M8 27 V33"/><path d="M20 30 V22 H32 V30 M24 22 V18 M28 22 V18"/>
-    <path d="M16 36 Q24 40 34 36"/><path d="M46 46 L48 50 M52 44 L56 48 M42 50 L43 54" opacity=".6"/>`,
-  filmcamera: `<path d="M12 28 H44 V48 H12 Z" fill="WASH"/><circle cx="20" cy="18" r="8"/><circle cx="38" cy="18" r="8"/><circle cx="20" cy="18" r="2"/><circle cx="38" cy="18" r="2"/>
-    <path d="M44 34 L56 28 V48 L44 42"/><path d="M22 48 L16 58 M28 48 V58 M34 48 L40 58"/>`,
-  launch: `<path d="M28 44 V16 Q32 4 36 16 V44 Z" fill="WASH"/><path d="M28 34 L22 44 H28 M36 34 L42 44 H36"/><path d="M28 24 H36"/>
-    <path d="M26 46 Q24 54 20 58 M32 46 V60 M38 46 Q40 54 44 58" opacity=".7"/><circle cx="14" cy="56" r="4"/><circle cx="50" cy="56" r="4"/>`,
-  car: `<path d="M8 40 V32 H20 L24 20 H40 L44 32 H56 V40 Z" fill="WASH"/><path d="M26 22 V32 M38 22 V32 M24 20 H40"/><circle cx="18" cy="42" r="6"/><circle cx="46" cy="42" r="6"/>
-    <circle cx="18" cy="42" r="1.5"/><circle cx="46" cy="42" r="1.5"/><path d="M4 50 H60" opacity=".5"/>`,
-  guitar: `<path d="M24 34 Q14 36 14 46 Q16 56 26 56 Q34 56 36 50 Q42 48 42 42 Q42 34 34 34 Q32 30 28 32 Z" fill="WASH"/><circle cx="28" cy="46" r="3.5"/>
-    <path d="M32 36 L52 10 M50 8 L56 12 L54 14"/><path d="M22 52 H32" />`,
+  // A wooden derrick over the Spindletop gusher of 1901, oil raining down.
+  derrick: `<path d="M22 56 L29 8 H35 L42 56 Z" fill="WASH"/>${times(6, (i) => { const y = 50 - i * 7.4; const w = 9.6 - i * 1.1; return `<path d="M${r1(32 - w)} ${r1(y)} H${r1(32 + w)}"/><path d="M${r1(32 - w)} ${r1(y)} L${r1(32 + w - 1.1)} ${r1(y - 7.4)} M${r1(32 + w)} ${r1(y)} L${r1(32 - w + 1.1)} ${r1(y - 7.4)}" opacity=".45"/>`; })}
+    <path d="M28 8 H36 V5 H28 Z" fill="WASH"/><path d="M32 5 Q30 -2 26 2 Q22 6 16 8 M32 5 Q35 -2 40 2 Q44 6 50 7 M32 5 V0" />
+    <path d="M18 12 l-1 3 M14 16 l-1 3 M46 11 l1 3 M50 15 l1 3 M22 18 l-.6 2 M42 18 l.6 2" opacity=".55"/><path d="M12 56 H52"/><path d="M14 58.6 Q32 57 50 58.6" opacity=".4"/>`,
+  // A trumpet: the flared bell, the three valves, the folded tubing, the mouthpiece.
+  trumpet: `<path d="M44 24 Q54 22 60 16 V40 Q54 34 44 32 Z" fill="WASH"/><path d="M8 28 H44 M10 32 H44" /><path d="M6 26.6 V33.4 L8.4 32 V28 Z" fill="WASH"/>
+    <path d="M14 32 Q12 40 18 41 H40 Q44 40 44 36"/>${[24, 29, 34].map((x) => `<path d="M${x - 1.6} 20 V40 H${x + 1.6} V20 Z" fill="WASH"/><path d="M${x - 2.4} 20 H${x + 2.4} M${x - 1} 17.6 H${x + 1} V20 M${x} 17.6 V16" />`).join("")}
+    <path d="M50 46 L52 50 M54 44 L57 48 M46 48 L47 52" opacity=".45"/>`,
+  // A hand-cranked cine camera on its tripod: the two film magazines, the lens, the crank.
+  filmcamera: `<path d="M14 26 H42 V42 H14 Z" fill="WASH"/><circle cx="20" cy="16" r="8" fill="WASH"/><circle cx="38" cy="16" r="8" fill="WASH"/>
+    ${[20, 38].map((x) => `<circle cx="${x}" cy="16" r="2"/>${times(3, (i) => `<path d="M${x} 16 L${r1(x + 6 * Math.cos((i * 2 * Math.PI) / 3))} ${r1(16 + 6 * Math.sin((i * 2 * Math.PI) / 3))}" opacity=".5"/>`)}`).join("")}
+    <path d="M42 30 H48 V38 H42 Z" fill="WASH"/><path d="M48 31 L54 29 V39 L48 37"/><path d="M14 34 H10 V38 M10 38 L7 40" /><circle cx="7" cy="40.6" r="1"/>
+    <path d="M28 42 L18 58 M28 42 V58 M28 42 L38 58"/><path d="M17 33 H24 M17 36 H24" opacity=".45"/>`,
+  // A Saturn V on the pad at Cape Canaveral: the stages, the gantry, the plume.
+  launch: `<path d="M28 46 V18 Q28 10 32 4 Q36 10 36 18 V46 Z" fill="WASH"/><path d="M28 18 H36 M28 30 H36 M28 38 H36 M30 46 V30 M34 46 V30" opacity=".45"/><path d="M28 46 L24 50 H28 M36 46 L40 50 H36"/>
+    <path d="M42 50 V10 H48 V50"/>${times(8, (i) => `<path d="M42 ${14 + i * 4.6} L48 ${18.6 + i * 4.6} M48 ${14 + i * 4.6} L42 ${18.6 + i * 4.6}" opacity=".35"/><path d="M42 ${14 + i * 4.6} H48" opacity=".5"/>`)}<path d="M42 20 H36 M42 32 H36" />
+    <path d="M28 50 Q22 52 14 51 Q8 54 4 52 Q10 57 22 56 Q32 58 42 56 Q54 57 60 52 Q56 54 50 51 Q42 52 36 50 Z" fill="WASH"/><path d="M2 58 H62" opacity=".45"/>`,
+  // A Ford Model T: the upright windscreen, the folding top, spoked wheels, the running board.
+  car: `<path d="M8 40 V33 H18 L22 22 H40 V33 H52 Q56 33 56 37 V40 Z" fill="WASH"/><path d="M22 22 Q30 18 40 22" /><path d="M24 23 V33 M33 23 V33" opacity=".5"/>
+    <path d="M42 33 V25.6 L44.6 24 V33" opacity=".6"/><path d="M46 33 H52 V36 H46 Z" fill="WASH"/><path d="M14 42 H50" />
+    ${[[17, 44], [47, 44]].map(([x, y]) => `<circle cx="${x}" cy="${y}" r="6"/><circle cx="${x}" cy="${y}" r="1.4" fill="WASH"/>${times(8, (i) => `<path d="M${x} ${y} L${r1(x + 5.6 * Math.cos((i * Math.PI) / 4))} ${r1(y + 5.6 * Math.sin((i * Math.PI) / 4))}" opacity=".5"/>`)}`).join("")}
+    <circle cx="55" cy="35" r="1.4"/><path d="M4 50.4 H60" opacity=".45"/>`,
+  // An acoustic guitar: the waisted body, the rosette, the bridge, six strings to the headstock.
+  guitar: `<path d="M27 32 Q16 31 15 41 Q14 50 22 54 Q30 57 37 53 Q42 50 41 44 Q42 40 39 37 Q41 33 37 31 Q33 29.6 30 31 Z" fill="WASH" transform="rotate(-30 28 42)"/>
+    <g transform="rotate(-30 28 42)"><circle cx="28" cy="40" r="3.4"/><circle cx="28" cy="40" r="2.6" opacity=".45"/><path d="M24 47 H32" />${times(6, (i) => `<path d="M${25.6 + i * 1} 47 V8" opacity=".55"/>`)}
+    <path d="M25 31 V10 H31 V31" fill="WASH"/><path d="M24.4 10 L24 3 H32 L31.6 10 Z" fill="WASH"/>${times(3, (i) => `<circle cx="23.4" cy="${4.6 + i * 2}" r="0.7"/><circle cx="32.6" cy="${4.6 + i * 2}" r="0.7"/>`)}${times(6, (i) => `<path d="M25 ${14 + i * 3} H31" opacity=".35"/>`)}</g>`,
   // A Dutch smock mill: the thatched octagonal body, the stage, the cap, four latticed sails.
   windmill: `<path d="M23 56 L26.5 26 H37.5 L41 56 Z" fill="WASH"/><path d="M28.8 55 L30.4 27 M35.2 55 L33.6 27" opacity=".35"/>
     <path d="M18 40 H46 V42 H18 Z" fill="WASH"/><path d="M19.5 42 L21.5 47 M44.5 42 L42.5 47" opacity=".6"/>
@@ -388,16 +442,21 @@ const D: Record<string, string> = {
     <path d="M10 28 H54 V30.6 H10 Z" fill="WASH"/><path d="M30.6 23 V28 H33.4 V23" />
     <path d="M16.6 23 L15.6 55 H19.6 L18.6 23 Z M45.4 23 L44.4 55 H48.4 L47.4 23 Z" fill="WASH"/>
     <path d="M14.6 55 H20.6 M43.4 55 H49.4"/><path d="M2 56.5 Q10 55 18 56.5 T34 56.5 T50 56.5 T62 56.5 M8 60 Q16 58.6 24 60 T40 60 T56 60" opacity=".45"/>`,
-  vase: `<path d="M26 8 H38 V14 Q38 18 44 24 Q52 34 46 46 Q42 54 32 56 Q22 54 18 46 Q12 34 20 24 Q26 18 26 14 Z" fill="WASH"/>
-    <path d="M22 30 Q32 26 42 30 M20 40 Q32 44 44 40"/><path d="M28 34 Q32 30 36 34 Q32 38 28 34" /><path d="M24 56 H40"/>`,
+  // Jingdezhen porcelain: a blue-and-white meiping vase, a dragon chasing through clouds round the shoulder.
+  vase: `<path d="M27 6 H37 V9 Q37 12 42 16 Q50 24 48 38 Q46 50 40 54 H24 Q18 50 16 38 Q14 24 22 16 Q27 12 27 9 Z" fill="WASH"/>
+    <path d="M27 9 H37 M21 18 H43 M17 40 H47 M22 50 H42" opacity=".6"/>${times(10, (i) => `<path d="M${23.4 + i * 1.8} 50 L${24.2 + i * 1.8} 53.6" opacity=".45"/>`)}
+    <path d="M20 30 Q24 25 28 28 Q32 31 36 27 Q40 24 44 28 M22 34 Q26 32 30 35 Q35 37 40 33" /><circle cx="44.4" cy="27" r="0.6"/><path d="M44 27 L46.4 25 M44.6 28 L47 28.6" opacity=".6"/>
+    <path d="M18 24 q2 -2 4 0 q2 -2 4 0 M38 21 q2 -2 4 0 M24 44 q2 -2 4 0 q2 -2 4 0 q2 -2 4 0" opacity=".45"/><path d="M22 54.4 H42" />`,
   // A beaver at its dam: the broad flat tail, the gnawed stump behind.
   beaver: `<path d="M14 42 Q12 32 24 29.6 Q34 28 42 31 Q48 30.4 51 34 Q53.6 37.6 52 40.6 Q50 43.6 45 43.6 H18 Q14 43.6 14 42 Z" fill="WASH"/>
     <path d="M14.6 39.4 Q6 38.4 3 42 Q2.4 46.4 8 46.4 Q12.6 45.6 15.4 42.6 Z" fill="WASH"/>${times(3, (i) => times(3, (j) => `<path d="M${4.6 + j * 2.6} ${41.4 + i * 1.4} h1.4" opacity=".4"/>`))}
     <circle cx="47.4" cy="34.4" r="0.5"/><path d="M45.6 31 l.6 -1.6 l1 1.4"/><path d="M51.6 38.6 v2" /><path d="M24 32 Q28 37 26 43 M34 30.6 Q37 36 35.6 43" opacity=".35"/>
     <path d="M40 43.6 L42 47.6 M22 43.6 L20 47.6"/><path d="M56 47 V30 L58 28.4 L60 31 L62 30 V47" fill="WASH"/><path d="M58 28.4 L59 33 M60 31 L59.6 35" opacity=".5"/>
     <path d="M2 48 H62"/><path d="M4 51.6 Q14 50 24 51.6 T44 51.6 T62 51.6" opacity=".4"/>`,
-  bell: `<path d="M20 44 Q20 24 32 20 Q44 24 44 44 Z" fill="WASH"/><path d="M16 44 H48 V48 H16 Z"/><path d="M32 20 V14 M26 14 H38"/><circle cx="32" cy="52" r="3"/>
-    <path d="M34 26 L32 32 L35 36 L33 42"/>`,
+  // The Liberty Bell: the crack up its side, the inscription band, hung from its wooden yoke.
+  bell: `<path d="M12 10 H52 V15 H12 Z" fill="WASH"/><path d="M16 15 V20 M48 15 V20"/><path d="M28 15 V19 H36 V15" />
+    <path d="M20 46 Q20 26 25 22 Q28 19 32 19 Q36 19 39 22 Q44 26 44 46 L47 49 V52 H17 V49 Z" fill="WASH"/><path d="M21 28 H43 M20.6 31.6 H43.4" opacity=".55"/>${times(8, (i) => `<path d="M${23 + i * 2.6} 29.4 h1.4" opacity=".55"/>`)}
+    <path d="M17 49 H47" /><path d="M34 52 L33 47 L35 43 L33.4 38 L35.4 33.6" /><path d="M36 52 Q34 56 32 55" opacity=".6"/>`,
   // A dairy cow, black-and-white, at the fence.
   cow: `<path d="M12 33 Q11.6 27 20 26 H44 Q48 24.6 51 26.4 L56 29.6 Q57.6 32 55.6 34 L52 34.2 Q50.4 37 47 38 Q45.6 41 43 41.4 L16 41.6 Q12 40 12 33 Z" fill="WASH"/>
     <path d="M18 28 Q22 26.6 25 29 Q26 33 22 34.6 Q17.6 34 18 28 Z M33 27 Q37.6 26.4 39 30 Q37.6 34 33.6 33 Q31 30 33 27 Z M47.6 26.6 Q50 28 49.6 31" opacity=".6"/>
@@ -575,8 +634,8 @@ const D: Record<string, string> = {
     <path d="M1 50 H63"/>`,
   "town-metro": `${[[3, 34, 7], [10.5, 24, 7.5], [18.5, 14, 7], [26, 8, 6.5], [33, 18, 7], [40.5, 27, 7.5], [48.5, 20, 6.5], [55.5, 32, 6]].map(([x, top, w]) => `<path d="M${x} 50 V${top} H${x + w} V50 Z" fill="WASH"/>${times(Math.floor((49 - top) / 3.4), (r) => `<path d="M${x + 1.2} ${top + 2.4 + r * 3.4} H${x + w - 1.2}" opacity=".3"/>`)}<path d="M${x + w / 2} ${top + 1} V49" opacity=".22"/>`).join("")}
     <path d="M29.2 8 V3.4 M28.4 5 H30"/><path d="M21 14 L22 11.6 L23 14"/><path d="M1 50 H63"/>`,
-  // --- Scenery: the sea and sky ---------------------------------------------------
-  waves: `<path d="M6 30 Q12 24 18 30 T30 30 M28 40 Q34 34 40 40 T52 40"/>`,
+  // Engraved water: rows of wavelets, the old chart-maker's sea.
+  waves: `${times(3, (r) => times(3, (c) => { const x = 6 + c * 18 + (r % 2) * 9, y = 24 + r * 9; return `<path d="M${x} ${y} Q${x + 3} ${y - 3} ${x + 6} ${y} Q${x + 9} ${y + 2.4} ${x + 12} ${y}"/>`; }))}`,
   // A sperm whale surfacing: the great square head, the blow, the fluke breaking the water behind.
   whale: `<path d="M6 34 Q6 26 18 25 Q32 24 44 28 Q50 30 54 33 Q50 38 40 39.6 Q24 41.4 12 39.4 Q6 38 6 34 Z" fill="WASH"/>
     <path d="M7.6 37.4 Q16 38.4 26 38" opacity=".5"/><circle cx="17" cy="31" r="0.55"/><path d="M28 39.4 Q30 44 34.6 44.2 Q32 41.6 33 39.6"/>
@@ -585,11 +644,17 @@ const D: Record<string, string> = {
     <path d="M2 41 Q8 39.6 14 41 T26 41 T38 41 T50 41 T62 41 M6 46 Q12 44.6 18 46 T30 46 T42 46 T54 46" opacity=".45"/>`,
   // Cod in a shoal: the barbel, three dorsal fins, the lateral line.
   fish: `${[[22, 24, 1], [42, 40, 0.85]].map(([x, y, k]) => `<g transform="translate(${x} ${y}) scale(${k})"><path d="M-14 0 Q-8 -6 2 -5.4 Q9 -4.6 12 0 Q9 4.6 2 5.4 Q-8 6 -14 0 Z" fill="WASH"/><path d="M12 0 L18 -5 Q16.6 0 18 5 Z" fill="WASH"/><path d="M-8 -4.6 Q-6 -8 -3 -5.2 M-1 -5.4 Q1.6 -8.4 4.4 -5 M6 -4.6 Q8.4 -7 10 -3" /><path d="M-11 0.4 Q0 -1.6 11 0.4" opacity=".4"/><circle cx="-10" cy="-1.4" r="0.5"/><path d="M-14 0 l-1 1.6"/><path d="M-4 5 Q-2 8 1 5.4 M4 5 Q6 7 8 3.6" opacity=".7"/></g>`).join("")}`,
-  wind: `<circle cx="18" cy="30" r="11" fill="WASH"/><path d="M12 26 Q14 24 16 26 M20 25 Q22 23 24 25"/><path d="M27 31 Q31 30 29 34"/><circle cx="14" cy="34" r="2"/>
-    <path d="M32 26 Q42 22 52 26 M32 31 Q44 31 58 29 M32 36 Q42 38 50 36"/><path d="M10 20 Q14 14 20 17 M8 26 Q4 22 8 18" opacity=".6"/>`,
-  compass: `<circle cx="32" cy="32" r="20"/><circle cx="32" cy="32" r="16" opacity=".5"/>
-    <path d="M32 6 L36 28 L58 32 L36 36 L32 58 L28 36 L6 32 L28 28 Z" fill="WASH"/><path d="M32 12 L34 30 L52 14 M32 52 L30 34 L12 50" opacity=".5"/>
-    <path d="M29 4 V-1 L35 4 V-1" />`,
+  // A wind-head from the margin of an old chart: puffed cheeks, the breath streaming out in lines.
+  wind: `<circle cx="18" cy="30" r="11" fill="WASH"/><path d="M10 22 Q12 14 20 15 Q28 15 29 22 Q26 19 21 20 Q16 18 10 22 Z" fill="WASH"/>
+    <path d="M13 28.6 Q14.6 27 16.2 28.6 M20.4 28 Q22 26.4 23.6 28" /><path d="M18.8 30 Q20.4 32.6 18.4 33.6" opacity=".7"/><ellipse cx="27" cy="33" rx="2.4" ry="1.6" fill="WASH"/>
+    <path d="M12 34 Q13 36 15 35 M22 35 Q23.6 36.4 25 35.4" opacity=".55"/>
+    <path d="M30 31 Q42 27 52 30 M30 33.6 Q44 34 60 31 M30 36 Q42 39 50 38 M52 30 q3 -2 2 -5 M60 31 q2 -3 0 -5" opacity=".7"/>`,
+  // A mariner's compass card: sixteen points, the fleur-de-lis at north, the lubber ring.
+  compass: `<circle cx="32" cy="32" r="24" fill="WASH"/><circle cx="32" cy="32" r="21"/>${times(32, (i) => { const a = (i * Math.PI) / 16; const r0 = i % 2 ? 22.6 : 21; return `<path d="M${r1(32 + r0 * Math.cos(a))} ${r1(32 + r0 * Math.sin(a))} L${r1(32 + 24 * Math.cos(a))} ${r1(32 + 24 * Math.sin(a))}" opacity=".55"/>`; })}
+    ${times(8, (i) => { const a = (i * Math.PI) / 4 + Math.PI / 8; return `<path d="M32 32 L${r1(32 + 4 * Math.cos(a - 0.4))} ${r1(32 + 4 * Math.sin(a - 0.4))} L${r1(32 + 13 * Math.cos(a))} ${r1(32 + 13 * Math.sin(a))} L${r1(32 + 4 * Math.cos(a + 0.4))} ${r1(32 + 4 * Math.sin(a + 0.4))} Z" opacity=".6"/>`; })}
+    ${times(4, (i) => { const a = (i * Math.PI) / 2 + Math.PI / 4; return `<path d="M32 32 L${r1(32 + 4 * Math.cos(a - 0.5))} ${r1(32 + 4 * Math.sin(a - 0.5))} L${r1(32 + 16 * Math.cos(a))} ${r1(32 + 16 * Math.sin(a))} L${r1(32 + 4 * Math.cos(a + 0.5))} ${r1(32 + 4 * Math.sin(a + 0.5))} Z" fill="WASH"/>`; })}
+    ${times(4, (i) => { const a = (i * Math.PI) / 2 - Math.PI / 2; return `<path d="M32 32 L${r1(32 + 4.4 * Math.cos(a - 0.6))} ${r1(32 + 4.4 * Math.sin(a - 0.6))} L${r1(32 + 20 * Math.cos(a))} ${r1(32 + 20 * Math.sin(a))} L${r1(32 + 4.4 * Math.cos(a + 0.6))} ${r1(32 + 4.4 * Math.sin(a + 0.6))} Z" fill="WASH"/><path d="M32 32 L${r1(32 + 20 * Math.cos(a))} ${r1(32 + 20 * Math.sin(a))}" opacity=".5"/>`; })}
+    <path d="M32 3 Q29.6 5.4 30.6 8 M32 3 Q34.4 5.4 33.4 8 M32 3 V8.4 M29.4 6.4 H34.6" /><circle cx="32" cy="32" r="1.4" fill="WASH"/>`,
   // A war galley (trireme): the bronze ram, three banks of oars, the square sail, the curling stern.
   galley: `<path d="M31 37 V12"/><path d="M20 13 H42 V30 Q31 32.4 20 30 Z" fill="WASH"/><path d="M23.6 13.6 V30.4 M27.4 13.6 V31 M34.6 13.6 V31 M38.4 13.6 V30.4" opacity=".3"/>
     <path d="M4 36 Q4 28 9 26 Q8 31 11 37 H54 L60 39 L54 41.6 Q32 45.6 9 42 Z" fill="WASH"/><path d="M54 39.4 H62.6 L60.4 41.4 H54" fill="WASH"/>
@@ -617,10 +682,11 @@ const D: Record<string, string> = {
     ${times(12, (i) => `<circle cx="${18 + i * 2.6}" cy="30.8" r="0.45"/>`)}
     <path d="M27 33 L19.6 46 H23.6 L36.4 33.4 Z M30 29.4 L24.6 22.6 H27.4 L35 29.2 Z" fill="WASH"/><path d="M22.6 40.4 h4 v2.4 h-4 Z" fill="WASH"/>
     <path d="M7.6 30 L4.4 21.6 H7.4 L13.6 29.2 Z M8.6 33.2 L5 37.6 H7.6 L12.6 33.4 Z" fill="WASH"/><path d="M38 36 Q46 38 54 37" opacity=".3"/>`,
-  // --- The Surveyor: a small, long-nosed figure with a telescope ---------------
-  surveyor: `<path d="M24 12 H38 M27 12 V4 H35 V12"/><circle cx="31" cy="17" r="5"/><path d="M35 17 L41 19 L35 20"/>
-    <path d="M27 22 L22 44 H38 L34 22 Z" fill="WASH"/><path d="M33 26 L50 17"/><path d="M48 15 L54 12 L56 16 L50 19 Z"/>
-    <path d="M27 28 L18 34 L14 30"/><path d="M26 44 L23 56 M34 44 L37 56 M20 56 H25 M35 56 H40"/>`,
+  // The Surveyor: a small, long-nosed figure in a greatcoat and tricorn, a telescope to one eye.
+  surveyor: `<path d="M24 13 Q31 9.6 38 13 L35.6 14 Q31 12.6 26.4 14 Z" fill="WASH"/><circle cx="31" cy="17.4" r="3.6" fill="WASH"/><path d="M34.4 17 L40.6 19 L34.6 19.6"/>
+    <path d="M27.4 21 Q31 20 34.4 21 L37 44 Q31 46 24 44 Z" fill="WASH"/><path d="M31 21.4 V44.6 M28 30 H30 M28 34 H30" opacity=".45"/>
+    <path d="M33.6 24 L46 16.6"/><path d="M44.6 15.6 L52 11.6 L53.4 14 L46 18 Z" fill="WASH"/><path d="M28 25 L21 32 L17.4 29"/>
+    <path d="M27 44.6 L25.6 56 M34 44.6 L35.6 56"/><path d="M22.6 56 H27 M34 56 H38.6"/><path d="M14 56.4 H48" opacity=".4"/>`,
   // The Leaning Tower of Pisa: eight storeys of arcades, the belfry on top, tilting south.
   campanile: `<g transform="rotate(5.5 30 56)"><path d="M23.5 56 V13 H38.5 V56 Z" fill="WASH"/><path d="M22.5 13 H39.5 V11.6 H22.5 Z" fill="WASH"/>
     ${times(7, (i) => { const y = 49.5 - i * 5.4; return `<path d="M22.8 ${y} H39.2"/>${times(4, (j) => `<path d="M${25 + j * 3.6} ${y - 0.6} V${y - 3} Q${25.9 + j * 3.6} ${y - 4.2} ${26.8 + j * 3.6} ${y - 3} V${y - 0.6}" opacity=".6"/>`)}`; })}
