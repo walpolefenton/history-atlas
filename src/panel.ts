@@ -27,6 +27,8 @@ export interface PanelContext {
   hiddenTypes: Set<EventType>;
   /** Layer groups the reader has switched off. */
   hiddenLayers: Set<LayerGroup>;
+  /** A short summary of the world in this snapshot (public/data/eras.json). */
+  summary: string | null;
   /** The second snapshot, when compare mode is on. */
   compare: YearData | null;
   /** Landmarks and curiosities that existed during this era. */
@@ -178,6 +180,7 @@ export function renderOverview(ctx: PanelContext, focus = false) {
     <p class="muted">Snapshot ${idx + 1} of ${meta.years.length}. ${
       ctx.nextYear === null ? "This is the most recent map." : `The next map is ${formatYear(ctx.nextYear)}.`
     }</p>
+    ${ctx.summary ? `<p class="era-summary">${esc(ctx.summary)}</p>` : ""}
     <dl class="stats">
       <div><dt>Territories</dt><dd>${data.borders.features.length}</dd></div>
       <div><dt>Sovereign powers</dt><dd>${sovereigns.size}</dd></div>

@@ -16,6 +16,7 @@ export const loadDrawings = () => getJson<{ drawings: Drawing[] }>("drawings.jso
 export const loadSurveyor = () => getJson<{ spots: Record<string, SurveyorSpot> }>("surveyor.json").then((d) => d.spots);
 export const loadCities = () => getJson<City[]>("cities.json");
 export const loadAdmin1 = () => getJson<Admin1Data>("admin1.json");
+export const loadEraSummaries = () => getJson<{ summaries: Record<string, string> }>("eras.json").then((d) => d.summaries);
 
 /** The name a city went by in a given year. */
 export function cityNameAt(c: City, year: number): string {

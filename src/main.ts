@@ -1,6 +1,6 @@
 import "./style.css";
 import { AtlasMap, letteringEra, type LayerGroup, type YearLayers } from "./map";
-import { citiesForEra, drawingsForEra, eventsForEra, loadAdmin1, loadCities, loadDrawings, loadEvents, loadLand, loadMeta, loadScenery, loadSurveyor, loadWikidataEvents, loadYear, sceneryForEra } from "./data";
+import { citiesForEra, drawingsForEra, eventsForEra, loadAdmin1, loadEraSummaries, loadCities, loadDrawings, loadEvents, loadLand, loadMeta, loadScenery, loadSurveyor, loadWikidataEvents, loadYear, sceneryForEra } from "./data";
 import { formatYear } from "./format";
 import { initPanel, renderAdmin, renderCity, renderCompare, renderDrawing, renderEvent, renderList, renderOverview, renderPolity, renderRoute, renderSurveyor, type PanelContext } from "./panel";
 import { initSearch } from "./search";
@@ -96,6 +96,7 @@ class App {
     private land: GeoJSON.FeatureCollection,
     private drawings: Drawing[],
     private spots: Record<string, SurveyorSpot>,
+    private summaries: Record<string, string>,
   ) {}
 
   private get years() {
@@ -165,6 +166,7 @@ class App {
       surveyor: { spot: era.surveyor, found: this.found.has(this.data.year), count: this.found.size, total: Object.keys(this.spots).length },
       hiddenTypes: this.hiddenTypes,
       hiddenLayers: this.hiddenLayers,
+      summary: this.summaries[String(this.data.year)] ?? null,
       compare: this.compareData,
       actions: {
         selectPolity: (name, year) => this.selectPolity(name, year, true),
@@ -657,7 +659,7 @@ async function boot() {
   applyTheme(loadThemeChoice());
   try {
     // The image index is small; load it up front so the first panel has its artwork.
-    const [meta, curated, land, drawings, spots] = await Promise.all([loadMeta(), loadEvents(), loadLand(), loadDrawings(), loadSurveyor(), loadImages()]);
+    const [meta, curated, land, drawings, spots, , summaries] = await Promise.all([loadMeta(), loadEvents(), loadLand(), loadDrawings(), loadSurveyor(), loadImages(), loadEraSummaries().catch(() => ({}))]);
     let app: App;
     const atlas = await AtlasMap.create("map", land, {
       onPolityClick: (name) => app.selectPolity(name, undefined, false),
@@ -668,7 +670,7 @@ async function boot() {
       onCityClick: (qid) => app.selectCity(qid),
       onAdminClick: (name, country) => app.selectAdmin(name, country),
     });
-    app = new App(meta, curated, atlas, land, drawings, spots);
+    app = new App(meta, curated, atlas, land, drawings, spots, summaries);
     // Handy for testing in development; not present in production builds.
     if (import.meta.env.DEV) {
       Object.assign(window, { __atlas: atlas, __app: app });
