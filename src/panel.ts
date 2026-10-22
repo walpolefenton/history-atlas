@@ -263,6 +263,7 @@ export function renderPolity(ctx: PanelContext, name: string, focus = false) {
             .join("")}</ul></section>`
         : ""
     }
+    ${todaySection(parts)}
     <section>
       <h3>On the map</h3>
       <p class="small muted">Snapshots where “${esc(name)}” appears under this name:</p>
@@ -276,6 +277,30 @@ export function renderPolity(ctx: PanelContext, name: string, focus = false) {
     if (current?.data !== data) return;
     fillWiki(w, w?.match === "search" ? `This article was found by search and may not be exactly “${name}”.` : null);
   });
+}
+
+/**
+ * Where a territory lies on today's map: the present-day countries its land
+ * falls in, with their shares, combined across all of its parts by area.
+ */
+function todaySection(parts: { properties: { km2: number; today?: string } }[]) {
+  const shares = new Map<string, number>();
+  const total = parts.reduce((s, f) => s + f.properties.km2, 0) || 1;
+  for (const f of parts)
+    for (const entry of (f.properties.today ?? "").split("|").filter(Boolean)) {
+      const [country, pct] = entry.split(":");
+      shares.set(country, (shares.get(country) ?? 0) + (Number(pct) * f.properties.km2) / total);
+    }
+  const rows = [...shares].filter(([, pct]) => pct >= 2).sort((a, b) => b[1] - a[1]).slice(0, 8);
+  if (!rows.length) return "";
+  const single = rows.length === 1 && rows[0][1] > 95;
+  return `<section><h3>Where it is today</h3>${
+    single
+      ? `<p>Its land lies within present-day <strong>${esc(rows[0][0])}</strong>.</p>`
+      : `<ul class="today-list">${rows
+          .map(([c, pct]) => `<li><span class="today-name">${esc(c)}</span><span class="today-bar" aria-hidden="true"><span style="width:${Math.max(3, Math.round(pct))}%"></span></span><span class="today-pct">${Math.round(pct)}%</span></li>`)
+          .join("")}</ul><p class="small muted">Approximate share of its land in each present-day country.</p>`
+  }</section>`;
 }
 
 // --- Event ------------------------------------------------------------------

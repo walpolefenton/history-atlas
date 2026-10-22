@@ -723,6 +723,14 @@ body[data-lettering="printed"] #ym-num { font-family: "IM Fell English", var(--f
 
 /* --- Small screens: panel becomes a bottom sheet ------------------------------------- */
 
+/* Where a territory is today: country, a share bar, the percentage. */
+.today-list { list-style: none; margin: 0 0 6px; padding: 0; display: grid; gap: 6px; }
+.today-list li { display: grid; grid-template-columns: minmax(0, 1fr) 90px 38px; align-items: center; gap: 10px; font-size: 14px; }
+.today-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.today-bar { height: 6px; border-radius: 3px; background: var(--raised); overflow: hidden; }
+.today-bar span { display: block; height: 100%; border-radius: 3px; background: var(--accent); opacity: 0.75; }
+.today-pct { text-align: right; font-variant-numeric: tabular-nums; color: var(--muted); font-size: 13px; }
+
 /* The bottom-sheet handle only exists on phones. */
 .sheet-handle { display: none; }
 

@@ -12,6 +12,8 @@ export interface PolityProps {
   partOf: string | null;
   /** 1 approximate, 2 moderately precise, 3 set by international law. */
   precision: 1 | 2 | 3 | null;
+  /** Present-day countries its land lies in, with shares: "Turkey:53|Greece:10" (scripts/prepare-today.mjs). */
+  today?: string;
   /** Index into the theme palette; shared by everything one power rules. */
   ci: number;
   km2: number;
