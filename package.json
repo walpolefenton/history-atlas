@@ -6,6 +6,8 @@
   "license": "GPL-3.0-or-later",
   "scripts": {
     "fetch:capitals": "node scripts/fetch-capitals.mjs",
+    "fetch:events": "node scripts/fetch-events.mjs",
+    "resolve:names": "node scripts/resolve-names.mjs",
     "prepare:data": "node scripts/prepare-data.mjs",
     "dev": "vite",
     "build": "tsc --noEmit && vite build",

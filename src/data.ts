@@ -11,6 +11,7 @@ async function getJson<T>(path: string): Promise<T> {
 export const loadMeta = () => getJson<Meta>("meta.json");
 export const loadLand = () => getJson<GeoJSON.FeatureCollection>("land.json");
 export const loadEvents = () => getJson<{ events: HistoryEvent[] }>("events.json").then((d) => d.events);
+export const loadWikidataEvents = () => getJson<{ events: HistoryEvent[] }>("wd-events.json").then((d) => d.events);
 
 const yearCache = new Map<number, Promise<YearData>>();
 

@@ -3,12 +3,16 @@
 //   vendor-src/geojson/world_*.geojson  (aourednik/historical-basemaps, GPL-3.0)
 //   vendor-src/ne_50m_land.geojson      (Natural Earth, public domain)
 //   vendor-src/wd_capitals.json         (Wikidata, CC0; see fetch-capitals.mjs)
+//   vendor-src/name_candidates.json     (name -> Wikidata IDs; see resolve-names.mjs)
+//   vendor-src/wd_events.json           (Wikidata, CC0; see fetch-events.mjs)
 //
 // Output in public/data/:
 //   meta.json          snapshot years + an index of which years each polity appears in
 //   land.json          coastline base layer
 //   years/<year>.json  { year, borders, labels, capitals } for one snapshot
+//   wd-events.json     notable events from Wikidata, minus those already curated
 import { readFile, writeFile, mkdir } from "node:fs/promises";
+import { existsSync } from "node:fs";
 import polylabel from "polylabel";
 import { area } from "@turf/area";
 import { booleanPointInPolygon } from "@turf/boolean-point-in-polygon";
@@ -89,12 +93,13 @@ function parsePoint(wkt) {
 // --- Capitals index -------------------------------------------------------
 const wdRows = JSON.parse(await readFile(`${SRC}/wd_capitals.json`, "utf8"));
 const statesByName = new Map();
+const statesByQid = new Map();
+const push = (map, key, v) => (map.get(key) ?? map.set(key, []).get(key)).push(v);
 for (const r of wdRows) {
   const point = parsePoint(r.coord.value);
-  if (!point) continue;
-  const key = norm(r.stateLabel.value);
-  if (!statesByName.has(key)) statesByName.set(key, []);
-  statesByName.get(key).push({
+  // Skip capitals without an English label (the label service falls back to the QID).
+  if (!point || /^Qd+$/.test(r.capLabel.value)) continue;
+  const row = {
     qid: r.state.value.split("/").pop(),
     capital: r.capLabel.value,
     capitalQid: r.cap.value.split("/").pop(),
@@ -103,10 +108,29 @@ for (const r of wdRows) {
     end: wdYear(r.end),
     inception: wdYear(r.inception),
     dissolved: wdYear(r.dissolved),
-  });
+  };
+  push(statesByName, norm(r.stateLabel.value), row);
+  push(statesByQid, row.qid, row);
 }
 
-const LIFETIME_SLACK = 50; // snapshot years are coarse; allow some tolerance
+const candidates = existsSync(`${SRC}/name_candidates.json`)
+  ? JSON.parse(await readFile(`${SRC}/name_candidates.json`, "utf8"))
+  : { aliases: {}, byName: {} };
+
+/** Wikidata rows to try for a name, most trusted source first. */
+function rowGroups(name) {
+  const groups = [];
+  const alias = candidates.aliases[name];
+  if (alias) groups.push({ source: "alias", rows: statesByQid.get(alias) ?? [] });
+  groups.push({ source: "label", rows: statesByName.get(norm(name)) ?? [] });
+  for (const q of candidates.byName[name] ?? []) groups.push({ source: "altName", rows: statesByQid.get(q) ?? [] });
+  return groups;
+}
+const matchStats = { alias: 0, label: 0, altName: 0 };
+
+// Snapshot years are coarse, so allow some tolerance on a state's lifetime;
+// less for modern states, whose dates are known precisely.
+const lifetimeSlack = (year) => (year >= 1800 ? 3 : 50);
 
 // Border coastlines are generalised, so coastal capitals (Copenhagen, Lisbon,
 // Constantinople...) often sit just offshore. Accept points within ~0.25°.
@@ -120,20 +144,29 @@ for (const r of [0.1, 0.25]) {
 const nearPolygon = (p, geometry) =>
   NEAR_OFFSETS.some(([dx, dy]) => booleanPointInPolygon([p[0] + dx, p[1] + dy], geometry));
 
-function findCapital(name, year, geometry) {
-  const rows = statesByName.get(norm(name));
-  if (!rows) return null;
-  const candidates = rows.filter((r) => {
-    if (r.inception !== null && r.inception > year + LIFETIME_SLACK) return false;
-    if (r.dissolved !== null && r.dissolved < year - LIFETIME_SLACK) return false;
+function capitalFrom(rows, year, geometry) {
+  const valid = rows.filter((r) => {
+    if (r.inception !== null && r.inception > year + lifetimeSlack(year)) return false;
+    if (r.dissolved !== null && r.dissolved < year - lifetimeSlack(year)) return false;
     if (r.start !== null && r.start > year) return false;
     if (r.end !== null && r.end < year) return false;
     return nearPolygon(r.point, geometry);
   });
-  if (!candidates.length) return null;
+  if (!valid.length) return null;
   // Prefer statements with explicit dates: they are about *this* period.
-  candidates.sort((a, b) => (b.start !== null) + (b.end !== null) - ((a.start !== null) + (a.end !== null)));
-  return candidates[0];
+  valid.sort((a, b) => (b.start !== null) + (b.end !== null) - ((a.start !== null) + (a.end !== null)));
+  return valid[0];
+}
+
+function findCapital(name, year, geometry) {
+  for (const { source, rows } of rowGroups(name)) {
+    const c = capitalFrom(rows, year, geometry);
+    if (c) {
+      matchStats[source]++;
+      return c;
+    }
+  }
+  return null;
 }
 
 // --- Snapshots --------------------------------------------------------------
@@ -211,4 +244,30 @@ await writeFile(
   }),
 );
 
+// --- Wikidata events ----------------------------------------------------------
+if (existsSync(`${SRC}/wd_events.json`)) {
+  const curated = JSON.parse(await readFile(`${OUT}/events.json`, "utf8")).events;
+  const curatedTitles = new Set(curated.map((e) => e.wiki));
+  const wd = JSON.parse(await readFile(`${SRC}/wd_events.json`, "utf8"))
+    .filter((e) => !curatedTitles.has(e.title))
+    .map((e) => ({
+      id: e.qid,
+      title: e.title,
+      type: e.type,
+      start: e.start,
+      // Some items have an end before their start; treat those as single-date.
+      ...(e.end !== undefined && e.end > e.start ? { end: e.end } : {}),
+      lat: round(e.lat),
+      lon: round(e.lon),
+      summary: e.desc,
+      wiki: e.title,
+      source: "wikidata",
+      notability: e.links,
+    }))
+    .sort((a, b) => a.start - b.start);
+  await writeFile(`${OUT}/wd-events.json`, JSON.stringify({ events: wd }));
+  console.log(`${wd.length} Wikidata events (${curated.length} curated events take precedence)`);
+}
+
+console.log(`capital matches by source: ${JSON.stringify(matchStats)}`);
 console.log(`\n${years.length} snapshots, ${polityCount} polity-snapshots, ${capitalCount} with a matched capital (${Math.round((capitalCount / polityCount) * 100)}%)`);

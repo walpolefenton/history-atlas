@@ -15,7 +15,11 @@ const GLYPHS = "https://demotiles.maplibre.org/font/{fontstack}/{range}.pbf";
 export interface MapHandlers {
   onPolityClick(name: string): void;
   onEventClick(id: string): void;
-  onBackgroundClick(): void;
+}
+
+export interface MapOptions {
+  /** The comparison map: no controls or attribution of its own. */
+  secondary?: boolean;
 }
 
 function cssVar(name: string): string {
@@ -27,7 +31,10 @@ export class AtlasMap {
   private ready: Promise<void>;
   private tooltip = document.getElementById("tooltip")!;
 
-  constructor(container: string, land: GeoJSON.FeatureCollection, private handlers: MapHandlers) {
+  private readonly secondary: boolean;
+
+  constructor(container: string, land: GeoJSON.FeatureCollection, private handlers: MapHandlers, options: MapOptions = {}) {
+    this.secondary = options.secondary ?? false;
     const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
     this.map = new maplibregl.Map({
       container,
@@ -136,9 +143,24 @@ export class AtlasMap {
             paint: { "text-color": cssVar("--map-label"), "text-halo-color": cssVar("--map-label-halo"), "text-halo-width": 1.2 },
           },
           {
+            // Imported Wikidata events: many, so small and quiet.
+            id: "event-more",
+            type: "circle",
+            source: "events",
+            filter: ["!", ["get", "featured"]],
+            paint: {
+              "circle-radius": ["interpolate", ["linear"], ["zoom"], 1, 2.5, 6, 5],
+              "circle-color": ["match", ["get", "type"], ...Object.entries(EVENT_TYPES).flatMap(([k, v]) => [k, v.color]), "#888"],
+              "circle-opacity": 0.75,
+              "circle-stroke-color": cssVar("--map-label-halo"),
+              "circle-stroke-width": 0.8,
+            },
+          },
+          {
             id: "event-dot",
             type: "circle",
             source: "events",
+            filter: ["get", "featured"],
             paint: {
               "circle-radius": ["interpolate", ["linear"], ["zoom"], 1, 5, 6, 8],
               "circle-color": ["match", ["get", "type"], ...Object.entries(EVENT_TYPES).flatMap(([k, v]) => [k, v.color]), "#888"],
@@ -162,29 +184,60 @@ export class AtlasMap {
       } as maplibregl.StyleSpecification,
     });
 
+    if (!this.secondary) this.addControls();
+
+    this.ready = new Promise((resolve) => this.map.once("load", () => resolve()));
+    this.bindInteractions();
+    matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => this.applyTheme());
+    window.addEventListener("resize", () => this.updatePadding());
+    this.updatePadding();
+  }
+
+  private addControls() {
     this.map.addControl(new maplibregl.NavigationControl({ visualizePitch: false }), "top-right");
     this.map.addControl(new maplibregl.AttributionControl({
       compact: true,
       customAttribution: [
         'Borders: <a href="https://github.com/aourednik/historical-basemaps">historical-basemaps</a> (GPL-3.0)',
         'Coastlines: <a href="https://www.naturalearthdata.com/">Natural Earth</a>',
-        'Capitals: <a href="https://www.wikidata.org/">Wikidata</a>',
+        'Capitals &amp; events: <a href="https://www.wikidata.org/">Wikidata</a>',
       ],
     }), "bottom-left");
+  }
 
-    // Keep the globe centred in the area the side panel leaves visible.
-    const pad = () => this.map.setPadding(window.innerWidth > 800 ? { top: 0, bottom: 0, left: 0, right: 404 } : { top: 0, bottom: 0, left: 0, right: 0 });
-    pad();
-    window.addEventListener("resize", pad);
+  /** Keeps the globe centred in the area the side panel leaves visible. */
+  private updatePadding() {
+    const overlapsPanel = !this.secondary && window.innerWidth > 800 && !document.body.classList.contains("comparing");
+    this.map.setPadding({ top: 0, bottom: 0, left: 0, right: overlapsPanel ? 404 : 0 });
+  }
 
-    this.ready = new Promise((resolve) => this.map.once("load", () => resolve()));
-    this.bindInteractions();
-    matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => this.applyTheme());
+  /** Call after the container changes size (entering or leaving compare mode). */
+  resize() {
+    this.map.resize();
+    this.updatePadding();
+  }
+
+  jumpTo(other: AtlasMap) {
+    const m = other.map;
+    this.map.jumpTo({ center: m.getCenter(), zoom: m.getZoom(), bearing: m.getBearing(), pitch: m.getPitch() });
+  }
+
+  /** Mirrors camera movement between this map and another, in both directions. */
+  syncWith(other: AtlasMap) {
+    let syncing = false;
+    const mirror = (from: AtlasMap, to: AtlasMap) => () => {
+      if (syncing) return;
+      syncing = true;
+      to.jumpTo(from);
+      syncing = false;
+    };
+    this.map.on("move", mirror(this, other));
+    other.map.on("move", mirror(other, this));
   }
 
   private bindInteractions() {
     const m = this.map;
-    const interactive = ["event-dot", "polity-fill"];
+    const interactive = ["event-dot", "event-more", "polity-fill"];
 
     m.on("mousemove", (e: maplibregl.MapMouseEvent) => {
       const f = m.queryRenderedFeatures(e.point, { layers: interactive })[0];
@@ -200,8 +253,8 @@ export class AtlasMap {
 
     m.on("click", (e: maplibregl.MapMouseEvent) => {
       const f = m.queryRenderedFeatures(e.point, { layers: interactive })[0];
-      if (!f) return this.handlers.onBackgroundClick();
-      if (f.layer.id === "event-dot") this.handlers.onEventClick(f.properties.id);
+      if (!f) return;
+      if (f.layer.id.startsWith("event-")) this.handlers.onEventClick(f.properties.id);
       else this.handlers.onPolityClick(f.properties.name);
     });
   }
@@ -209,7 +262,7 @@ export class AtlasMap {
   private showTooltip(f: MapGeoJSONFeature, point: maplibregl.Point) {
     const p = f.properties;
     let text: string;
-    if (f.layer.id === "event-dot") {
+    if (f.layer.id.startsWith("event-")) {
       text = p.title;
       this.map.setFilter("polity-hover", ["==", ["get", "name"], ""]);
     } else {
@@ -234,19 +287,19 @@ export class AtlasMap {
       m.setPaintProperty(id, "text-halo-color", cssVar("--map-label-halo"));
     }
     m.setPaintProperty("capital-dot", "circle-color", cssVar("--map-capital"));
-    for (const id of ["capital-dot", "event-dot"]) m.setPaintProperty(id, "circle-stroke-color", cssVar("--map-label-halo"));
+    for (const id of ["capital-dot", "event-dot", "event-more"]) m.setPaintProperty(id, "circle-stroke-color", cssVar("--map-label-halo"));
   }
 
-  async setYear(data: YearData, events: HistoryEvent[]) {
+  async setYear(data: YearData, featured: HistoryEvent[], more: HistoryEvent[]) {
     await this.ready;
     (this.map.getSource("borders") as GeoJSONSource).setData(data.borders);
     (this.map.getSource("labels") as GeoJSONSource).setData(data.labels);
     (this.map.getSource("capitals") as GeoJSONSource).setData(data.capitals);
     (this.map.getSource("events") as GeoJSONSource).setData({
       type: "FeatureCollection",
-      features: events.map((e) => ({
+      features: [...more, ...featured].map((e) => ({
         type: "Feature",
-        properties: { id: e.id, title: e.title, type: e.type },
+        properties: { id: e.id, title: e.title, type: e.type, featured: !e.source },
         geometry: { type: "Point", coordinates: [e.lon, e.lat] },
       })),
     });

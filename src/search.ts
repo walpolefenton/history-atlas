@@ -20,6 +20,7 @@ export function initSearch(meta: Meta, events: HistoryEvent[], handlers: SearchH
   const list = document.getElementById("search-results") as HTMLUListElement;
   const polities = Object.entries(meta.appearances).map(([name, years]) => ({ name, years, key: fold(name) }));
   const evs = events.map((e) => ({ e, key: fold(e.title) }));
+  const eventIds = new Set(events.map((e) => e.id));
   let results: Result[] = [];
   let active = -1;
 
@@ -35,7 +36,7 @@ export function initSearch(meta: Meta, events: HistoryEvent[], handlers: SearchH
     const es = evs
       .map((x) => ({ e: x.e, s: score(x.key) }))
       .filter((x) => x.s >= 0)
-      .sort((a, b) => a.s - b.s)
+      .sort((a, b) => a.s - b.s || (a.e.source ? 1 : 0) - (b.e.source ? 1 : 0) || (b.e.notability ?? 0) - (a.e.notability ?? 0))
       .map(({ e }): Result => ({ kind: "event", event: e }));
     // Interleave so a few events surface even when many polities match.
     return [...ps.slice(0, MAX_RESULTS - Math.min(es.length, 4)), ...es].slice(0, MAX_RESULTS);
@@ -111,4 +112,11 @@ export function initSearch(meta: Meta, events: HistoryEvent[], handlers: SearchH
     }
   });
   input.addEventListener("blur", () => setTimeout(close, 100));
+
+  return {
+    /** Makes more events searchable, e.g. once the Wikidata set has loaded. */
+    addEvents(more: HistoryEvent[]) {
+      for (const e of more) if (!eventIds.has(e.id)) eventIds.add(e.id), evs.push({ e, key: fold(e.title) });
+    },
+  };
 }

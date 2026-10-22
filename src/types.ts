@@ -47,10 +47,15 @@ export interface HistoryEvent {
   summary: string;
   /** English Wikipedia article title, used as the source link. */
   wiki: string;
+  /** Absent for hand-curated events; "wikidata" for imported ones (id is then the QID). */
+  source?: "wikidata";
+  /** Number of Wikipedia language editions covering the event. */
+  notability?: number;
 }
 
 export type Selection =
   | { kind: "none" }
   | { kind: "polity"; name: string }
   | { kind: "event"; id: string }
-  | { kind: "list" };
+  | { kind: "list" }
+  | { kind: "compare" };
