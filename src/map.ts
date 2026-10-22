@@ -1282,8 +1282,11 @@ export class AtlasMap {
 
   /** Keeps the globe centred in the area the side panel leaves visible. */
   private updatePadding() {
-    const overlapsPanel = !this.secondary && window.innerWidth > 800 && !document.body.classList.contains("comparing");
-    this.map.setPadding({ top: 0, bottom: 0, left: 0, right: overlapsPanel ? 404 : 0 });
+    const comparing = document.body.classList.contains("comparing");
+    const overlapsPanel = !this.secondary && window.innerWidth > 800 && !comparing;
+    // On phones the details sheet peeks up over the lower part of the map.
+    const sheet = !this.secondary && window.innerWidth <= 800 && !comparing ? Math.round(this.map.getContainer().clientHeight * 0.4) : 0;
+    this.map.setPadding({ top: 0, bottom: sheet, left: 0, right: overlapsPanel ? 404 : 0 });
   }
 
   /** Call after the container changes size (entering or leaving compare mode). */

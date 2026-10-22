@@ -56,6 +56,7 @@ export function initPanel() {
     else if (action === "event") current.actions.selectEvent(id!);
     else if (action === "year") current.actions.goToYear(Number(year));
     else if (action === "overview") current.actions.showOverview();
+    else if (action === "sheet") setSheetOpen(!document.body.classList.contains("sheet-open"));
     else if (action === "type") current.actions.toggleType(type as EventType);
     else if (action === "compare-year") current.actions.setCompareYear(Number(year));
     else if (action === "drawing") current.actions.selectDrawing(id!);
@@ -69,6 +70,17 @@ export function initPanel() {
       el.remove();
     }
   });
+  // Swipe the handle up to open the sheet, down to close it.
+  let startY: number | null = null;
+  panel().addEventListener("touchstart", (ev) => {
+    startY = (ev.target as HTMLElement).closest(".sheet-handle") ? ev.touches[0].clientY : null;
+  }, { passive: true });
+  panel().addEventListener("touchend", (ev) => {
+    if (startY === null) return;
+    const dy = ev.changedTouches[0].clientY - startY;
+    if (Math.abs(dy) > 24) setSheetOpen(dy < 0);
+    startY = null;
+  }, { passive: true });
   panel().addEventListener("input", (ev) => {
     const input = ev.target as HTMLInputElement;
     if (input.id !== "list-filter") return;
@@ -86,10 +98,27 @@ export function initPanel() {
   });
 }
 
+/**
+ * On phones the panel is a bottom sheet: it peeks up over the map and the handle
+ * (or a swipe on it) opens it to nearly full height. The handle is hidden on
+ * wider screens, where the panel is a sidebar.
+ */
+const sheetHandle = () => {
+  const open = document.body.classList.contains("sheet-open");
+  return `<button type="button" class="sheet-handle" data-action="sheet" aria-expanded="${open}" aria-label="${open ? "Collapse details" : "Expand details"}"><span></span></button>`;
+};
+
+export function setSheetOpen(open: boolean) {
+  document.body.classList.toggle("sheet-open", open);
+  const h = panel().querySelector(".sheet-handle");
+  h?.setAttribute("aria-expanded", String(open));
+  h?.setAttribute("aria-label", open ? "Collapse details" : "Expand details");
+}
+
 function render(ctx: PanelContext, html: string, focus = false) {
   current = ctx;
   const el = panel();
-  el.innerHTML = html;
+  el.innerHTML = sheetHandle() + html;
   el.scrollTop = 0;
   if (focus) el.focus({ preventScroll: true });
 }

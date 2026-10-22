@@ -11,7 +11,7 @@
       (function () {
         var c = "auto";
         try { c = localStorage.getItem("atlas-theme") || "auto"; } catch (e) {}
-        if (c === "auto") c = matchMedia("(prefers-color-scheme: light)").matches ? "survey" : "night";
+        if (c === "auto") c = matchMedia("(prefers-color-scheme: light)").matches ? "atlas" : "atlas-dark";
         document.documentElement.dataset.theme = c;
       })();
     </script>
