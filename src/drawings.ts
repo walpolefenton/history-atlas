@@ -171,11 +171,12 @@ const D: Record<string, string> = {
     <path d="M41.6 50 Q46 38 57 32.5 Q52.6 42 54 50 Z" fill="WASH"/><path d="M45.8 49.4 Q49 40.4 55.4 35.4" opacity=".4"/>
     <path d="M2 57.5 Q8 56 14 57.5 T26 57.5 T38 57.5 T50 57.5 T62 57.5 M6 61 Q12 59.6 18 61 T30 61 T42 61 T54 61" opacity=".4"/>`,
 
-  // --- Curiosities -----------------------------------------------------------
-  mammoth: `<path d="M12 40 Q11 20 31 18 Q45 17 49 26 Q54 31 51 40 Z" fill="WASH"/>
-    <path d="M50 30 Q58 38 54 48 Q52 51 50 48"/><path d="M48 37 Q44 47 35 43"/>
-    <path d="M16 40 V52 M22 40 V52 M38 40 V52 M44 40 V51"/><path d="M14 33 L12 37 M19 38 L18 41 M27 39 L26 42 M33 39 L33 42"/><circle cx="45" cy="27" r="0.8"/>
-    <path d="M12 26 Q8 28 9 33"/><path d="M4 53 H60" opacity=".5"/>`,
+  // A woolly mammoth: the high domed head, the sloping back, curling tusks, the shaggy coat.
+  mammoth: `<path d="M12 40 Q10 30 18 26 Q28 21.6 38 22 Q44 18 50 20 Q56 22.6 56 30 Q56 34 54.4 37.4 Q57 44 56.6 51 Q56.6 53.6 59 54.4 Q55.6 56 54.4 52.6 Q53.6 46 51 42 L48 43 L46 41.6 L18 42 Q13 42 12 40 Z" fill="WASH"/>
+    <path d="M52.6 38 Q56 47 51 50 Q46 52 45 47.6 Q48.6 49 50.6 46 Q52.4 43 50.4 38.6" fill="WASH"/>
+    <circle cx="51.6" cy="27.4" r="0.5"/><path d="M45.6 23.6 Q48.6 26 47.6 31 Q45.4 33.4 44 31" opacity=".5"/>
+    <path d="M16 41.6 L15.6 54.6 H20.6 L21 42 Z M23 42 L23.4 54 H28 V42 Z M36.6 42 V54.6 H41.6 L41.4 42 Z M42 41.6 L43 54 H47.6 L46.6 40.6 Z" fill="WASH"/>
+    ${times(14, (i) => `<path d="M${16 + i * 2.4} ${38 + (i % 3)} l-.6 ${3 + (i % 2)}" opacity=".45"/>`)}<path d="M12.4 37 Q9 40 9.6 45"/><path d="M4 55 H62" opacity=".45"/>`,
   serpent: `<path d="M4 44 Q10 29 16 44 M20 44 Q26 27 32 44 M36 44 Q42 31 48 44"/>
     <path d="M47 44 Q50 29 57 31 Q61 35 56 38 L51 39" fill="WASH"/><circle cx="55" cy="33.5" r="0.8"/><path d="M58 37 L62 39 M58 37 L61 41"/>
     <path d="M9 37 L11 34 M25 35 L27 32 M41 37 L43 34"/><path d="M2 49 Q8 46 14 49 T26 49 T38 49 T50 49 T62 49"/>`,
@@ -193,9 +194,11 @@ const D: Record<string, string> = {
     <path d="M4 32 H14 L16 38 H56 L60 36 L55 46.4 Q32 49.6 10 46.6 Z" fill="WASH"/><path d="M6 34.6 H14.6 M8 42.4 Q32 46 56.4 41" opacity=".5"/>
     <path d="M6 46 L4.6 51 L9 50" /><circle cx="54" cy="40.6" r="1.1"/>
     <path d="M2 53 Q8 51.6 14 53 T26 53 T38 53 T50 53 T62 53 M8 57 Q14 55.6 20 57 T32 57 T44 57 T56 57" opacity=".45"/>`,
-  camel: `<path d="M12 34 Q16 20 25 28 Q31 16 39 28 Q43 31 46 29 L50 22 Q53 20 55 23 L52 27 L49 35 Q44 39 36 38 H18 Q13 38 12 34 Z" fill="WASH"/>
-    <path d="M18 38 L16 52 M23 38 L24 52 M36 38 L34 52 M42 37 L44 52"/><path d="M12 34 Q8 36 9 42"/><circle cx="52.5" cy="23.5" r="0.7"/>
-    <path d="M24 24 L21 14 L27 14 Z"/><path d="M3 53 Q20 50 34 53 T62 52" opacity=".6"/>`,
+  // A dromedary of the caravans: the single hump under a saddle blanket, long neck, long legs, a pack.
+  camel: `<path d="M12 34 Q14 28 20 27 Q25 17.6 31.6 26 Q36 27 40 29 Q44 30 46 26 Q47 20 50 17.6 L53 17 Q56 17.4 56.6 19.6 L55.6 21 Q53.6 21 52.6 22 Q51.6 28 49 33.6 Q46 38 41.6 38.6 L20 39 Q14 38.6 12.6 36.4 Z" fill="WASH"/>
+    <path d="M20.6 26.4 Q25.4 21.6 30.6 26.4 L30 30.4 Q25.2 32 21 30.4 Z" fill="WASH"/><path d="M31 27.4 H37 V33.4 H31.4 Z" fill="WASH"/><path d="M31.4 30.4 H36.8" opacity=".5"/>
+    <path d="M41.2 38.4 L42 46 L41.4 55.6 H43.4 L44 46 L44.6 37.6 M37.6 38.6 L38 47 L37.4 55.6 H39.4 L40 47 L40.4 38.6 M17 38 L19.4 45 L18 55.6 H20 L21.6 45 L20.6 38.8 M22.4 39 L24 46 L23.4 55.6 H25.4 L26 46 L25.4 39" fill="WASH"/>
+    <path d="M12.6 34 Q10.4 37 11 42"/><circle cx="53.4" cy="19.2" r="0.45"/><path d="M51 17.4 l.6 -1.6"/><path d="M46.6 27 Q47.8 31.4 46.4 35" opacity=".4"/><path d="M8 55.8 H60" opacity=".45"/>`,
   // A Polynesian voyaging canoe: twin hulls joined by a deck, the crab-claw sail, paddlers aboard.
   canoe: `<path d="M30 38 L24 10 M30 38 L44 9"/><path d="M24 10 Q31 16 44 9 Q40 22 30 38 Q27 22 24 10 Z" fill="WASH"/><path d="M27 18 Q33 19 40 15 M28.4 27 Q32 26.4 36.6 22" opacity=".35"/>
     <path d="M14 38 H50 V40 H14 Z" fill="WASH"/><path d="M18 38 V35 L21 33 V38 M42 38 V34.4 L45 33 V38" opacity=".6"/>
@@ -232,11 +235,19 @@ const D: Record<string, string> = {
   airship: `<ellipse cx="32" cy="25" rx="26" ry="10" fill="WASH"/><path d="M14 18 Q12 25 14 32 M23 16 Q21 25 23 34 M32 15 V35 M41 16 Q43 25 41 34 M50 18 Q52 25 50 32"/>
     <path d="M55 21 L62 15 V35 L55 29"/><path d="M26 35 H38 V40 H26 Z"/>`,
   rocket: `<circle cx="27" cy="27" r="9" fill="WASH"/><path d="M33 33 L60 47 M31 35 L52 56 M35 30 L61 38 M28 36 L40 61"/><path d="M21 23 Q24 20 28 21"/>`,
-  volcano: `<path d="M5 54 L23 26 H41 L59 54 Z" fill="WASH"/><path d="M23 26 Q32 30 41 26"/><path d="M29 28 L26 40 M35 28 L38 44"/>
-    <circle cx="27" cy="18" r="5"/><circle cx="35" cy="14" r="6"/><circle cx="44" cy="9" r="5"/><circle cx="24" cy="9" r="3.5"/>`,
-  elephant: `<path d="M12 40 Q11 22 30 21 Q43 20 46 30 Q52 29 54 38 Q55 49 51 50" fill="WASH"/><path d="M12 40 H44"/>
-    <path d="M16 40 V52 M23 40 V52 M36 40 V52 M43 40 V51"/><path d="M36 26 Q31 31 35 37 Q40 38 41 31"/><path d="M47 37 Q44 42 39 41"/><circle cx="45" cy="29" r="0.8"/>
-    <path d="M24 21 L22 14 H32 L30 21"/><path d="M4 54 L20 46 L30 52 L44 42 L60 52" opacity=".5"/>`,
+  // A stratovolcano erupting: the crater, an ash plume rising and leaning with the wind, lava streaks down the flank.
+  volcano: `<path d="M4 54 L24 26 Q32 23.6 40 26 L60 54 Z" fill="WASH"/><path d="M24 26 Q32 28.4 40 26" />
+    <path d="M30 26.6 Q28 36 31 44 M34 26.6 Q38 34 37 42 M27 27 L22 38" opacity=".55"/>
+    <path d="M28 24 Q22 18 26 12 Q24 6 30 4 Q34 0 40 3 Q46 1 48 6 Q54 8 52 13 Q50 17 44 16 Q42 22 36 22 Q32 24 28 24 Z" fill="WASH"/>
+    <path d="M30 10 q2 -2 4 0 M38 7 q2 -2 4 0 M44 11 q2 -2 4 0" opacity=".4"/><path d="M42 30 L46 36 M46 36 L50 44 M14 44 L18 40" opacity=".35"/><path d="M2 54.4 H62" opacity=".45"/>`,
+  // An elephant, as Hannibal took over the Alps: great fan of an ear, the trunk, tusks, pillar legs.
+  elephant: `<path d="M10 32 Q11 21 24 20 Q36 19 43 22.6 Q46 30 44.6 40.6 L14 41 Q9.6 38 10 32 Z" fill="WASH"/>
+    <path d="M42 23 Q46 17.6 52.6 19 Q58 20.6 58 27.4 Q58 31 56.6 33.6 Q59.6 41 58.6 49 Q58.4 52.4 61.6 53 Q57.6 55 56.4 51 Q56 44 53.4 38.4 Q50 40.4 46 39.6 Z" fill="WASH"/>
+    <path d="M44.6 24 Q50.6 22.6 51.4 28 Q51.4 35 46.6 37 Q44 33 44.6 24 Z" fill="WASH"/><path d="M46.4 26.6 Q49 28 48.6 32.6" opacity=".45"/>
+    <circle cx="53.4" cy="25.6" r="0.5"/><path d="M54.6 35.4 Q57 40 61 39.6 Q57.4 38 56 34.6 Z" fill="WASH"/>
+    <path d="M13.6 40 V54.6 H19 V41 Z M21 40.6 V53.6 H26 V41 Z M37 41 V54.6 H42.4 V40.6 Z M43 40 V53.6 H47.6 V38.8 Z" fill="WASH"/>
+    <path d="M14.4 54 q1 -1 2 0 M38 54 q1 -1 2 0" opacity=".5"/><path d="M10.6 30 Q7.4 34 8.2 41"/><path d="M30 24 Q31 30 30 38 M20 24 Q19 30 20 37 M57.4 41 h1.2 M57.6 45 h1.2" opacity=".3"/>
+    <path d="M6 55 H62" opacity=".45"/>`,
   // The horse tamed: a handler holding a horse on a lead rope.
   horse: `<g transform="translate(-7 0)">${HORSE_STAND}</g>
     <circle cx="57.4" cy="25.2" r="2.1" fill="WASH"/><path d="M55.4 28.4 Q57.6 27.4 59.6 28.6 L60.4 40 Q57.4 41 54.6 40 Z" fill="WASH"/>
@@ -244,9 +255,12 @@ const D: Record<string, string> = {
     <path d="M1 55.8 H63" opacity=".5"/>`,
   press: `<path d="M14 54 V10 H50 V54"/><path d="M14 16 H50"/><path d="M32 16 V30"/><path d="M20 24 H44"/>
     <path d="M22 30 H42 V36 H22 Z" fill="WASH"/><path d="M18 42 H46 V46 H18 Z"/><path d="M24 40 L40 40" opacity=".6"/><path d="M8 54 H56"/>`,
-  dodo: `<path d="M14 42 Q10 25 27 24 Q33 17 42 19 Q51 21 49 29 Q46 33 42 31 Q44 40 36 45 Q24 50 14 42 Z" fill="WASH"/>
-    <path d="M49 29 Q53 31 50 34"/><circle cx="43" cy="23" r="0.8"/><path d="M12 33 Q6 31 7 26 M12 36 Q6 37 5 33"/>
-    <path d="M27 46 L25 54 M33 46 L35 54 M22 54 H28 M32 54 H38"/>`,
+  // The dodo of Mauritius, gone by about 1662: the great hooked bill, stubby wings, the curled tail plume.
+  dodo: `<path d="M18 40 Q16 30 24 26 Q30 23 36 25 Q42 27 43 34 Q44 42 38 46 Q30 49 23 47 Q18.6 45 18 40 Z" fill="WASH"/>
+    <path d="M36 25.6 Q37 19 41.6 17.6 Q46.4 17 48 21 L55.6 23 Q57.6 24.6 56 27.4 Q53 29.6 50.6 27 L47.6 27.4 Q45 29 43 31.4" fill="WASH"/><path d="M48 21 Q51 23.6 55.6 23" opacity=".55"/>
+    <circle cx="44" cy="21" r="0.6"/><path d="M41.4 18 Q43 16.6 45.4 17.4" opacity=".5"/>
+    <path d="M18.4 34 Q13.6 31 12.6 26.4 Q15.6 28 17 26 Q16.6 30 19.6 32" fill="WASH"/><path d="M27 33 Q30 37 34 36 Q31 31.6 27 33 Z" fill="WASH"/>
+    <path d="M27 47.4 L26.6 54 M26.6 54 L23.6 55 M26.6 54 L29.4 55 M34 47 L35 54 M35 54 L32 55 M35 54 L38 55"/><path d="M14 55.4 H50" opacity=".45"/>`,
   footprints: `<ellipse cx="12" cy="50" rx="2.6" ry="4.5" fill="WASH"/><ellipse cx="20" cy="44" rx="2.6" ry="4.5" fill="WASH"/>
     <ellipse cx="26" cy="35" rx="2.6" ry="4.5" fill="WASH"/><ellipse cx="34" cy="30" rx="2.6" ry="4.5" fill="WASH"/>
     <ellipse cx="40" cy="21" rx="2.6" ry="4.5" fill="WASH"/><ellipse cx="48" cy="16" rx="2.6" ry="4.5" fill="WASH"/>
@@ -256,55 +270,73 @@ const D: Record<string, string> = {
     <circle cx="15" cy="30" r="1"/><circle cx="31" cy="24" r="1"/><circle cx="32" cy="32" r="1"/><circle cx="51" cy="36" r="1"/>
     <path d="M2 50 Q8 47 14 50 T26 50 T38 50 T50 50 T62 50"/>`,
 
-  // --- Nature in history --------------------------------------------------------
-  wheat: `<path d="M22 54 Q24 36 27 21 M32 54 V17 M42 54 Q40 36 37 21"/>
-    <path d="M32 17 Q28 12 30 6 Q34 10 32 17 Z M32 23 Q27 20 28 14 Q31 17 32 23 Z M32 23 Q37 20 36 14 Q33 17 32 23 Z M32 29 Q27 26 28 20 Q31 23 32 29 Z M32 29 Q37 26 36 20 Q33 23 32 29 Z" fill="WASH"/>
-    <path d="M27 21 Q23 17 25 11 Q29 15 27 21 Z M37 21 Q41 17 39 11 Q35 15 37 21 Z" fill="WASH"/>
-    <path d="M32 42 Q24 38 20 32 M32 38 Q40 34 44 30"/><path d="M10 54 H54"/>`,
-  rice: `<path d="M16 50 Q20 30 30 20 Q38 16 41 26 M30 50 Q33 32 43 24 Q51 20 52 30 M44 50 Q44 38 50 32"/>
-    <ellipse cx="41" cy="27" rx="1.6" ry="2.4" fill="WASH"/><ellipse cx="40" cy="31" rx="1.6" ry="2.4" fill="WASH"/><ellipse cx="38" cy="34.5" rx="1.6" ry="2.4" fill="WASH"/>
-    <ellipse cx="52" cy="31" rx="1.6" ry="2.4" fill="WASH"/><ellipse cx="51" cy="35" rx="1.6" ry="2.4" fill="WASH"/><ellipse cx="49.5" cy="38.5" rx="1.6" ry="2.4" fill="WASH"/>
-    <path d="M20 40 Q14 36 10 38 M34 40 Q28 34 24 36"/><path d="M2 50 H62 M6 55 H20 M28 55 H44 M50 55 H60" opacity=".7"/>`,
-  maize: `<path d="M32 10 Q42 18 40 40 Q32 46 24 40 Q22 18 32 10 Z" fill="WASH"/>
-    <path d="M27 20 H37 M25 26 H39 M25 32 H39 M26 38 H38 M32 12 V44 M28 14 V42 M36 14 V42" opacity=".7"/>
-    <path d="M24 40 Q14 36 11 21 Q20 30 26 32 M40 40 Q50 36 53 21 Q44 30 38 32"/><path d="M32 44 V56"/><path d="M32 10 Q30 5 33 2"/>`,
-  hippo: `<path d="M8 41 Q7 27 23 26 Q34 24 44 28 Q55 28 57 36 Q57 42 50 42 H14 Q9 42 8 41 Z" fill="WASH"/>
-    <path d="M14 42 V47 M21 42 V47 M43 42 V47 M50 42 V47"/><path d="M46 27 L47 23 L50 27"/><circle cx="50" cy="31" r="0.8"/><circle cx="55.5" cy="35" r="0.6"/>
-    <path d="M2 46 Q8 43 14 46 T26 46 T38 46 T50 46 T62 46"/><path d="M4 46 V34 M7 46 V31 M10 46 V36"/>`,
-  tree: `<path d="M27 56 Q23 44 29 36 Q33 30 27 22 M35 56 Q39 46 35 38 Q32 32 38 24"/>
-    <path d="M29 36 Q20 32 14 34 M34 32 Q44 28 50 30 M27 22 Q23 16 18 16 M38 24 Q42 18 48 16"/>
-    <path d="M9 34 Q7 28 13 27 Q17 24 21 28 Q23 33 17 35 Z M44 30 Q44 24 50 24 Q56 25 55 31 Q52 34 46 33 Z M13 18 Q11 12 17 11 Q23 10 23 16 Q21 20 15 20 Z M44 18 Q44 12 50 12 Q55 13 54 18 Q51 21 46 20 Z" fill="WASH"/>
-    <path d="M6 56 H58"/><path d="M12 56 Q15 52 19 56 M44 56 Q48 51 52 56"/>`,
-  bull: `<path d="M10 38 Q10 24 26 24 H44 Q52 22 54 30 L58 36 Q56 40 52 38 L48 38 Q44 40 40 40 H16 Q11 40 10 38 Z" fill="WASH"/>
-    <path d="M16 40 V52 M22 40 V52 M40 40 V52 M46 39 V52"/><path d="M50 25 Q47 16 55 12 M53 26 Q58 19 62 21"/>
-    <path d="M10 30 Q5 34 6 42"/><circle cx="52" cy="29" r="0.8"/><path d="M4 53 H60" opacity=".5"/>`,
-  moa: `<path d="M17 31 Q17 20 29 20 Q40 22 40 30 Q38 38 28 38 Q20 38 17 31 Z" fill="WASH"/>
-    <path d="M36 22 Q40 12 44 8"/><path d="M44 8 Q48 5 51 9 L46 11"/><circle cx="46" cy="8" r="0.7"/>
-    <path d="M26 38 L24 54 M32 38 L34 54 M20 54 H27 M31 54 H38"/><path d="M22 26 Q28 24 34 28 M20 31 Q27 29 33 33" opacity=".6"/>`,
-  potato: `<path d="M32 30 V8"/><path d="M32 16 Q24 10 20 14 Q24 18 32 18 M32 12 Q40 6 44 10 Q40 14 32 14 M32 23 Q42 19 46 23 Q42 27 32 25" fill="WASH"/>
-    <path d="M4 32 H60"/><path d="M32 32 Q26 38 20 42 M32 32 Q38 40 42 46 M32 32 V43"/>
-    <ellipse cx="17" cy="45" rx="6" ry="4.5" fill="WASH"/><ellipse cx="44" cy="49" rx="6.5" ry="4.5" fill="WASH"/><ellipse cx="31" cy="48" rx="5" ry="4" fill="WASH"/>
-    <circle cx="15" cy="44" r="0.6"/><circle cx="46" cy="48" r="0.6"/>`,
-  tulip: `<path d="M32 56 Q30 40 32 31"/><path d="M31 50 Q20 44 18 30 Q26 38 31 44 M33 46 Q44 42 46 28 Q38 36 33 40"/>
-    <path d="M24 14 Q24 30 32 32 Q40 30 40 14 L36 18 L32 10 L28 18 Z" fill="WASH"/>
-    <circle cx="51" cy="12" r="5"/><path d="M50 9 Q52 8 52 10 V15 M49 12 H53"/>`,
+  // A sheaf of einkorn wheat, bound at the waist, the ears heavy with grain and bristling with awns.
+  wheat: `${times(7, (i) => { const a = -0.5 + (i * 1) / 6; const tx = 32 + Math.sin(a) * 20, ty = 34 - Math.cos(a) * 20; const ex = 32 + Math.sin(a) * 27, ey = 34 - Math.cos(a) * 27; const deg = (a * 180) / Math.PI; return `<path d="M${r1(32 - Math.sin(a) * 7)} 56 L32 38 L${r1(tx)} ${r1(ty)}"${i % 2 ? ' opacity=".7"' : ""}/><ellipse cx="${r1((tx + ex) / 2)}" cy="${r1((ty + ey) / 2)}" rx="1.6" ry="4" transform="rotate(${r1(deg)} ${r1((tx + ex) / 2)} ${r1((ty + ey) / 2)})" fill="WASH"/><path d="M${r1(ex)} ${r1(ey)} l${r1(Math.sin(a) * 4 - 1)} ${r1(-Math.cos(a) * 4)} M${r1(ex)} ${r1(ey)} l${r1(Math.sin(a) * 4 + 1)} ${r1(-Math.cos(a) * 4)}" opacity=".55"/>`; })}
+    <path d="M28.4 37.6 Q32 40 35.6 37.6 V40.6 Q32 43 28.4 40.6 Z" fill="WASH"/><path d="M22 56.4 H42" opacity=".45"/>`,
+  // Rice seedlings planted out in a flooded paddy, their reflections in the water.
+  rice: `${times(4, (r) => times(5, (c) => { const x = 8 + c * 12 + (r % 2) * 6; const y = 30 + r * 7; return `<path d="M${x} ${y} Q${x - 1} ${y - 4} ${x - 3} ${y - 6} M${x} ${y} Q${x} ${y - 5} ${x + 0.6} ${y - 7} M${x} ${y} Q${x + 1} ${y - 4} ${x + 3} ${y - 5.4}"/><path d="M${x - 2} ${y + 1} H${x + 2}" opacity=".4"/>`; }))}
+    <path d="M2 24 H62 M2 56 H62" opacity=".35"/>${times(4, (i) => `<path d="M${4 + i * 15} ${33 + i * 5} h6" opacity=".3"/>`)}`,
+  // Maize: the tall stalk, long leaves, the ear in its husk with silk, the tassel on top.
+  maize: `<path d="M31 56 Q32 34 31 8"/><path d="M31 8 L28 4 M31 8 L32 3 M31 8 L35 4.4 M31 9 L27 8 M31 9 L35.4 8.6" opacity=".7"/>
+    ${[[44, 1], [36, -1], [28, 1], [20, -1]].map(([y, s]) => `<path d="M31.4 ${y} Q${31 + s * 10} ${y - 8} ${31 + s * 20} ${y - 2} Q${31 + s * 10} ${y - 4} 31.4 ${y + 2.4} Z" fill="WASH"/><path d="M31.4 ${y + 1} Q${31 + s * 10} ${y - 5} ${31 + s * 19} ${y - 2}" opacity=".4"/>`).join("")}
+    <path d="M32 33 Q38 30 39 22 Q36 20 33.6 23 Q32 28 32 33 Z" fill="WASH"/><path d="M34 31 Q37 27 37.6 23 M33.6 28 l4 -1 M34 25 l3.4 -.6" opacity=".5"/><path d="M38.4 22 Q41 19 40 15 M39 22 Q42.6 21 43.4 17" opacity=".7"/>
+    <path d="M14 56.4 H50" opacity=".45"/>`,
+  // Hippos of the Green Sahara, wallowing: eyes, ears and nostrils above the water.
+  hippo: `<path d="M8 42 Q8 30 22 28 Q34 26.6 44 30 Q50 30 54 33.6 Q58 34.6 58.6 38.6 Q58.4 42.6 54 43 L50 42.6 L48 44.6 Q30 46.6 12 45 Q8 44.4 8 42 Z" fill="WASH"/>
+    <path d="M47.6 31 L48.4 28.6 L50 30.6"/><circle cx="51" cy="33.4" r="0.55"/><path d="M56 36.6 h1.2 M54 41 Q52 39.6 50 41" opacity=".6"/>
+    <path d="M24 30 Q27 35 25 42 M36 29.4 Q38 34 37 41" opacity=".3"/>
+    <path d="M2 44 Q8 42.6 14 44 T26 44 T38 44 T50 44 T62 44 M6 49 Q12 47.6 18 49 T30 49 T42 49 T54 49 M2 54 Q10 52.6 18 54 T34 54 T50 54 T62 54" opacity=".45"/>
+    <path d="M36 54 V44 M38 52 L40 46 M34 52 L32 46.6" opacity=".55"/>`,
+  // A bristlecone pine, nearly five thousand years old: the twisted, half-dead trunk, a few tufts of needles.
+  tree: `<path d="M24 55 Q27 46 25 38 Q23 32 27 26 Q30 21 28 15 Q33 20 32 27 Q31 33 34 38 Q38 44 36 55 Z" fill="WASH"/>
+    <path d="M26.4 52 Q29 44 27.4 38 Q26 32 29 26 M31 52 Q33 44 31 38 M33.6 50 Q35 46 34 42" opacity=".45"/>
+    <path d="M28 15 Q22 10 16 11 M27.6 26 Q20 24 14 27 M33 30 Q40 26 46 27 M32 22 Q38 16 44 15"/>
+    ${[[16, 11], [14, 27], [46, 27], [44, 15]].map(([x, y]) => `<path d="M${x - 4} ${y} Q${x - 2} ${y - 4} ${x + 1} ${y - 3} Q${x + 4} ${y - 2} ${x + 3} ${y + 1.6} Q${x} ${y + 3} ${x - 4} ${y} Z" fill="WASH"/>`).join("")}
+    <path d="M18 55.4 H48" opacity=".45"/><path d="M20 58 L24 55.4 M40 58 L44 55.4" opacity=".3"/>`,
+  // An aurochs bull, as painted at Lascaux and hunted to extinction in 1627: forward-sweeping horns, deep chest.
+  bull: `<path d="M12 34 Q11 26 22 25 Q32 23 42 24.6 Q47 23 50.6 25.4 L55.6 28.6 Q57.4 31 55.6 33.6 L52.6 34 Q50 36.6 46 37.6 Q44.6 40.4 42.6 41 L16 41.6 Q12 40 12 34 Z" fill="WASH"/>
+    <path d="M50.4 25.6 Q50 20 54.6 17 Q53 21 54.4 24.4 M52.4 25 Q55.6 21.6 59.6 22" /><circle cx="53.6" cy="28.4" r="0.45"/>
+    <path d="M15.6 41 L15.6 54.6 H18 L18.6 41.6 Z M21 41.6 L22.4 54.6 H24.8 L24.4 41.6 Z M38.6 41.4 L38.4 54.6 H40.8 L41.4 41 Z M42.6 40.6 L44.4 54.6 H46.8 L45.4 39.6 Z" fill="WASH"/>
+    <path d="M12.6 32 Q9.4 38 10.4 46 l-1 1.6"/><path d="M46 37.6 Q45 42 42.6 41 M28 25 Q30 32 28 40" opacity=".4"/><path d="M6 55 H60" opacity=".45"/>`,
+  // The moa of New Zealand, up to three and a half metres tall, hunted out within two centuries of human arrival.
+  moa: `<path d="M18 36 Q18 26 28 25 Q38 24.6 44 30 Q47 34 44 39 Q39 43 30 43 Q20 42.6 18 36 Z" fill="WASH"/>
+    <path d="M40 27 Q42 18 41 12 Q41 7 44 6.4 Q47.4 6.6 48 8.4 L51 9.6 L47.8 10.6 Q45 11 44.6 14 Q44.6 20 43.6 28" fill="WASH"/><circle cx="45.4" cy="8.2" r="0.45"/>
+    ${times(7, (i) => `<path d="M${22 + i * 3} ${30 + (i % 2) * 3} q1 3 -.4 6" opacity=".4"/>`)}
+    <path d="M28 42.6 L27 50 L25 57 M25 57 H21.6 M25 57 L28 57.4 M36 42.4 L37.6 50 L36.4 57 M36.4 57 H33 M36.4 57 L39.6 57.6"/>
+    <path d="M27.6 45 h1.4 M37 45 h1.4" /><path d="M10 58 H58" opacity=".45"/>`,
+  // A potato plant cut away below the ground: leaves and flowers above, the tubers on their stolons beneath.
+  potato: `<path d="M2 36 H62"/><path d="M2 39 H62 M2 44 H62" opacity=".15"/>
+    <path d="M32 36 V22 M32 28 L24 22 M32 26 L40 20"/>${[[24, 22], [40, 20], [32, 20]].map(([x, y]) => `<path d="M${x} ${y} Q${x - 4} ${y - 3} ${x - 6} ${y} Q${x - 3} ${y + 3} ${x} ${y} Z M${x} ${y} Q${x + 4} ${y - 3} ${x + 6} ${y} Q${x + 3} ${y + 3} ${x} ${y} Z" fill="WASH"/>`).join("")}
+    <path d="M32 20 V14"/><circle cx="32" cy="12.6" r="1.6" fill="WASH"/><circle cx="29.6" cy="14.6" r="1.2" fill="WASH"/><circle cx="34.6" cy="14.4" r="1.2" fill="WASH"/>
+    <path d="M32 36 Q30 42 22 46 M32 36 Q33 43 40 47 M32 36 Q32 44 31 50 M32 36 Q26 40 14 41"/>
+    ${[[20, 47, 4], [42, 48.4, 4.4], [30, 51.6, 3.6], [12, 42, 3]].map(([x, y, r]) => `<ellipse cx="${x}" cy="${y}" rx="${r}" ry="${r * 0.7}" fill="WASH"/><circle cx="${x - r * 0.3}" cy="${y - r * 0.2}" r="0.35"/><circle cx="${x + r * 0.4}" cy="${y + r * 0.1}" r="0.35"/>`).join("")}`,
+  // Tulips: the cupped blooms on their stems, broad leaves at the base.
+  tulip: `${[[24, 16, 0], [38, 22, 1], [31, 28, 2]].map(([x, y, i]) => `<path d="M${x} 54 Q${x + (i - 1) * 2} ${y + 14} ${x} ${y + 8}"/><path d="M${x - 4} ${y + 1} Q${x - 4.4} ${y + 7} ${x} ${y + 8} Q${x + 4.4} ${y + 7} ${x + 4} ${y + 1} L${x + 2} ${y + 3} L${x} ${y - 0.6} L${x - 2} ${y + 3} Z" fill="WASH"/><path d="M${x} ${y - 0.4} V${y + 7.6}" opacity=".4"/>`).join("")}
+    <path d="M24 54 Q16 46 15 38 Q20 44 26 50 Z M38 54 Q46 47 47 40 Q42 45 36 50 Z" fill="WASH"/><path d="M16 54.4 H48" opacity=".45"/>`,
   frost: `<path d="M8 40 L14 30 L20 40 Z M44 40 L50 30 L56 40 Z" fill="WASH"/><path d="M14 30 V27 L17 28 L14 29 M50 30 V27 L53 28 L50 29"/>
     <circle cx="32" cy="20" r="3.5"/><path d="M29 16 H35 M30 16 V12 H34 V16"/><path d="M32 23.5 L30 34 M31 27 L24 24 M31 27 L38 30 M30 34 L25 42 M30 34 L37 41"/>
     <path d="M22 43 H28 M35 42 H41"/><path d="M2 46 H62"/><path d="M10 50 L16 48 M40 52 L48 49" opacity=".6"/>
     <path d="M52 6 V16 M47.5 8.5 L56.5 13.5 M47.5 13.5 L56.5 8.5"/>`,
-  bird: `<path d="M12 34 Q20 24 34 26 Q42 22 48 24 Q52 26 50 29 L46 30 Q42 36 32 38 Q22 40 12 34 Z" fill="WASH"/>
-    <path d="M12 34 L2 40 M14 36 L4 44"/><path d="M24 30 Q32 26 40 30"/><circle cx="47" cy="26" r="0.8"/><path d="M50 27 L54 27.5"/>
-    <path d="M8 46 H56 M30 38 V46 M34 38 V46"/><path d="M14 12 l3 2 l3 -2 M26 8 l3 2 l3 -2 M40 12 l3 2 l3 -2 M50 6 l3 2 l3 -2 M33 16 l2 1.5 l2 -1.5"/>`,
+  // The passenger pigeon, once in flocks of billions, on a branch.
+  bird: `<path d="M4 46 Q20 43 34 45.6 Q46 47.6 60 45" /><path d="M24 45 L28 49 M42 46.6 L45 50" opacity=".55"/>
+    <path d="M22 36 Q24 30 31 29.6 Q35 26 39 27.4 Q42 28.6 42 31.4 L45.6 31.6 L42.4 33 Q40.6 38 34 40 Q28 41.4 22 40 Z" fill="WASH"/>
+    <path d="M22 37 L6 41.6 L7.6 39 L4.6 39.4 L21.6 35.6" fill="WASH"/><path d="M27 33.6 Q32 32 37 34 M25.6 36.4 Q31 35.4 35.6 37.4" opacity=".45"/>
+    <circle cx="39.4" cy="30" r="0.55"/><path d="M33 40 L32 44.6 M36 39.4 L36.6 44.6"/>
+    ${times(5, (i) => `<path d="M${8 + i * 11} ${12 + (i % 2) * 5} q2 -1.6 4 0 q2 -1.6 4 0" opacity=".4"/>`)}`,
   dust: `<path d="M2 54 V20 Q8 10 18 16 Q24 6 34 14 Q40 10 44 18 Q48 24 44 30 Q52 34 48 42 Q54 46 50 54 Z" fill="WASH"/>
     <path d="M10 26 Q16 22 20 28 M22 20 Q28 16 32 22 M14 38 Q22 34 28 40 M30 32 Q36 28 40 34 M20 48 Q28 44 34 50" opacity=".7"/>
     <path d="M50 54 V44 L55 39 L60 44 V54"/><path d="M53 54 V49 H57 V54"/><path d="M2 54 H62"/>`,
-  thylacine: `<path d="M10 36 Q12 26 24 26 H42 Q48 22 52 24 L58 28 L54 32 L50 32 Q48 38 42 38 H16 Q11 38 10 36 Z" fill="WASH"/>
-    <path d="M16 38 V50 M22 38 V50 M38 38 V50 M44 37 V50"/><path d="M10 32 L2 30"/><path d="M27 26 V32 M31 26 V33 M35 26 V32 M39 26 V31"/>
-    <path d="M50 24 L52 19 L54 25"/><circle cx="53" cy="26.5" r="0.7"/><path d="M4 51 H60" opacity=".5"/>`,
-  wolf: `<path d="M46 54 V36 H60 V54 Z" opacity=".55"/><path d="M52 36 V18 H57 V36 M52 24 H57 M52 30 H57" opacity=".55"/>
-    <path d="M14 54 Q12 40 18 32 Q20 24 24 18 L26 9 L29 15 L33 13 L32 21 Q34 30 32 40 Q36 48 34 54 Z" fill="WASH"/>
-    <path d="M26 9 L34 3 M29 12 L35 7"/><path d="M14 54 Q6 52 6 44"/><circle cx="28" cy="15" r="0.7"/><path d="M2 54 H62"/>`,
-
+  // The thylacine, the Tasmanian tiger: dog-like, the stiff tail, the stripes across the back.
+  thylacine: `<path d="M12 33 Q12.6 28 20 27.4 H40 Q44 27 47 24.6 L49.4 21.4 L50.6 24 Q53.6 24.4 58 27.4 Q59 28.8 57.6 29.4 L52.6 30 Q50.6 33 47 34.6 Q45 37.4 42.6 38 L17 38.6 Q12.6 37.4 12 33 Z" fill="WASH"/>
+    ${times(9, (i) => `<path d="M${22 + i * 2.6} 27.6 Q${21.4 + i * 2.6} 30.6 ${22.4 + i * 2.6} 32.6" opacity=".65"/>`)}
+    <path d="M12.4 31.4 Q6 33.6 2.6 38 Q7 36.6 12.4 34.6" fill="WASH"/><circle cx="53" cy="26.4" r="0.45"/><path d="M48.4 24.4 L49.6 21 L51 23.8" />
+    <path d="M16 38.4 L16.4 46 L15.4 54.6 H17.4 L18.6 46 L18.4 38.6 Z M20.6 38.6 L22 46 L21.6 54.6 H23.6 L24 46 L23 38.6 Z M39.6 38.4 L40 46 L39.6 54.6 H41.6 L42.2 46 L42.4 38.2 Z M43 37.6 L44.6 46 L44.4 54.6 H46.4 L46.8 45.6 L45.4 37 Z" fill="WASH"/>
+    <path d="M4 55 H60" opacity=".45"/>`,
+  // A grey wolf: long-legged, head low, the brush of a tail.
+  wolf: `<path d="M14 32 Q15 27 22 26.6 H40 Q44 26 47 23.4 L49 19.6 L50.4 22.4 Q53 23 57.4 26 Q58.4 27.4 57 28 L52.4 28.6 Q50 31.6 46.6 33.4 Q45 36.6 42.6 37 L18 37.6 Q14 36.4 14 32 Z" fill="WASH"/>
+    <path d="M48 23 L49.2 19.2 L50.6 22" /><circle cx="52.6" cy="25" r="0.45"/><path d="M46.4 33.4 Q45 30 46 27" opacity=".45"/>
+    <path d="M17.6 37 L18.6 45 L17.8 54.6 H19.8 L21 45 L20.6 37.4 Z M22.6 37.6 L24 45 L23.6 54.6 H25.6 L26 45 L25 37.6 Z M39.6 37.4 L40 45.6 L39.6 54.6 H41.6 L42.2 45.6 L42.4 37.2 Z M43 36.6 L44.6 45.6 L44.4 54.6 H46.4 L46.8 45.4 L45.4 36 Z" fill="WASH"/>
+    <path d="M14.4 31 Q7.6 33 5.6 41 Q9.6 38.6 14 35.4 Z" fill="WASH"/><path d="M24 27 Q27 30 30 27.6 M32 27 Q35 30 38 27.4" opacity=".35"/><path d="M4 55 H60" opacity=".45"/>`,
   // A Roman aqueduct bridge (the Pont du Gard): three tiers of arches, the small arcade carrying the water channel on top.
   aqueduct: `<path d="M2 56 V40 H62 V56 Z ${[5, 19, 33, 47].map((x) => `M${x} 56 V46.5 A6 6 0 0 1 ${x + 12} 46.5 V56 Z`).join(" ")}" fill="WASH" fill-rule="evenodd"/>
     <path d="M2 40 V27 H62 V40 Z ${[5.5, 19.5, 33.5, 47.5].map((x) => `M${x} 40 V33 A5.5 5.5 0 0 1 ${x + 11} 33 V40 Z`).join(" ")}" fill="WASH" fill-rule="evenodd"/>
@@ -358,12 +390,20 @@ const D: Record<string, string> = {
     <path d="M14.6 55 H20.6 M43.4 55 H49.4"/><path d="M2 56.5 Q10 55 18 56.5 T34 56.5 T50 56.5 T62 56.5 M8 60 Q16 58.6 24 60 T40 60 T56 60" opacity=".45"/>`,
   vase: `<path d="M26 8 H38 V14 Q38 18 44 24 Q52 34 46 46 Q42 54 32 56 Q22 54 18 46 Q12 34 20 24 Q26 18 26 14 Z" fill="WASH"/>
     <path d="M22 30 Q32 26 42 30 M20 40 Q32 44 44 40"/><path d="M28 34 Q32 30 36 34 Q32 38 28 34" /><path d="M24 56 H40"/>`,
-  beaver: `<path d="M12 40 Q10 28 24 26 Q36 24 44 30 Q50 30 52 36 Q52 42 46 42 H16 Q12 42 12 40 Z" fill="WASH"/><path d="M12 38 Q2 40 4 48 Q8 52 14 44"/>
-    <path d="M48 32 L49 29"/><circle cx="48" cy="34" r="0.8"/><path d="M50 40 V43 M18 42 V46 M24 42 V46 M40 42 V46"/><path d="M2 50 Q10 47 18 50 T34 50 T50 50 T62 50" opacity=".6"/>`,
+  // A beaver at its dam: the broad flat tail, the gnawed stump behind.
+  beaver: `<path d="M14 42 Q12 32 24 29.6 Q34 28 42 31 Q48 30.4 51 34 Q53.6 37.6 52 40.6 Q50 43.6 45 43.6 H18 Q14 43.6 14 42 Z" fill="WASH"/>
+    <path d="M14.6 39.4 Q6 38.4 3 42 Q2.4 46.4 8 46.4 Q12.6 45.6 15.4 42.6 Z" fill="WASH"/>${times(3, (i) => times(3, (j) => `<path d="M${4.6 + j * 2.6} ${41.4 + i * 1.4} h1.4" opacity=".4"/>`))}
+    <circle cx="47.4" cy="34.4" r="0.5"/><path d="M45.6 31 l.6 -1.6 l1 1.4"/><path d="M51.6 38.6 v2" /><path d="M24 32 Q28 37 26 43 M34 30.6 Q37 36 35.6 43" opacity=".35"/>
+    <path d="M40 43.6 L42 47.6 M22 43.6 L20 47.6"/><path d="M56 47 V30 L58 28.4 L60 31 L62 30 V47" fill="WASH"/><path d="M58 28.4 L59 33 M60 31 L59.6 35" opacity=".5"/>
+    <path d="M2 48 H62"/><path d="M4 51.6 Q14 50 24 51.6 T44 51.6 T62 51.6" opacity=".4"/>`,
   bell: `<path d="M20 44 Q20 24 32 20 Q44 24 44 44 Z" fill="WASH"/><path d="M16 44 H48 V48 H16 Z"/><path d="M32 20 V14 M26 14 H38"/><circle cx="32" cy="52" r="3"/>
     <path d="M34 26 L32 32 L35 36 L33 42"/>`,
-  cow: `<path d="M10 38 Q10 26 22 26 H44 Q50 22 54 28 L56 34 L52 36 Q50 40 44 40 H16 Q10 40 10 38 Z" fill="WASH"/><path d="M16 40 V52 M22 40 V52 M40 40 V52 M45 40 V52"/>
-    <path d="M50 24 L48 20 M54 25 L57 22"/><path d="M24 30 Q28 26 32 30 Q28 34 24 30 M36 32 Q39 29 42 33" /><path d="M10 32 Q5 36 7 42"/><path d="M30 40 Q30 44 33 44" />`,
+  // A dairy cow, black-and-white, at the fence.
+  cow: `<path d="M12 33 Q11.6 27 20 26 H44 Q48 24.6 51 26.4 L56 29.6 Q57.6 32 55.6 34 L52 34.2 Q50.4 37 47 38 Q45.6 41 43 41.4 L16 41.6 Q12 40 12 33 Z" fill="WASH"/>
+    <path d="M18 28 Q22 26.6 25 29 Q26 33 22 34.6 Q17.6 34 18 28 Z M33 27 Q37.6 26.4 39 30 Q37.6 34 33.6 33 Q31 30 33 27 Z M47.6 26.6 Q50 28 49.6 31" opacity=".6"/>
+    <path d="M49.6 25.6 L48.6 22.6 M52 26.4 L54.6 23.6"/><circle cx="53.4" cy="29.4" r="0.45"/><path d="M30.6 41.4 Q32 44.6 35 44.6 Q37.6 44.6 38 41.4" fill="WASH"/>
+    <path d="M15.6 41 V54.6 H18 L18.4 41.6 Z M21 41.6 L21.6 54.6 H24 V41.6 Z M39.6 41.4 V54.6 H42 L42.4 41 Z M43.6 40.6 L45 54.6 H47.4 L46.4 39.6 Z" fill="WASH"/>
+    <path d="M12.6 31 Q9.6 37 10.4 45 l-1 1.6"/><path d="M2 46 H62 M4 46 V55 M60 46 V55 M2 50 H62" opacity=".3"/>`,
   // A cowboy on his cow pony, a lariat swinging overhead.
   cowboy: `<g transform="translate(-2 4)">${HORSE_STAND}</g>
     <path d="M27.6 33 Q29.4 26 28.8 21.6 L33 21.2 Q34 27.4 32.6 34 Z" fill="WASH"/><circle cx="30.8" cy="18.4" r="2.1" fill="WASH"/>
@@ -377,33 +417,78 @@ const D: Record<string, string> = {
   city: `<circle cx="32" cy="32" r="14" fill="WASH"/><circle cx="32" cy="32" r="4.5"/>`,
   "city-ruin": `<circle cx="32" cy="32" r="14" stroke-dasharray="5 4"/><path d="M26 34 V28 M32 36 V26 M38 34 V29" />`,
 
-  // --- Scenery: the land ----------------------------------------------------------
-  peak: `<path d="M8 50 L30 16 L52 50" fill="WASH"/><path d="M23 27 L30 31 L36 25"/><path d="M36 30 L41 37 M38 38 L44 46 M42 32 L46 40" opacity=".6"/>`,
-  peaks: `<path d="M3 52 L18 28 L28 42 L40 18 L61 52 Z" fill="WASH"/><path d="M14 34 L18 37 L21 33 M35 26 L40 30 L44 25"/><path d="M45 32 L50 40 M48 42 L53 50 M24 40 L27 46" opacity=".6"/>`,
-  // A crescent dune: windward slope washed, slip face hatched.
-  dune: `<path d="M4 46 Q18 30 38 33 Q52 35 60 46 Q46 40 33 42 Q18 44 4 46 Z" fill="WASH"/><path d="M38 33 Q35 39 33 42"/>
-    <path d="M40 36 L44 42 M45 37 L49 43 M50 39 L53 44" opacity=".55"/><path d="M10 52 Q30 47 54 52" opacity=".4"/>`,
-  cactus: `<path d="M28 54 V17 Q28 11 32 11 Q36 11 36 17 V54 Z" fill="WASH"/><path d="M28 34 H23 Q19 34 19 30 V23 M36 28 H41 Q45 28 45 24 V18"/><path d="M32 16 V50" opacity=".5"/><path d="M12 54 H52"/>`,
-  palm: `<path d="M30 56 Q27 40 34 22"/><path d="M34 22 Q23 15 14 23 M34 22 Q29 11 20 9 M34 22 Q41 11 50 12 M34 22 Q47 18 53 27 M34 22 Q37 31 31 35" fill="none"/>
-    <circle cx="33" cy="25" r="2" fill="WASH"/><circle cx="37" cy="24" r="2" fill="WASH"/><path d="M18 56 H46"/>`,
-  jungle: `<path d="M16 54 Q11 33 24 25 Q31 38 22 54 Z M32 54 Q29 29 42 19 Q49 34 38 54 Z M44 54 Q46 37 57 33 Q59 46 50 54 Z" fill="WASH"/>
-    <path d="M20 52 Q20 38 24 28 M35 52 Q37 34 42 22 M48 52 Q51 42 56 35" opacity=".6"/><path d="M6 54 H60"/>`,
-  pine: `<path d="M22 12 L12 30 H17 L9 44 H35 L27 30 H32 Z M44 22 L37 34 H40 L34 46 H54 L48 34 H51 Z" fill="WASH"/><path d="M22 44 V54 M44 46 V54"/><path d="M6 54 H60"/>`,
-  oak: `<path d="M19 34 Q13 26 21 20 Q23 10 33 12 Q43 8 46 18 Q54 22 50 32 Q50 40 40 38 Q32 42 26 38 Q18 40 19 34 Z" fill="WASH"/>
-    <path d="M32 38 V54 M32 46 L26 42 M32 44 L38 40"/><path d="M14 54 H50"/>`,
-  grass: `<path d="M14 50 Q10 44 6 41 M14 50 Q13 42 14 35 M14 50 Q17 43 22 39 M40 52 Q36 46 31 44 M40 52 Q40 44 41 37 M40 52 Q43 45 49 42 M54 50 Q52 46 50 44 M54 50 Q56 45 59 43"/><path d="M4 52 H60" opacity=".35"/>`,
-  bison: `<path d="M10 40 Q10 22 26 22 Q32 15 40 22 Q48 22 52 30 Q56 32 54 38 L50 40 H14 Q10 40 10 40 Z" fill="WASH"/>
-    <path d="M16 40 V50 M22 40 V50 M42 40 V50 M48 40 V50"/><path d="M52 30 Q55 26 53 24"/><path d="M50 38 Q50 44 47 45"/><path d="M28 26 L30 32 M34 24 L36 31" opacity=".6"/>`,
-  caribou: `<path d="M14 36 Q14 28 24 28 H40 Q44 24 46 22 L50 26 L46 30 Q46 36 40 38 H18 Q14 38 14 36 Z" fill="WASH"/>
-    <path d="M18 38 V52 M23 38 V52 M37 38 V52 M42 38 V52"/><path d="M46 22 L44 12 M44 16 L40 12 M46 22 L52 12 M50 15 L54 12"/>`,
-  giraffe: `<path d="M18 37 Q18 30 26 30 H37 Q42 30 42 34 V38 H18 Z" fill="WASH"/><path d="M38 31 L46 10 M46 10 L52 12 L48 14 M44 9 L45 6"/>
-    <path d="M20 38 V54 M25 38 V54 M36 38 V54 M41 38 V54"/><circle cx="25" cy="33" r="1.3"/><circle cx="32" cy="34" r="1.3"/><circle cx="42" cy="22" r="1"/><circle cx="44" cy="15" r="1"/>`,
-  kangaroo: `<path d="M20 50 Q14 40 20 30 Q24 20 32 18 L36 10 L38 18 Q42 22 40 30 Q44 40 40 48 Z" fill="WASH"/>
-    <path d="M40 48 L52 52 M30 50 H40"/><path d="M20 46 Q10 52 4 54"/><path d="M36 26 L44 28" /><circle cx="35" cy="17" r="0.7"/>`,
-  penguin: `<path d="M24 54 Q18 40 24 26 Q30 16 36 26 Q42 40 36 54 Z" fill="WASH"/><path d="M27 30 Q30 46 30 52 M33 30 Q30 46 30 52" opacity=".5"/>
-    <path d="M33 22 L38 24 L33 25"/><path d="M22 34 L16 42 M38 34 L44 42"/><path d="M24 54 H36"/>`,
-  polarbear: `<path d="M8 42 Q8 30 22 30 H42 Q50 28 54 34 L58 38 L54 40 Q48 42 44 42 H12 Z" fill="WASH"/>
-    <path d="M14 42 V50 M21 42 V50 M40 42 V50 M47 42 V50"/><path d="M48 30 L49 27 L51 30"/><circle cx="53" cy="34" r="0.7"/><path d="M2 52 H62 M10 55 L20 52 M40 55 L50 52" opacity=".6"/>`,
+  // A single summit: the snow cap with its ragged lower edge, the lit west face, ridges hatched on the east.
+  peak: `<path d="M6 52 L29 12 L54 52 Z" fill="WASH"/><path d="M29 12 L24.4 20 L27 19 L28.6 22 L31 19.4 L33.4 21.6 L34.6 20.4 Z" fill="WASH"/>
+    <path d="M29 12 L33 30 L31 40 L34 52 M33 30 L40 36 M31 40 L24 46" opacity=".5"/><path d="M36 26 L42 34 M40 33 L46 40 M43 40 L49 48" opacity=".35"/><path d="M2 52.4 H62" opacity=".45"/>`,
+  // A range: three summits, the highest snow-capped, ridgelines running down.
+  peaks: `<path d="M2 52 L16 30 L24 40 L36 16 L46 32 L52 26 L62 52 Z" fill="WASH"/>
+    <path d="M36 16 L31.6 24.4 L34 23.6 L35.4 26 L37.6 23.6 L39.6 25.4 L40.4 24 Z M16 30 L13.6 34 L15.6 33.4 L17.4 35 L18.6 33.6 Z" fill="WASH" opacity=".9"/>
+    <path d="M36 16 L39 30 L36.6 40 L39 52 M16 30 L18 40 L16 52 M52 26 L50 36 L53 46" opacity=".45"/><path d="M41 28 L46 36 M44 36 L50 44 M20 36 L24 44" opacity=".3"/>`,
+  // A barchan dune: the long windward slope, the steep slip face in shadow, ripples across the sand.
+  dune: `<path d="M3 47 Q16 30 36 31 Q52 32 61 47 Q48 41 34 42.6 Q18 44 3 47 Z" fill="WASH"/><path d="M36 31 Q33 37.6 31 42.8"/>
+    ${times(5, (i) => `<path d="M${9 + i * 4.6} ${43.6 - i * 2.4} Q${12 + i * 4.6} ${42 - i * 2.4} ${15 + i * 4.6} ${43 - i * 2.4}" opacity=".4"/>`)}
+    ${times(4, (i) => `<path d="M${38 + i * 4.6} ${34 + i * 2.6} L${41 + i * 4.6} ${40 + i * 1.6}" opacity=".5"/>`)}<path d="M8 52 Q30 48 56 52" opacity=".35"/>`,
+  // A saguaro: the fluted column, two upturned arms, the spines.
+  cactus: `<path d="M28 55 V16 Q28 11 32 11 Q36 11 36 16 V55 Z" fill="WASH"/><path d="M30.4 13 V54 M33.6 13 V54" opacity=".4"/>
+    <path d="M28 36 H23 Q19 36 19 31 V23 Q19 20.4 21.4 20.4 Q23.8 20.4 23.8 23 V31.4 H28" fill="WASH"/><path d="M21.4 22 V33" opacity=".4"/>
+    <path d="M36 30 H41 Q45 30 45 25 V18 Q45 15.4 42.6 15.4 Q40.2 15.4 40.2 18 V25.4 H36" fill="WASH"/><path d="M42.6 17 V27" opacity=".4"/>
+    ${times(10, (i) => `<path d="M${i % 2 ? 36 : 27.4} ${16 + i * 3.6} l${i % 2 ? 1.2 : -1.2} -.6" opacity=".5"/>`)}<path d="M12 55.2 H52" opacity=".45"/>`,
+  // A coconut palm: the leaning ringed trunk, pinnate fronds arching out, the nuts under the crown.
+  palm: `<path d="M27 55 Q26 42 31 30 Q33 25 35 22 L37.4 23 Q35.4 27 33.6 31 Q29.6 42 30.4 55 Z" fill="WASH"/>${times(10, (i) => `<path d="M${r1(27.4 + i * 0.6 + (i > 6 ? (i - 6) * 0.4 : 0))} ${r1(52 - i * 3)} l2.8 .4" opacity=".55"/>`)}
+    ${[[-1, 0.2], [-0.9, -0.5], [-0.3, -1], [0.5, -0.9], [1, -0.3], [0.9, 0.3]].map(([dx, dy]) => { const ex = 36 + dx * 20, ey = 22 + dy * 12 + 8; const mx = 36 + dx * 10, my = 22 + dy * 12 - 2; return `<path d="M36 22 Q${r1(mx)} ${r1(my)} ${r1(ex)} ${r1(ey)}"/>${times(7, (k) => { const t = 0.2 + k * 0.11; const px = (1 - t) ** 2 * 36 + 2 * t * (1 - t) * mx + t * t * ex; const py = (1 - t) ** 2 * 22 + 2 * t * (1 - t) * my + t * t * ey; return `<path d="M${r1(px)} ${r1(py)} l${r1(-dy * 2.6 + dx)} ${r1(3.2 - Math.abs(dx))} M${r1(px)} ${r1(py)} l${r1(dy * 2.6 + dx)} ${r1(-1 + Math.abs(dy))}" opacity=".55"/>`; })}`; }).join("")}
+    <circle cx="35" cy="24.6" r="1.4" fill="WASH"/><circle cx="37.6" cy="25" r="1.4" fill="WASH"/><path d="M14 55.2 H50" opacity=".45"/>`,
+  // Rainforest: a buttressed emergent tree over banana leaves and ferns.
+  jungle: `<path d="M30 55 Q31 40 30 24 M34 55 Q33 40 34 24"/><path d="M26 55 Q29 50 30 44 M38 55 Q35 50 34 44"/>
+    <path d="M14 24 Q16 14 26 13 Q32 6 40 11 Q50 10 51 18 Q56 22 50 26 Q42 29 32 26 Q22 29 14 24 Z" fill="WASH"/>${times(5, (i) => `<path d="M${20 + i * 6} ${19 + (i % 2) * 3} q2 -2 4 0" opacity=".4"/>`)}
+    ${[[10, 1], [50, -1]].map(([x, s]) => `<path d="M${x} 55 Q${x + s * 2} 46 ${x + s * 8} 38 Q${x + s * 12} 42 ${x + s * 3} 50 Z" fill="WASH"/><path d="M${x + s * 1} 53 Q${x + s * 4} 46 ${x + s * 8} 39.6" opacity=".5"/><path d="M${x} 55 Q${x - s * 3} 47 ${x - s * 9} 42 Q${x - s * 10} 47 ${x - s * 2} 52 Z" fill="WASH"/>`).join("")}
+    ${times(7, (i) => `<path d="M${20 + i * 3.6} 55 Q${19 + i * 3.6} 50 ${16 + i * 3.6 + (i % 2) * 3} 47" opacity=".5"/>`)}<path d="M2 55.4 H62" opacity=".45"/>`,
+  // Spruces: tiers of drooping boughs round a straight trunk.
+  pine: `${[[23, 46, 11], [44, 36, 8.5]].map(([x, h, w]) => { const top = 54 - h; const n = 6; let left = "", right = ""; for (let i = 0; i <= n; i++) { const y = top + 2 + (i * (h - 8)) / n; const ww = 1 + (w * (i + 1)) / (n + 1); left = `L${r1(x - ww * 0.45)} ${r1(y - 1.2)} L${r1(x - ww)} ${r1(y + 2.2)} ` + left; right += `L${r1(x + ww)} ${r1(y + 2.2)} L${r1(x + ww * 0.45)} ${r1(y + 1)} `; } return `<path d="M${x} ${top} ${right}L${x + 1} ${54 - 6} H${x - 1} ${left}Z" fill="WASH"/><path d="M${x} ${top + 2} V54"/>${times(n, (i) => { const y = top + 4 + (i * (h - 10)) / n; return `<path d="M${x} ${r1(y)} l${-2 - i * 0.8} ${2} M${x} ${r1(y)} l${2 + i * 0.8} ${2}" opacity=".4"/>`; })}`; }).join("")}
+    <path d="M6 54.4 H60" opacity=".45"/>`,
+  // An oak: the broad lobed crown, the branching trunk showing through.
+  oak: `<path d="${(() => { const cx = 32, cy = 26, rx = 22, ry = 15, n = 13; let d = ""; for (let i = 0; i <= n; i++) { const a = (i / n) * Math.PI * 2; const x = cx + rx * Math.cos(a), y = cy + ry * Math.sin(a); if (!i) { d += `M${r1(x)} ${r1(y)}`; continue; } const am = ((i - 0.5) / n) * Math.PI * 2; const k = 1.22 + 0.06 * Math.sin(i * 2.3); d += ` Q${r1(cx + rx * k * Math.cos(am))} ${r1(cy + ry * k * Math.sin(am))} ${r1(x)} ${r1(y)}`; } return d + " Z"; })()}" fill="WASH"/>
+    ${times(6, (i) => `<path d="M${16 + i * 6} ${20 + (i % 2) * 6} q2 -2 4 0" opacity=".4"/>`)}
+    <path d="M30 54 Q31 46 30 38 Q26 34 21 31 M30 38 Q34 33 40 30 M31 44 Q36 41 38 37 M30 40 Q30 34 32 28" /><path d="M33.6 54 Q32.8 46 33.4 40" />
+    <path d="M24 54.4 Q30 52.6 38 54.4"/><path d="M8 54.6 H56" opacity=".45"/>`,
+  // Tufts of steppe grass with seed heads.
+  grass: `${[[14, 1], [36, 1.2], [52, 0.8]].map(([x, k]) => times(7, (i) => { const a = -0.9 + (i * 1.8) / 6; const l = (10 + (i % 3) * 3) * k; return `<path d="M${x} 52 Q${r1(x + Math.sin(a) * l * 0.4)} ${r1(52 - l * 0.6)} ${r1(x + Math.sin(a) * l)} ${r1(52 - l * Math.cos(a * 0.6))}"${i % 3 ? "" : ' opacity=".6"'}/>`; })).join("")}
+    <path d="M36 52 Q37 40 39 34 M39 34 l-1.4 -1.4 M39 34 l1.6 -1.2 M38.4 36 l-1.4 -1 M38.6 36 l1.6 -.8" opacity=".75"/><path d="M4 52.4 H60" opacity=".4"/>`,
+  // An American bison: the massive shaggy forequarters and hump, head carried low, short horns.
+  bison: `<path d="M16 34 Q15 26 24 24 Q32 18.4 42 19.6 Q50 20.6 52.6 26 Q56 28 56.6 34 Q57 40 54 43 Q51 44 49.6 41.4 L46 42 H22 Q16.6 41 16 34 Z" fill="WASH"/>
+    <path d="M38 20.4 Q44 29 43.2 41.6 M33 21.6 Q36.6 26 36.4 31" opacity=".4"/><path d="M53 41.6 Q52.6 46 50.4 47.2 Q49.6 44.6 50.2 42" fill="WASH"/>
+    <path d="M51.4 25.2 Q54 22.4 52.8 20.4"/><circle cx="53.8" cy="30" r="0.45"/>
+    <path d="M20.6 41 L21 54.6 H23.4 L24 42 Z M26 42 L26.6 54.6 H29 L29 42 Z M42.6 42 L42.4 54.6 H45 L45.6 41.4 Z M47 41.6 L48 54.6 H50.4 L49.6 41 Z" fill="WASH"/>
+    <path d="M16.2 32 Q12.6 36 13.6 41 l-1 1"/>${times(6, (i) => `<path d="M${42 + (i % 3) * 3.4} ${24 + Math.floor(i / 3) * 6} q1.2 -1.4 2.4 0" opacity=".4"/>`)}
+    <path d="M8 55 H60" opacity=".45"/>`,
+  // A caribou: the great sweep of antlers, the pale throat mane, long slender legs.
+  caribou: `<path d="M16 33 Q16 27 24 26 H40 Q44 25.4 46 22.6 L47.6 15 Q48.6 13.6 50.4 14.6 Q53.6 16.6 56 18.6 Q57 20.2 55.4 20.6 L51.6 20 Q50 25.6 47 30 Q45.6 34.6 43 36.4 L20 36.6 Q16.4 36 16 33 Z" fill="WASH"/>
+    <path d="M47 27 Q46 32 43.4 35.6 M45.6 28.6 l-1.6 1.2 M45 31 l-1.6 1" opacity=".5"/>
+    <path d="M19 36 L20.4 44 L19.6 55 H21.4 L22.6 44 L21.6 36.6 Z M24 36.6 L25 44.4 L24.6 55 H26.4 L27 44 L26.4 36.6 Z M39.6 36.6 L40 45 L39.4 55 H41.2 L42 45 L42 36.6 Z M43 36 L44.6 45 L44 55 H45.8 L46.6 45 L45.6 35.6 Z" fill="WASH"/>
+    <path d="M49 14.6 Q46 8 41 6.6 M45.6 9 Q45 6 46.6 3.6 M42.8 7.2 Q41.6 4.6 42.6 2.6 M50.6 14.6 Q53 9 57.6 7 M54 9.6 Q55.4 6.4 54.4 4 M48.4 13 Q45.6 13.6 44.6 16"/>
+    <circle cx="51.6" cy="17.2" r="0.45"/><path d="M49 16 L46.6 14.4 L48.2 16.8"/><path d="M16.2 31 l-2 1.6"/><path d="M8 55.4 H60" opacity=".45"/>`,
+  // A giraffe: the long neck and ossicones, the patchwork coat, browsing an acacia.
+  giraffe: `<path d="M50 56 V30 M50 30 Q42 26 40 28 M50 30 Q58 26 62 28"/><path d="M38 28.6 Q44 24 50 25.4 Q57 24 63 28.4 Q56 30.4 50 29.6 Q43 30.6 38 28.6 Z" fill="WASH"/>
+    <path d="M14 34 Q14 29 20 28.6 H31 Q34 28 35.4 24 L41 8.6 Q42 6.6 44.4 7.4 L47.4 9.6 Q48 11 46.6 11.4 L44 11 Q42 16 39 27 Q37.4 33 35 35.6 Q33 37 31 37 H18 Q14 36.6 14 34 Z" fill="WASH"/>
+    <path d="M42.6 7.4 V4.6 M44 7.2 L44.8 4.6"/><circle cx="43.6" cy="9.4" r="0.45"/>
+    <path d="M16.6 36.6 L17.6 46 L16.6 56 H18.6 L19.8 46 L19.4 37 Z M21 37 L22.4 46 L22 56 H24 L24.6 46 L23.6 37 Z M29 37 L29.6 46 L29 56 H31 L31.8 46 L31.6 37 Z M32.6 36.4 L34 46 L33.6 56 H35.6 L36.4 46 L35 36 Z" fill="WASH"/>
+    ${[[18, 31], [23, 33], [28, 31], [32, 33.4], [37.4, 26], [39, 20], [40.6, 14], [25.4, 30]].map(([x, y]) => `<path d="M${x - 1.4} ${y} l1.2 -1.4 l1.6 .4 l.4 1.6 l-1.4 1 Z" opacity=".55"/>`).join("")}
+    <path d="M14.2 33 Q11.6 38 12.4 44" /><path d="M6 56 H62" opacity=".45"/>`,
+  // A red kangaroo sitting up on its haunches and tail.
+  kangaroo: `<path d="M26 54 Q20 48 21.6 40 Q23 32 28 27 Q30 21 33 17.6 L33.6 12.6 L35.4 16 L36.8 12.4 L37.6 17 Q40.6 18.6 41.6 21.6 Q42 23.4 40.2 23.6 L37 23.2 Q36.4 27.6 37.6 31 Q40.4 36 39.6 43 Q39 48.6 36 52 L40.6 54.4 H29 Z" fill="WASH"/>
+    <path d="M21.6 46 Q12 50 4 55.6 Q14 53.6 24 52" fill="WASH"/><path d="M35.6 31 L39 37 L41.4 37.6 M36.4 33 L38.4 38.4"/>
+    <circle cx="37.4" cy="19.4" r="0.45"/><path d="M27 41 Q30 45 29.6 50 M31 34 Q33 38 33.6 44" opacity=".4"/><path d="M2 56 H62" opacity=".45"/>`,
+  // An emperor penguin and its downy chick on the ice.
+  penguin: `<path d="M30 55 Q22 50 22.6 38 Q23.4 26 28.6 19 Q31 15 34.6 15.4 Q38 16.2 38.4 20 L43.6 22.4 Q40 23.6 38.6 23.4 Q40.6 30 40.6 40 Q40.4 50 35 55 Z" fill="WASH"/>
+    <path d="M38.6 23.6 Q41 34 39.6 44 Q38.4 51 34.6 54.6"/><path d="M35 20.6 Q37.6 23.6 36.8 27.4" opacity=".55"/><path d="M38.4 20 L43.6 22.4"/><circle cx="35.6" cy="18.8" r="0.45"/>
+    <path d="M27.6 29 Q22.6 38 24.4 46.6 Q27.8 40 29.6 32 Z" fill="WASH"/><path d="M28.6 55.2 h4.4 M33.6 55.2 h4.4"/>
+    <path d="M45 55 Q44 47.6 47.4 44 Q48.4 40 51.4 40.4 Q54 41 53.6 44 Q56 48 54.6 55 Z" fill="WASH"/><path d="M53.4 42.4 L55.4 43.2 L53.4 43.6"/><circle cx="52" cy="42.4" r="0.4"/>
+    ${times(5, (i) => `<path d="M${46 + i * 1.8} ${47 + (i % 2) * 2} l-.6 1.4" opacity=".4"/>`)}
+    <path d="M2 55.6 H62"/><path d="M6 58.6 L12 55.6 M48 58.6 L54 55.6" opacity=".3"/>`,
+  // A polar bear walking the ice: long neck, small head, heavy shoulders.
+  polarbear: `<path d="M10 38 Q9 30 18 28 Q28 24.6 38 26.4 Q44 26 48 28 Q51 26 54 27.4 L57.6 30.6 Q58.6 32.4 56.6 33 L53.6 33.2 Q50.6 36 46 37.4 Q44 40 42 41 L14 41.6 Q10 40.6 10 38 Z" fill="WASH"/>
+    <path d="M14.4 41 L14 50 H18.4 L18.6 41.6 Z M20 41.6 L21.6 49.6 H25.6 L24.6 41.6 Z M36.6 41.4 L36.4 50 H40.8 L41 41 Z M41.6 40.6 L43.6 49.4 H47.6 L45.6 39.4 Z" fill="WASH"/>
+    <path d="M52.4 28 L53 26 L54.4 27.6"/><circle cx="55" cy="30" r="0.45"/><path d="M30 27 Q33 33 32 40 M44 30 Q46 33 45 37" opacity=".35"/>
+    <path d="M2 50.4 H62"/><path d="M6 53.6 L16 50.4 M36 53.6 L46 50.4 M24 54 H32" opacity=".4"/>`,
   wildhorse: `${HORSE_GALLOP}`,
   // A Paleolithic hunter in a fur cloak, spear drawn back, a red deer bolting ahead of him.
   hunter: `<circle cx="22" cy="18.6" r="2.6" fill="WASH"/><path d="M19.6 17.4 Q21 14.6 24.6 16"/>
@@ -492,9 +577,14 @@ const D: Record<string, string> = {
     <path d="M29.2 8 V3.4 M28.4 5 H30"/><path d="M21 14 L22 11.6 L23 14"/><path d="M1 50 H63"/>`,
   // --- Scenery: the sea and sky ---------------------------------------------------
   waves: `<path d="M6 30 Q12 24 18 30 T30 30 M28 40 Q34 34 40 40 T52 40"/>`,
-  whale: `<path d="M6 38 Q10 26 28 26 Q44 26 52 34 L58 28 L58 42 L52 38 Q40 46 24 44 Q10 44 6 38 Z" fill="WASH"/>
-    <path d="M18 25 Q16 17 12 15 M18 25 Q20 17 24 15"/><circle cx="14" cy="34" r="0.8"/><path d="M8 38 Q14 40 20 38"/><path d="M2 48 Q10 45 18 48 T34 48 T50 48 T62 48" opacity=".6"/>`,
-  fish: `<path d="M10 28 Q20 20 30 28 Q20 36 10 28 Z M30 28 L36 23 V33 Z M30 42 Q40 34 50 42 Q40 50 30 42 Z M50 42 L56 37 V47 Z" fill="WASH"/><circle cx="15" cy="27" r="0.7"/><circle cx="35" cy="41" r="0.7"/>`,
+  // A sperm whale surfacing: the great square head, the blow, the fluke breaking the water behind.
+  whale: `<path d="M6 34 Q6 26 18 25 Q32 24 44 28 Q50 30 54 33 Q50 38 40 39.6 Q24 41.4 12 39.4 Q6 38 6 34 Z" fill="WASH"/>
+    <path d="M7.6 37.4 Q16 38.4 26 38" opacity=".5"/><circle cx="17" cy="31" r="0.55"/><path d="M28 39.4 Q30 44 34.6 44.2 Q32 41.6 33 39.6"/>
+    <path d="M54 33 L58 28 Q61.6 25.4 63 27.4 Q60.6 28.6 59.6 31.4 Q61.6 33 63 36 Q59.6 36.6 57.6 35 Z" fill="WASH"/>
+    <path d="M10 25.4 Q8.4 20 5 18.4 M10 25.4 Q11.6 19.4 15 17.6 M10 25.4 V18" opacity=".55"/>
+    <path d="M2 41 Q8 39.6 14 41 T26 41 T38 41 T50 41 T62 41 M6 46 Q12 44.6 18 46 T30 46 T42 46 T54 46" opacity=".45"/>`,
+  // Cod in a shoal: the barbel, three dorsal fins, the lateral line.
+  fish: `${[[22, 24, 1], [42, 40, 0.85]].map(([x, y, k]) => `<g transform="translate(${x} ${y}) scale(${k})"><path d="M-14 0 Q-8 -6 2 -5.4 Q9 -4.6 12 0 Q9 4.6 2 5.4 Q-8 6 -14 0 Z" fill="WASH"/><path d="M12 0 L18 -5 Q16.6 0 18 5 Z" fill="WASH"/><path d="M-8 -4.6 Q-6 -8 -3 -5.2 M-1 -5.4 Q1.6 -8.4 4.4 -5 M6 -4.6 Q8.4 -7 10 -3" /><path d="M-11 0.4 Q0 -1.6 11 0.4" opacity=".4"/><circle cx="-10" cy="-1.4" r="0.5"/><path d="M-14 0 l-1 1.6"/><path d="M-4 5 Q-2 8 1 5.4 M4 5 Q6 7 8 3.6" opacity=".7"/></g>`).join("")}`,
   wind: `<circle cx="18" cy="30" r="11" fill="WASH"/><path d="M12 26 Q14 24 16 26 M20 25 Q22 23 24 25"/><path d="M27 31 Q31 30 29 34"/><circle cx="14" cy="34" r="2"/>
     <path d="M32 26 Q42 22 52 26 M32 31 Q44 31 58 29 M32 36 Q42 38 50 36"/><path d="M10 20 Q14 14 20 17 M8 26 Q4 22 8 18" opacity=".6"/>`,
   compass: `<circle cx="32" cy="32" r="20"/><circle cx="32" cy="32" r="16" opacity=".5"/>
