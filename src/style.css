@@ -806,6 +806,7 @@ kbd { display: inline-block; min-width: 1.5em; padding: 0 5px; border: 1px solid
   .tool { flex: none; height: 34px; padding: 0 12px; font-size: 13px; }
   .tool-icon { width: 34px; padding: 0; }
   .intro { left: 12px; right: 12px; transform: none; max-width: none; bottom: calc(40% + 12px); }
+  body.sheet-open .intro { display: none; }
   .keys div { grid-template-columns: 110px 1fr; }
 
   /* The panel becomes a bottom sheet: it peeks over the map and opens upward. */
