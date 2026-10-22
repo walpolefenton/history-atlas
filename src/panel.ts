@@ -2,7 +2,7 @@ import type { AdminProps, City, Drawing, EventType, HistoryEvent, Meta, RouteInf
 import { cityNameAt } from "./data";
 import { EVENT_TYPES, PRECISION_LABEL, escapeHtml as esc, formatArea, formatEventDate, formatYear } from "./format";
 import { eventArticle, polityArticle, type WikiSummary } from "./wiki";
-import { eventIconSvg } from "./icons";
+import { eventIconSvg, modernEventSvg } from "./icons";
 import { drawingSvg } from "./drawings";
 import { currentTheme } from "./theme";
 import { creditHtml, drawingImage, eraImage, type AtlasImage } from "./images";
@@ -10,7 +10,8 @@ import { creditHtml, drawingImage, eraImage, type AtlasImage } from "./images";
 /** The same pictogram the map uses for this event type, in the current theme. */
 function marker(type: EventType) {
   const t = currentTheme();
-  return `<span class="marker" aria-hidden="true">${eventIconSvg(type, t.events[type], t.ring, t.clay)}</span>`;
+  const svg = t.modern ? modernEventSvg(type, t.events[type], t.ring) : eventIconSvg(type, t.events[type], t.ring, t.clay);
+  return `<span class="marker" aria-hidden="true">${svg}</span>`;
 }
 
 export interface PanelContext {

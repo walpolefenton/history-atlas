@@ -37,13 +37,30 @@ const ERAS = [
   { from: 1960, article: "Earthrise", caption: "Earthrise, photographed from Apollo 8, 1968" },
 ];
 
+/**
+ * Where a drawing's own article has no free lead image, the article whose image
+ * stands in for it: the ship type, the wild horse, the tree species, the musician,
+ * the relay riders' horses.
+ */
+const STAND_INS = {
+  "manila-galleon": "Galleon",
+  horse: "Przewalski's horse",
+  methuselah: "Pinus longaeva",
+  yam: "Mongolian horse",
+  jazz: "Louis Armstrong",
+};
+const articleFor = (d) => STAND_INS[d.id] ?? d.wiki;
+
 async function getJson(url, params) {
   const q = new URLSearchParams({ format: "json", formatversion: "2", ...params });
-  for (let attempt = 0; attempt < 5; attempt++) {
+  for (let attempt = 0; attempt < 10; attempt++) {
     const res = await fetch(`${url}?${q}`, { headers: HEADERS });
     if (res.ok) return res.json();
     if (res.status !== 429 && res.status < 500) throw new Error(`${res.status} ${url}`);
-    await sleep(2000 * (attempt + 1));
+    // Wikimedia rate-limits busy addresses; wait as long as it asks.
+    const wait = Number(res.headers.get("retry-after")) || 5 * (attempt + 1);
+    console.log(`${res.status}; waiting ${wait}s`);
+    await sleep(wait * 1000 + 500);
   }
   throw new Error(`gave up on ${url}`);
 }
@@ -87,7 +104,7 @@ async function credits(files) {
 }
 
 const { drawings } = JSON.parse(await readFile("public/data/drawings.json", "utf8"));
-const articles = [...new Set([...drawings.map((d) => d.wiki).filter(Boolean), ...ERAS.map((e) => e.article)])];
+const articles = [...new Set([...drawings.map(articleFor).filter(Boolean), ...ERAS.map((e) => e.article)])];
 const images = await leadImages(articles);
 const files = [...new Set([...images.values()].map((v) => v.file.replace(/_/g, " ")))];
 const credit = await credits(files);
@@ -95,10 +112,10 @@ const credit = await credits(files);
 const withCredit = (img) => img && { ...img, ...(credit.get(img.file.replace(/_/g, " ")) ?? {}) };
 const out = {
   note: "Lead images of Wikipedia articles, hosted on Wikimedia Commons, with their licence and artist. Built by scripts/fetch-images.mjs.",
-  drawings: Object.fromEntries(drawings.filter((d) => images.has(d.wiki)).map((d) => [d.id, withCredit(images.get(d.wiki))])),
+  drawings: Object.fromEntries(drawings.filter((d) => images.has(articleFor(d))).map((d) => [d.id, withCredit(images.get(articleFor(d)))])),
   eras: ERAS.filter((e) => images.has(e.article)).map((e) => ({ from: e.from, caption: e.caption, ...withCredit(images.get(e.article)) })),
 };
 await writeFile("public/data/images.json", JSON.stringify(out, null, 1));
-const missing = drawings.filter((d) => !images.has(d.wiki)).map((d) => d.id);
+const missing = drawings.filter((d) => !images.has(articleFor(d))).map((d) => d.id);
 console.log(`${Object.keys(out.drawings).length}/${drawings.length} drawings, ${out.eras.length}/${ERAS.length} eras; no image: ${missing.join(", ")}`);
 console.log("eras missing:", ERAS.filter((e) => !images.has(e.article)).map((e) => e.article));

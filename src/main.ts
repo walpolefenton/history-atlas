@@ -20,8 +20,8 @@ const ERAS = [
   { name: "Early modern", from: 1500 },
   { name: "Modern", from: 1800 },
 ];
-const THEME_LABEL: Record<ThemeChoice, string> = { auto: "Auto", atlas: "Atlas", night: "Night", survey: "Survey", clay: "Clay" };
-const THEME_ORDER: ThemeChoice[] = ["atlas", "night", "survey", "clay", "auto"];
+const THEME_LABEL: Record<ThemeChoice, string> = { auto: "Auto", atlas: "Atlas", "atlas-dark": "Atlas Dark", night: "Night", survey: "Survey", clay: "Clay" };
+const THEME_ORDER: ThemeChoice[] = ["atlas", "atlas-dark", "night", "survey", "clay", "auto"];
 
 const $ = <T extends HTMLElement>(id: string) => document.getElementById(id) as T;
 

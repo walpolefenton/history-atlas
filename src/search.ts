@@ -31,24 +31,26 @@ export function initSearch(meta: Meta, events: HistoryEvent[], drawings: Drawing
     const k = fold(q.trim());
     if (k.length < 2) return [];
     const score = (key: string) => (key.startsWith(k) ? 0 : key.includes(" " + k) ? 1 : key.includes(k) ? 2 : -1);
+    // Each match keeps its score: 0 the name starts with the query, 1 a word
+    // does, 2 it appears inside. Best match first whatever its kind, so
+    // "Colosseum" finds the landmark before any territory merely containing it.
+    // Ties go to territories, then landmarks, then events.
     const ps = polities
-      .map((p) => ({ p, s: score(p.key) }))
+      .map((p) => ({ s: score(p.key), tie: p.years.length, kind: 0, r: { kind: "polity", name: p.name, years: p.years } as Result }))
       .filter((x) => x.s >= 0)
-      .sort((a, b) => a.s - b.s || b.p.years.length - a.p.years.length)
-      .map(({ p }): Result => ({ kind: "polity", name: p.name, years: p.years }));
-    const es = evs
-      .map((x) => ({ e: x.e, s: score(x.key) }))
-      .filter((x) => x.s >= 0)
-      .sort((a, b) => a.s - b.s || (a.e.source ? 1 : 0) - (b.e.source ? 1 : 0) || (b.e.notability ?? 0) - (a.e.notability ?? 0))
-      .map(({ e }): Result => ({ kind: "event", event: e }));
+      .sort((a, b) => a.s - b.s || b.tie - a.tie);
     const ds = draws
-      .map((x) => ({ d: x.d, s: score(x.key) }))
+      .map((x) => ({ s: score(x.key), kind: 1, r: { kind: "drawing", drawing: x.d } as Result }))
+      .filter((x) => x.s >= 0);
+    const es = evs
+      .map((x) => ({ s: score(x.key), tie: (x.e.source ? 1e6 : 0) - (x.e.notability ?? 0), kind: 2, r: { kind: "event", event: x.e } as Result }))
       .filter((x) => x.s >= 0)
-      .sort((a, b) => a.s - b.s)
-      .map(({ d }): Result => ({ kind: "drawing", drawing: d }));
-    // Interleave so landmarks and events surface even when many polities match.
-    const extras = [...ds.slice(0, 3), ...es];
-    return [...ps.slice(0, MAX_RESULTS - Math.min(extras.length, 5)), ...extras].slice(0, MAX_RESULTS);
+      .sort((a, b) => a.s - b.s || a.tie - b.tie);
+    // Array.prototype.sort is stable, so each kind keeps its own order within a score.
+    return [...ps, ...ds, ...es]
+      .sort((a, b) => a.s - b.s || a.kind - b.kind)
+      .slice(0, MAX_RESULTS)
+      .map((x) => x.r);
   }
 
   function describe(r: Result) {

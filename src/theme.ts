@@ -1,7 +1,7 @@
 // Map themes. The page chrome is themed in CSS through [data-theme] on <html>;
 // the map can't read CSS, so its colours live here.
 
-export type ThemeName = "atlas" | "night" | "survey" | "clay";
+export type ThemeName = "atlas" | "atlas-dark" | "night" | "survey" | "clay";
 
 /**
  * Colour families by cultural region, four shades each, in the order the data
@@ -38,6 +38,8 @@ function mix(hex: string, toward: string, amount: number) {
 const SURVEY_PALETTE = NIGHT_PALETTE.map((c) => mix(c, "#fbf7ec", 0.5));
 /** Atlas: the same families, softened and slightly greyed, so relief and imagery lead. */
 const ATLAS_PALETTE = NIGHT_PALETTE.map((c) => saturate(mix(c, "#f3f1ec", 0.38), 0.8));
+/** Atlas at night: the same families sunk toward the dark land, quieter still. */
+const ATLAS_DARK_PALETTE = NIGHT_PALETTE.map((c) => saturate(mix(c, "#1e252c", 0.3), 0.75));
 /** Plasticine: the same families, pushed warmer and more saturated. */
 const CLAY_PALETTE = NIGHT_PALETTE.map((c) => saturate(mix(c, "#f3d9b0", 0.18), 1.25));
 
@@ -253,12 +255,52 @@ THEMES.atlas = {
   modern: true,
 };
 
+// The Atlas after dark: slate land on a deep sea, the same quiet lines and
+// markers, the relief lit softly from the north-west.
+THEMES["atlas-dark"] = {
+  ocean: "#121a22",
+  land: "#1e252c",
+  coast: { color: "#3e5868", widths: [0.8, 5, 12], opacities: [0.9, 0.3, 0.12], blur: 3 },
+  border: "rgba(220, 226, 232, 0.38)",
+  hover: "#f2f4f6",
+  accent: "#e08a6b",
+  label: "#e6eaee",
+  labelMuted: "#97a1ab",
+  halo: "rgba(16, 22, 28, 0.9)",
+  palette: ATLAS_DARK_PALETTE,
+  fillOpacity: 0.5,
+  fillOpacityApprox: 0.32,
+  sky: {
+    "sky-color": "#0a0f15",
+    "horizon-color": "#1a2633",
+    "fog-color": "#0a0f15",
+    "atmosphere-blend": ["interpolate", ["linear"], ["zoom"], 0, 0.6, 4, 0.3, 7, 0],
+  },
+  events: {
+    conflict: "#e0614f",
+    diplomacy: "#5b9bd5",
+    political: "#d9a63a",
+    culture: "#a184d6",
+    exploration: "#5fb27a",
+    crisis: "#e58a45",
+  },
+  capital: "#e6eaee",
+  ring: "#10161c",
+  ink: "220,226,232",
+  wash: "rgba(224, 138, 107, 0.2)",
+  washSoft: "rgba(220, 226, 232, 0.06)",
+  muralOpacity: 0,
+  relief: { exaggeration: 0.5, shadow: "rgba(0, 0, 0, 0.62)", highlight: "rgba(170, 190, 210, 0.16)", accent: "rgba(0, 0, 0, 0.3)" },
+  clay: false,
+  modern: true,
+};
+
 const STORAGE_KEY = "atlas-theme";
 
 export function loadThemeChoice(): ThemeChoice {
   try {
     const v = localStorage.getItem(STORAGE_KEY);
-    if (v === "atlas" || v === "night" || v === "survey" || v === "clay" || v === "auto") return v;
+    if (v === "atlas" || v === "atlas-dark" || v === "night" || v === "survey" || v === "clay" || v === "auto") return v;
   } catch {
     /* storage unavailable: fall back to auto */
   }
@@ -275,7 +317,7 @@ export function saveThemeChoice(choice: ThemeChoice) {
 
 export function resolveTheme(choice: ThemeChoice): ThemeName {
   if (choice !== "auto") return choice;
-  return matchMedia("(prefers-color-scheme: light)").matches ? "atlas" : "night";
+  return matchMedia("(prefers-color-scheme: light)").matches ? "atlas" : "atlas-dark";
 }
 
 /** Applies a theme to the page and notifies listeners (the maps). */

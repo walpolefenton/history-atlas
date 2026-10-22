@@ -7,7 +7,7 @@ import workerUrl from "maplibre-gl/dist/maplibre-gl-worker.mjs?url";
 import type { Admin1Data, Drawing, EventType, HistoryEvent, SurveyorSpot, YearData } from "./types";
 import { currentTheme, type MapTheme } from "./theme";
 import { formatYear } from "./format";
-import { capitalIconSvg, eventIconSvg, svgToImage } from "./icons";
+import { capitalIconSvg, eventIconSvg, modernEventSvg, svgToImage } from "./icons";
 import { DRAWING_KINDS, SCENERY_KINDS, VARIANTS, drawingSvg } from "./drawings";
 import { MEDALLION_PX, drawingImage, loadImages, medallion } from "./images";
 
@@ -61,7 +61,7 @@ const TIER_MINZOOM = { 1: 1.4, 2: 2.6, 3: 3.4 } as const;
 const SURVEYOR_MINZOOM = 3.6;
 /** Snapshots that fall in the African Humid Period, when the Sahara was green. */
 const isGreenSahara = (year: number) => year >= -9000 && year <= -3500;
-const SAVANNA = { night: "#2b4230", survey: "#d9e6bf", clay: "#a9b86a", atlas: "#dfe8cf" };
+const SAVANNA = { night: "#2b4230", survey: "#d9e6bf", clay: "#a9b86a", atlas: "#dfe8cf", "atlas-dark": "#263a2a" };
 /** Open elevation tiles (Mapzen terrain on AWS Open Data), used for shaded relief. */
 const RELIEF_TILES = "https://s3.amazonaws.com/elevation-tiles-prod/terrarium/{z}/{x}/{y}.png";
 const CROSSFADE_MS = 750;
@@ -223,6 +223,7 @@ const COVER_TINT: Record<string, Record<(typeof COVERS)[number], string>> = {
   survey: { broadleaf: "#9fb88a", conifer: "#8eab8c", jungle: "#86b07c", grassland: "#cfcf9a", savanna: "#d9c88f", farmland: "#d6c995" },
   clay: { broadleaf: "#8f9c5a", conifer: "#7d8f60", jungle: "#7f9a52", grassland: "#c9b878", savanna: "#d1ad6a", farmland: "#cfae6c" },
   atlas: { broadleaf: "#a9c09a", conifer: "#98b49d", jungle: "#93b98b", grassland: "#d8dbb0", savanna: "#e0d3a6", farmland: "#ded3a6" },
+  "atlas-dark": { broadleaf: "#2a4231", conifer: "#243c35", jungle: "#27462f", grassland: "#37392b", savanna: "#3f3a2a", farmland: "#3d3a26" },
 };
 
 /** Watercolour paper: a faint, seamlessly tiling grain laid over the territories. */
@@ -288,7 +289,9 @@ async function themeImages(t: MapTheme): Promise<Record<string, HTMLImageElement
   ];
   if (t.modern) {
     entries.push(
-      ...EVENT_TYPES.map((k): [string, string, number] => [`event-${k}`, dotSvg(t.events[k], t.ring), 64]),
+      // Key events carry their glyph; the many lesser events are plain dots in the same colour.
+      ...EVENT_TYPES.map((k): [string, string, number] => [`event-${k}`, modernEventSvg(k, t.events[k], t.ring), 128]),
+      ...EVENT_TYPES.map((k): [string, string, number] => [`dot-${k}`, dotSvg(t.events[k], t.ring), 64]),
       ["capital", capitalDotSvg(t.capital, t.ring), 64],
       ["dot-city", dotSvg(t.labelMuted, t.ring, 4.5), 32],
     );
@@ -309,6 +312,7 @@ const TERRAIN_TINT: Record<string, Record<(typeof TERRAIN_KINDS)[number], string
   survey: { desert: "#efe2bf", mountains: "#e3d9c6", plateau: "#ebe3cc", tundra: "#e4eaea", wetland: "#dfe8d6" },
   clay: { desert: "#e6c98f", mountains: "#c9b08a", plateau: "#d6bd92", tundra: "#d7d3c4", wetland: "#b9bf8c" },
   atlas: { desert: "#efe5cf", mountains: "#e9e5dc", plateau: "#ece5d6", tundra: "#e8edee", wetland: "#e1eadc" },
+  "atlas-dark": { desert: "#2e2b24", mountains: "#272a2c", plateau: "#2b2a25", tundra: "#243039", wetland: "#1f2d28" },
 };
 
 /** Farmland in two tones, ripe and green, so neighbouring plots read as different crops. */
@@ -317,6 +321,7 @@ const FIELD_TINT: Record<string, [string, string]> = {
   survey: ["#dcc78e", "#b3c193"],
   clay: ["#d9b46a", "#a7ad6a"],
   atlas: ["#e2d6ae", "#c9d4ad"],
+  "atlas-dark": ["#47412c", "#2f3d2c"],
 };
 
 /** Cities in three tiers of prominence, the best known appearing first. */
@@ -451,10 +456,17 @@ function modernize(layers: maplibregl.LayerSpecification[], t: MapTheme): maplib
         layer.layout["text-offset"] = ["literal", [0.6, 0]];
         break;
       case "events-more":
-        layer.layout["icon-size"] = ["interpolate", ["linear"], ["zoom"], 2.8, 0.42, 6, 0.55];
+        // Lesser events wait until you're closer, and keep their distance, so
+        // the map never turns to confetti; the best covered win any collision.
+        layer.minzoom = 3.8;
+        layer.layout["icon-image"] = ["concat", "dot-", ["get", "type"]];
+        layer.layout["icon-size"] = ["interpolate", ["linear"], ["zoom"], 3.8, 0.42, 7, 0.55];
+        layer.layout["icon-padding"] = 9;
+        layer.paint["icon-opacity"] = fadeIn(3.8, 4.3, 0.9);
         break;
       case "events-key":
-        layer.layout["icon-size"] = ["interpolate", ["linear"], ["zoom"], 1, 0.55, 6, 0.75];
+        // 128px glyph markers at pixel ratio 2: 64 CSS px at size 1.
+        layer.layout["icon-size"] = ["interpolate", ["linear"], ["zoom"], 1, 0.36, 6, 0.5];
         break;
       case "drawings-1":
       case "drawings-2":
@@ -464,9 +476,10 @@ function modernize(layers: maplibregl.LayerSpecification[], t: MapTheme): maplib
         // The pin's point marks the place, so the city or capital beneath stays visible.
         layer.layout["icon-anchor"] = "bottom";
         // 128px medallions at pixel ratio 2: 64 CSS px at size 1.
-        layer.layout["icon-size"] = ["interpolate", ["linear"], ["zoom"], 1.4, ["*", 0.5, ["get", "s"]], 4, ["*", 0.68, ["get", "s"]], 7, ["*", 0.95, ["get", "s"]], 9, ["*", 1.2, ["get", "s"]]];
-        // Photographs always show; labels make way for them.
-        layer.layout["icon-allow-overlap"] = true;
+        layer.layout["icon-size"] = ["interpolate", ["linear"], ["zoom"], 1.4, ["*", 0.36, ["get", "s"]], 4, ["*", 0.6, ["get", "s"]], 7, ["*", 0.92, ["get", "s"]], 9, ["*", 1.2, ["get", "s"]]];
+        // The great landmarks always show; lesser ones give way rather than pile up.
+        layer.layout["icon-allow-overlap"] = l.id === "drawings-1";
+        layer.layout["icon-padding"] = 4;
         layer.layout["text-offset"] = [0, 0.3];
         layer.layout["text-anchor"] = "top";
         layer.layout["text-size"] = 11.5;
@@ -491,6 +504,7 @@ const terrainPattern = (green: boolean) =>
 
 function styleFor(land: GeoJSON.FeatureCollection, t: MapTheme, themeName: string, era: LetteringEra): maplibregl.StyleSpecification {
   const tint = TERRAIN_TINT[themeName] ?? TERRAIN_TINT.night;
+  const dark = themeName === "night" || themeName === "atlas-dark";
   const fonts = LETTERING[era];
   const coverColor = ["match", ["get", "cover"], ...COVERS.flatMap((k) => [k, (COVER_TINT[themeName] ?? COVER_TINT.night)[k]]), "#888"] as unknown as maplibregl.ExpressionSpecification;
   const physical = (layer: string) => ["==", ["get", "layer"], layer] as maplibregl.FilterSpecification;
@@ -587,7 +601,7 @@ function styleFor(land: GeoJSON.FeatureCollection, t: MapTheme, themeName: strin
         filter: physical("terrain"),
         paint: { "fill-pattern": terrainPattern(false), "fill-opacity": fadeIn(1.8, 3.2) },
       },
-      { id: "ice", type: "fill", source: "physical", filter: physical("ice"), paint: { "fill-color": themeName === "night" ? "#c9d6df" : "#ffffff", "fill-opacity": themeName === "night" ? 0.35 : 0.9 } },
+      { id: "ice", type: "fill", source: "physical", filter: physical("ice"), paint: { "fill-color": dark ? "#c9d6df" : "#ffffff", "fill-opacity": dark ? 0.35 : 0.9 } },
       { id: "lakes", type: "fill", source: "physical", filter: physical("lake"), paint: { "fill-color": t.ocean } },
       {
         id: "rivers",
@@ -618,7 +632,7 @@ function styleFor(land: GeoJSON.FeatureCollection, t: MapTheme, themeName: strin
         type: "line",
         source: "land",
         layout: { "line-join": "round" },
-        paint: { "line-color": t.label, "line-width": ["interpolate", ["linear"], ["zoom"], 1, 0.4, 6, 1.2], "line-opacity": themeName === "night" ? 0.35 : 0.6 },
+        paint: { "line-color": t.label, "line-width": ["interpolate", ["linear"], ["zoom"], 1, 0.4, 6, 1.2], "line-opacity": dark ? 0.35 : 0.6 },
       },
       {
         id: "coast-ink-retrace",
@@ -628,7 +642,7 @@ function styleFor(land: GeoJSON.FeatureCollection, t: MapTheme, themeName: strin
         paint: {
           "line-color": t.label,
           "line-width": ["interpolate", ["linear"], ["zoom"], 1, 0.3, 6, 0.7],
-          "line-opacity": themeName === "night" ? 0.18 : 0.3,
+          "line-opacity": dark ? 0.18 : 0.3,
           "line-offset": ["interpolate", ["linear"], ["zoom"], 1, 0.8, 6, 2.2],
         },
       },
@@ -660,7 +674,7 @@ function styleFor(land: GeoJSON.FeatureCollection, t: MapTheme, themeName: strin
         source: "landcover",
         paint: {
           "fill-color": coverColor,
-          "fill-opacity": t.clay ? 0.35 : themeName === "night" ? 0.45 : 0.32,
+          "fill-opacity": t.clay ? 0.35 : dark ? 0.45 : 0.32,
         },
       },
       {

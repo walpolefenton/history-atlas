@@ -54,6 +54,56 @@ export function eventIconSvg(type: EventType, color: string, ring: string, clay 
     ${GLYPHS[type]}</svg>`;
 }
 
+/**
+ * Atlas glyphs: drawn precisely rather than by pen, with enough detail to read
+ * at marker size. White on the event's colour; COLOR marks the inner details
+ * cut back into the white (seal, jewels, the heart of the flame).
+ */
+const SWORD = `<path d="M15.5 15.5 L21 16.5 L40.5 36 L36 40.5 L16.5 21 Z" fill="#fff"/>
+  <path d="M34.5 45.5 L45.5 34.5" stroke="#fff" stroke-width="3.6" stroke-linecap="round"/>
+  <path d="M41.5 41.5 L46.5 46.5" stroke="#fff" stroke-width="3.2" stroke-linecap="round"/>
+  <circle cx="48" cy="48" r="2.6" fill="#fff"/>
+  <path d="M19 19 L37 37" stroke="COLOR" stroke-width="0.9" opacity="0.55"/>`;
+const MODERN_GLYPHS: Record<EventType, string> = {
+  // Two crossed swords, with guards, grips and pommels
+  conflict: `${SWORD}<g transform="translate(64 0) scale(-1 1)">${SWORD}</g>`,
+  // A charter: a page of text, sealed with wax and ribbons
+  diplomacy: `<path d="M20 15 H38 L44 21 V45 H24 A4 4 0 0 1 20 41 Z" fill="#fff"/><path d="M38 15 V21 H44" fill="none" stroke="COLOR" stroke-width="1.2" opacity="0.5"/>
+    <path d="M24.5 24 H37 M24.5 29 H39 M24.5 34 H33" stroke="COLOR" stroke-width="2" stroke-linecap="round" opacity="0.7"/>
+    <path d="M37 47.5 L35 54 M43 47.5 L45 54" stroke="#fff" stroke-width="2.6" stroke-linecap="round"/>
+    <circle cx="40" cy="43" r="6.2" fill="#fff"/><circle cx="40" cy="43" r="4" fill="COLOR"/>`,
+  // A crown: five points tipped with pearls, a jewelled band
+  political: `<path d="M16.5 40 L14.5 23 L23.5 31 L32 17.5 L40.5 31 L49.5 23 L47.5 40 Z" fill="#fff"/>
+    <circle cx="14.5" cy="21.5" r="2.6" fill="#fff"/><circle cx="32" cy="15.5" r="2.8" fill="#fff"/><circle cx="49.5" cy="21.5" r="2.6" fill="#fff"/>
+    <rect x="16" y="42" width="32" height="6.5" rx="1.6" fill="#fff"/>
+    <circle cx="23.5" cy="45.2" r="1.7" fill="COLOR"/><circle cx="32" cy="45.2" r="2" fill="COLOR"/><circle cx="40.5" cy="45.2" r="1.7" fill="COLOR"/>`,
+  // A temple: pediment, entablature, four columns, a stepped base
+  culture: `<path d="M14 25 L32 14.5 L50 25 Z" fill="#fff"/><circle cx="32" cy="21.3" r="1.9" fill="COLOR"/>
+    <rect x="15.5" y="26.5" width="33" height="3.6" fill="#fff"/>
+    <rect x="18.5" y="31.5" width="4.2" height="11.5" fill="#fff"/><rect x="26.5" y="31.5" width="4.2" height="11.5" fill="#fff"/>
+    <rect x="33.3" y="31.5" width="4.2" height="11.5" fill="#fff"/><rect x="41.3" y="31.5" width="4.2" height="11.5" fill="#fff"/>
+    <rect x="14" y="44.5" width="36" height="3" fill="#fff"/><rect x="11.5" y="48.5" width="41" height="3" fill="#fff"/>`,
+  // A compass rose: eight points, half-shaded, in a ring
+  exploration: `<circle cx="32" cy="32" r="16.5" fill="none" stroke="#fff" stroke-width="1.6" opacity="0.8"/>
+    <path d="M32 21 L34.2 29.8 L43 32 L34.2 34.2 L32 43 L29.8 34.2 L21 32 L29.8 29.8 Z" fill="#fff" opacity="0.75" transform="rotate(45 32 32)"/>
+    <path d="M32 11 L35.4 28.6 L53 32 L35.4 35.4 L32 53 L28.6 35.4 L11 32 L28.6 28.6 Z" fill="#fff"/>
+    <path d="M32 11 L35.4 28.6 L32 32 Z M53 32 L35.4 35.4 L32 32 Z M32 53 L28.6 35.4 L32 32 Z M11 32 L28.6 28.6 L32 32 Z" fill="COLOR" opacity="0.4"/>
+    <circle cx="32" cy="32" r="2" fill="COLOR"/>`,
+  // A flame, with a second flame burning inside it
+  crisis: `<path d="M32 12 C41.5 22 46 30 44 38.5 C42.5 45.5 37.5 50.5 32 50.5 C25 50.5 20 45 20 38.5 C20 31.5 25.5 28.5 27 21.5 C30.8 25.5 32 29.5 31 33.5 C35.8 29.8 35.4 21 32 12 Z" fill="#fff"/>
+    <path d="M32 31 C36.3 36 37.8 40 36.3 43.5 C35.3 46 33.8 47.3 32 47.3 C29.4 47.3 27.4 45.3 27.4 42.6 C27.4 39.6 29.8 38 30.4 35 C31.8 36.6 32.6 38.2 32.1 39.8 C34 37.6 33.8 33.8 32 31 Z" fill="COLOR" opacity="0.85"/>`,
+};
+
+/** An Atlas event marker: the glyph on a disc of the event's colour, with a rim and a soft lift. */
+export function modernEventSvg(type: EventType, color: string, ring: string) {
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+    <defs><radialGradient id="lift" cx="0.35" cy="0.3" r="0.8"><stop offset="0" stop-color="#fff" stop-opacity="0.22"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>
+    <filter id="drop" x="-20%" y="-20%" width="140%" height="140%"><feDropShadow dx="0" dy="1.2" stdDeviation="1.4" flood-color="#000" flood-opacity="0.28"/></filter></defs>
+    <g filter="url(#drop)"><circle cx="32" cy="32" r="28" fill="${ring}"/></g>
+    <circle cx="32" cy="32" r="25" fill="${color}"/><circle cx="32" cy="32" r="25" fill="url(#lift)"/>
+    <g transform="translate(32 32) scale(0.82) translate(-32 -32)">${MODERN_GLYPHS[type].replace(/COLOR/g, color)}</g></svg>`;
+}
+
 const TOWER =
   "M21 52 V29 H18 V18 H24 V22 H29 V18 H35 V22 H40 V18 H46 V29 H43 V52 Z M29 52 V44 A3 3 0 0 1 35 44 V52 Z";
 

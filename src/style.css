@@ -109,6 +109,28 @@
   --backdrop-size: 100% 100%;
 }
 
+/* Atlas Dark: the same atlas after dark. Slate surfaces, hairlines, a warm coral accent. */
+:root[data-theme="atlas-dark"] {
+  color-scheme: dark;
+  --bg: #0b1016;
+  --surface: rgba(20, 26, 33, 0.94);
+  --surface-solid: #161d24;
+  --raised: rgba(255, 255, 255, 0.04);
+  --text: #e6eaee;
+  --muted: #97a1ab;
+  --line: rgba(230, 236, 242, 0.12);
+  --line-soft: rgba(230, 236, 242, 0.07);
+  --accent: #e08a6b;
+  --accent-ink: #1a0f0a;
+  --accent-soft: rgba(224, 138, 107, 0.12);
+  --focus: #7fb6e6;
+  --up: #6fcf8a;
+  --down: #ef8a7d;
+  --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 14px 36px rgba(0, 0, 0, 0.45);
+  --backdrop: radial-gradient(ellipse 70% 80% at 42% 50%, #17212b 0%, #0b1016 78%);
+  --backdrop-size: 100% 100%;
+}
+
 :root[data-theme="clay"] .tool[aria-pressed="true"],
 :root[data-theme="clay"] .chip.current,
 :root[data-theme="clay"] #btn-play {
@@ -538,11 +560,13 @@ body.comparing .year-mark { display: none; }
 .maplibregl-map .maplibregl-ctrl-top-right { right: calc(var(--panel-w) + 26px); }
 .maplibregl-map .maplibregl-ctrl-group { background: var(--surface-solid); border: 1px solid var(--line); box-shadow: none; }
 .maplibregl-map .maplibregl-ctrl-group button + button { border-top-color: var(--line-soft); }
-:root[data-theme="night"] .maplibregl-ctrl-group button .maplibregl-ctrl-icon { filter: invert(0.9); }
+:root[data-theme="night"] .maplibregl-ctrl-group button .maplibregl-ctrl-icon,
+:root[data-theme="atlas-dark"] .maplibregl-ctrl-group button .maplibregl-ctrl-icon { filter: invert(0.9); }
 .maplibregl-map .maplibregl-ctrl-attrib,
 .maplibregl-map .maplibregl-ctrl-attrib.maplibregl-compact { background: var(--surface); color: var(--muted); }
 .maplibregl-map .maplibregl-ctrl-attrib-button { background-color: var(--surface-solid); }
-:root[data-theme="night"] .maplibregl-ctrl-attrib-button { filter: invert(0.9); }
+:root[data-theme="night"] .maplibregl-ctrl-attrib-button,
+:root[data-theme="atlas-dark"] .maplibregl-ctrl-attrib-button { filter: invert(0.9); }
 .maplibregl-map .maplibregl-ctrl-attrib a { color: var(--muted); }
 
 /* --- Event filters, compare mode -------------------------------------------------- */
@@ -734,3 +758,18 @@ body[data-lettering="printed"] #ym-num { font-family: "IM Fell English", var(--f
 
 /* A landmark's photograph already heads the panel; don't repeat it beside the Wikipedia summary. */
 .photo-hero ~ #wiki .wiki-thumb { display: none; }
+
+/* In the Atlas themes the Wikipedia image leads, full width, uncropped (flags and maps stay whole). */
+:root[data-theme^="atlas"] .wiki-thumb {
+  float: none;
+  display: block;
+  width: 100%;
+  max-width: none;
+  height: 200px;
+  max-height: none;
+  margin: 0 0 14px;
+  object-fit: contain;
+  background: var(--raised);
+  border: 0;
+  border-radius: var(--r-md, 10px);
+}

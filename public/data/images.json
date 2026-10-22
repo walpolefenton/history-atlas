@@ -586,6 +586,15 @@
    "license": "Public domain",
    "artist": "Abraham Ortelius"
   },
+  "manila-galleon": {
+   "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/5a/Padre_Eterno_em_gravura_de_1683.jpg/500px-Padre_Eterno_em_gravura_de_1683.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "w": 480,
+   "h": 779,
+   "file": "Padre_Eterno_em_gravura_de_1683.jpg",
+   "page": "Galleon",
+   "license": "Public domain",
+   "artist": "Desconhecido"
+  },
   "mayflower": {
    "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/9d/Copyrighted_and_Published_by_A_S_Burbank%2C_The_Mayflower_at_Sea_%28NBY_21340%29.jpg/500px-Copyrighted_and_Published_by_A_S_Burbank%2C_The_Mayflower_at_Sea_%28NBY_21340%29.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
    "w": 480,
@@ -711,6 +720,24 @@
    "page": "African humid period",
    "license": "Public domain",
    "artist": "NASA"
+  },
+  "horse": {
+   "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/f/f5/Przewalskis_horse_02.jpg/500px-Przewalskis_horse_02.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "w": 480,
+   "h": 473,
+   "file": "Przewalskis_horse_02.jpg",
+   "page": "Przewalski's horse",
+   "license": "CC BY-SA 4.0",
+   "artist": "Claudia Feh"
+  },
+  "methuselah": {
+   "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/58/Big_bristlecone_pine_Pinus_longaeva.jpg/500px-Big_bristlecone_pine_Pinus_longaeva.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "w": 480,
+   "h": 598,
+   "file": "Big_bristlecone_pine_Pinus_longaeva.jpg",
+   "page": "Pinus longaeva",
+   "license": "CC BY-SA 3.0",
+   "artist": "Dcrjsr"
   },
   "aurochs": {
    "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/55/Copenhagen_Aurochse.jpg/500px-Copenhagen_Aurochse.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
@@ -1018,6 +1045,15 @@
    "license": "Public domain",
    "artist": ""
   },
+  "yam": {
+   "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/6a/Ko%C5%84_mongolski_w_Parku_Narodowym_Gorchi-Tereld%C5%BC_10.JPG/500px-Ko%C5%84_mongolski_w_Parku_Narodowym_Gorchi-Tereld%C5%BC_10.JPG?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "w": 480,
+   "h": 320,
+   "file": "Koń_mongolski_w_Parku_Narodowym_Gorchi-Tereldż_10.JPG",
+   "page": "Mongolian horse",
+   "license": "CC BY-SA 4.0",
+   "artist": "Marcin Konsek"
+  },
   "mona-lisa": {
    "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/6a/Mona_Lisa.jpg/500px-Mona_Lisa.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
    "w": 480,
@@ -1251,6 +1287,15 @@
    "page": "Chisholm Trail",
    "license": "Public domain",
    "artist": "Adrian W. Ziegelasch, 1893–1930, download and cleanup by Steve Meirowsky"
+  },
+  "jazz": {
+   "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/16/Louis_Armstrong_in_Color_%28restored%29.jpg/500px-Louis_Armstrong_in_Color_%28restored%29.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "w": 480,
+   "h": 355,
+   "file": "Louis_Armstrong_in_Color_(restored).jpg",
+   "page": "Louis Armstrong",
+   "license": "Public domain",
+   "artist": "Harry Warnecke / Gus Schoenbaechler"
   },
   "hollywood": {
    "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/2f/Hollywood_sign_%288485145044%29.jpg/500px-Hollywood_sign_%288485145044%29.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
