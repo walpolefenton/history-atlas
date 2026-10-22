@@ -1,7 +1,7 @@
 // Map themes. The page chrome is themed in CSS through [data-theme] on <html>;
 // the map can't read CSS, so its colours live here.
 
-export type ThemeName = "night" | "survey" | "clay";
+export type ThemeName = "atlas" | "night" | "survey" | "clay";
 
 /**
  * Colour families by cultural region, four shades each, in the order the data
@@ -36,6 +36,8 @@ function mix(hex: string, toward: string, amount: number) {
   return "#" + a.map((v, i) => Math.round(v + (b[i] - v) * amount).toString(16).padStart(2, "0")).join("");
 }
 const SURVEY_PALETTE = NIGHT_PALETTE.map((c) => mix(c, "#fbf7ec", 0.5));
+/** Atlas: the same families, softened and slightly greyed, so relief and imagery lead. */
+const ATLAS_PALETTE = NIGHT_PALETTE.map((c) => saturate(mix(c, "#f3f1ec", 0.38), 0.8));
 /** Plasticine: the same families, pushed warmer and more saturated. */
 const CLAY_PALETTE = NIGHT_PALETTE.map((c) => saturate(mix(c, "#f3d9b0", 0.18), 1.25));
 
@@ -81,6 +83,11 @@ export interface MapTheme {
   relief: { exaggeration: number; shadow: string; highlight: string; accent: string };
   /** Clay styling: sculpted seams on borders, a fingerprint grain, moulded markers. */
   clay: boolean;
+  /**
+   * Atlas styling: a modern reference atlas. Crisp lines, refined relief and
+   * photographs in place of the pen drawings, which are hidden.
+   */
+  modern: boolean;
 }
 
 export const THEMES = {
@@ -123,6 +130,7 @@ export const THEMES = {
     muralOpacity: 0.32,
     relief: { exaggeration: 0.32, shadow: "rgba(0, 0, 0, 0.5)", highlight: "rgba(180, 210, 240, 0.12)", accent: "rgba(0, 0, 0, 0.3)" },
     clay: false,
+    modern: false,
   },
   // A hand-tinted 19th-century lithograph atlas: pale sea with water lining.
   survey: {
@@ -160,6 +168,7 @@ export const THEMES = {
     muralOpacity: 0.3,
     relief: { exaggeration: 0.32, shadow: "rgba(80, 70, 60, 0.35)", highlight: "rgba(255, 255, 255, 0.25)", accent: "rgba(80, 70, 60, 0.2)" },
     clay: false,
+    modern: false,
   },
 } as unknown as Record<ThemeName, MapTheme>;
 
@@ -200,6 +209,48 @@ THEMES.clay = {
   muralOpacity: 0.34,
   relief: { exaggeration: 0.7, shadow: "rgba(60, 30, 10, 0.62)", highlight: "rgba(255, 246, 228, 0.55)", accent: "rgba(90, 50, 20, 0.4)" },
   clay: true,
+  modern: false,
+};
+
+// A modern reference atlas: soft muted territories over finely shaded relief,
+// crisp hairline borders, quiet dot markers, and photographs of the places
+// themselves in place of drawings.
+THEMES.atlas = {
+  ocean: "#cad8de",
+  land: "#f3f1ec",
+  coast: { color: "#9fb5bf", widths: [0.8, 5, 12], opacities: [0.9, 0.28, 0.12], blur: 3 },
+  border: "rgba(45, 48, 56, 0.55)",
+  hover: "#1d2126",
+  accent: "#9c3d2a",
+  label: "#1d2126",
+  labelMuted: "#5f6670",
+  halo: "rgba(246, 244, 239, 0.92)",
+  palette: ATLAS_PALETTE,
+  fillOpacity: 0.6,
+  fillOpacityApprox: 0.38,
+  sky: {
+    "sky-color": "#eef1f2",
+    "horizon-color": "#ffffff",
+    "fog-color": "#eef1f2",
+    "atmosphere-blend": ["interpolate", ["linear"], ["zoom"], 0, 0.55, 4, 0.3, 7, 0],
+  },
+  events: {
+    conflict: "#b23a2c",
+    diplomacy: "#2c6a9e",
+    political: "#a37515",
+    culture: "#6a4c9c",
+    exploration: "#357a47",
+    crisis: "#b8591d",
+  },
+  capital: "#1d2126",
+  ring: "#ffffff",
+  ink: "45,50,58",
+  wash: "rgba(156, 61, 42, 0.18)",
+  washSoft: "rgba(45, 50, 58, 0.06)",
+  muralOpacity: 0,
+  relief: { exaggeration: 0.55, shadow: "rgba(48, 56, 66, 0.55)", highlight: "rgba(255, 255, 255, 0.55)", accent: "rgba(48, 56, 66, 0.25)" },
+  clay: false,
+  modern: true,
 };
 
 const STORAGE_KEY = "atlas-theme";
@@ -207,7 +258,7 @@ const STORAGE_KEY = "atlas-theme";
 export function loadThemeChoice(): ThemeChoice {
   try {
     const v = localStorage.getItem(STORAGE_KEY);
-    if (v === "night" || v === "survey" || v === "clay" || v === "auto") return v;
+    if (v === "atlas" || v === "night" || v === "survey" || v === "clay" || v === "auto") return v;
   } catch {
     /* storage unavailable: fall back to auto */
   }
@@ -224,7 +275,7 @@ export function saveThemeChoice(choice: ThemeChoice) {
 
 export function resolveTheme(choice: ThemeChoice): ThemeName {
   if (choice !== "auto") return choice;
-  return matchMedia("(prefers-color-scheme: light)").matches ? "survey" : "night";
+  return matchMedia("(prefers-color-scheme: light)").matches ? "atlas" : "night";
 }
 
 /** Applies a theme to the page and notifies listeners (the maps). */

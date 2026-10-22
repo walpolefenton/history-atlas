@@ -34,9 +34,11 @@ node scripts/prepare-scenery.mjs   # the illustrated layer (scenery, murals, ran
 - **Events:** key events (hand-written) show as large dots, other events from Wikidata as small ones. Use **Show event types** in the overview to filter both.
 - **Compare:** press **Compare** to see two years side by side, with a list of territories that appeared, disappeared, changed ruler or changed size.
 - **Search:** press `/` and search any territory name across all eras, or any event.
-- **Map style:** the last button in the toolbar cycles through Night (a globe in space), Survey (a lithograph atlas), Clay (sculpted relief, after stop-motion animation) and Auto (Night or Survey, following your system).
+- **Map style:** the last button in the toolbar cycles through Atlas (a modern reference atlas with photographs), Night (a globe in space), Survey (a lithograph atlas), Clay (sculpted relief, after stop-motion animation) and Auto (Atlas or Night, following your system).
+- **Images:** each era opens with a work of art from its time, and every landmark has a photograph, shown as a photo pin on the Atlas map and at the top of its page. All are freely licensed files from Wikimedia Commons, credited where they appear.
 - **Look closer:** pen-and-ink drawings of landmarks, curiosities and moments in natural history appear as you zoom in, each with a short caption, the facts and a Wikipedia summary. Map lettering changes with the era: Roman capitals for antiquity, early printing type to 1800, a modern serif after.
-- **The illustrated globe:** thousands of small pen drawings fill the map by terrain, climate and era: peaks, jungles, dunes, animals, waves and whales, villages and townscapes drawn in each region's architecture, figures for how people lived, faint regional murals, mountain ranges drawn as chains of peaks, the Great Wall, and trade routes with the right ships and caravans for each era. Hover or click travellers and figures to learn more. Detail thickens as you zoom in.
+- **The land:** woodland, rainforest, grassland, savanna and farmland are painted as areas (engraved textures in the illustrated styles, soft colour in Atlas). Farmland appears as farming spread, from the Fertile Crescent around 7000 BCE. Mountains are drawn as hills over shaded relief.
+- **The illustrated styles** add faint regional murals, figures for how people lived, mountain ranges as chains of peaks, the Great Wall, villages on their roads, and trade routes with the right ships and caravans for each era. Hover or click travellers and figures to learn more.
 - **Find the Surveyor:** a small figure hides somewhere different in every era. The overview offers a hint and counts how many you've found (stored in your browser only).
 - **Sharing:** the URL holds the year and selection, e.g. `#y=1914&p=Ottoman+Empire`, `#y=1939&e=ww2` or `#y=1914&c=1920` for a comparison.
 
@@ -50,7 +52,10 @@ node scripts/prepare-scenery.mjs   # the illustrated layer (scenery, murals, ran
 | `data-src/aliases.json` | Hand-curated territory name → Wikipedia article links (edit to improve capital matches) |
 | `scripts/prepare-data.mjs` | Simplifies borders, places labels, colours territories by ruler, matches capitals |
 | `scripts/prepare-physical.mjs` | Terrain, rivers, lakes, ice and landform/sea names drawn beneath the political map |
-| `src/theme.ts` | Map colours for the Night and Survey themes (page colours are in `src/style.css`) |
+| `src/theme.ts` | Map colours for each theme (page colours are in `src/style.css`) |
+| `scripts/prepare-landcover.mjs` | Woodland, grassland, farmland and other land cover as areas (`public/data/landcover.json`) |
+| `scripts/fetch-images.mjs` | Photographs for landmarks and an artwork for each era, with credits (`public/data/images.json`) |
+| `src/images.ts` | Image index, credit lines and the photo pins drawn on the map |
 | `src/icons.ts` | Event and capital pictograms, shared by the map and the panel |
 | `public/data/years/<year>.json` | One snapshot: borders, label points, capitals |
 | `public/data/meta.json` | Snapshot list and which years each territory appears in |
@@ -83,6 +88,8 @@ Add an entry to `public/data/events.json`:
 - **Wikipedia summaries** are found through Wikidata where possible. Otherwise the exact title is tried, then a search. Matches found by search are labelled as possibly imperfect.
 - **Key events**, drawings and Surveyor notes are hand-written and still being reviewed. Each links to its Wikipedia article.
 - **Colours** come from a coarse cultural-region model (by the location of each power's capital or heartland). They are a visual aid, not a claim about identity.
+- **Images** are the lead images of the matching Wikipedia articles. A few landmarks have none and keep their drawing.
+- **Land cover** comes from a coarse biome model with noise for natural patches, not from vegetation surveys; farmland regions and dates are broad approximations.
 - **The illustrated layer** uses a coarse biome model and hand-placed routes and murals. It is decorative but meant to be truthful in broad strokes: routes, ranges and the Great Wall are approximate, and villages are placed at random within each state.
 - **The Green Sahara** is shown for snapshots between 9000 and 3500 BCE, with simplified desert outlines.
 - **Wikidata events** are items with an English Wikipedia article covered by at least 12 language editions. Their dates and locations are as recorded in Wikidata, and some are approximate or wrong.

@@ -9,6 +9,7 @@ import { currentTheme, type MapTheme } from "./theme";
 import { formatYear } from "./format";
 import { capitalIconSvg, eventIconSvg, svgToImage } from "./icons";
 import { DRAWING_KINDS, SCENERY_KINDS, VARIANTS, drawingSvg } from "./drawings";
+import { MEDALLION_PX, drawingImage, loadImages, medallion } from "./images";
 
 maplibregl.setWorkerUrl(workerUrl);
 
@@ -60,7 +61,7 @@ const TIER_MINZOOM = { 1: 1.4, 2: 2.6, 3: 3.4 } as const;
 const SURVEYOR_MINZOOM = 3.6;
 /** Snapshots that fall in the African Humid Period, when the Sahara was green. */
 const isGreenSahara = (year: number) => year >= -9000 && year <= -3500;
-const SAVANNA = { night: "#2b4230", survey: "#d9e6bf", clay: "#a9b86a" };
+const SAVANNA = { night: "#2b4230", survey: "#d9e6bf", clay: "#a9b86a", atlas: "#dfe8cf" };
 /** Open elevation tiles (Mapzen terrain on AWS Open Data), used for shaded relief. */
 const RELIEF_TILES = "https://s3.amazonaws.com/elevation-tiles-prod/terrarium/{z}/{x}/{y}.png";
 const CROSSFADE_MS = 750;
@@ -221,6 +222,7 @@ const COVER_TINT: Record<string, Record<(typeof COVERS)[number], string>> = {
   night: { broadleaf: "#2f4a35", conifer: "#28423a", jungle: "#2a4d33", grassland: "#4a4a32", savanna: "#5a4e30", farmland: "#5a5236" },
   survey: { broadleaf: "#9fb88a", conifer: "#8eab8c", jungle: "#86b07c", grassland: "#cfcf9a", savanna: "#d9c88f", farmland: "#d6c995" },
   clay: { broadleaf: "#8f9c5a", conifer: "#7d8f60", jungle: "#7f9a52", grassland: "#c9b878", savanna: "#d1ad6a", farmland: "#cfae6c" },
+  atlas: { broadleaf: "#a9c09a", conifer: "#98b49d", jungle: "#93b98b", grassland: "#d8dbb0", savanna: "#e0d3a6", farmland: "#ded3a6" },
 };
 
 /** Watercolour paper: a faint, seamlessly tiling grain laid over the territories. */
@@ -250,6 +252,13 @@ function trailPatternSvg(t: MapTheme) {
   return `<svg xmlns="http://www.w3.org/2000/svg" width="48" height="16" viewBox="0 0 24 8"><g fill="${t.labelMuted}"><circle cx="4" cy="3" r="1.1"/><circle cx="9" cy="5" r="1.1"/><circle cx="16" cy="3" r="1.1"/><circle cx="21" cy="5" r="1.1"/></g></svg>`;
 }
 
+/** Atlas markers: a solid dot in the event's colour on a white rim. */
+const dotSvg = (fill: string, rim: string, r = 9, inner = "") =>
+  `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32"><circle cx="16" cy="16" r="${r + 3}" fill="${rim}"/><circle cx="16" cy="16" r="${r}" fill="${fill}"/>${inner}</svg>`;
+/** A capital: a ring around a dot, the reference-atlas convention. */
+const capitalDotSvg = (ink: string, rim: string) =>
+  `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32"><circle cx="16" cy="16" r="10" fill="${rim}"/><circle cx="16" cy="16" r="7.5" fill="none" stroke="${ink}" stroke-width="2"/><circle cx="16" cy="16" r="3.2" fill="${ink}"/></svg>`;
+
 async function themeImages(t: MapTheme): Promise<Record<string, HTMLImageElement>> {
   const themeName = document.documentElement.dataset.theme ?? "night";
   const entries: [string, string, number][] = [
@@ -277,6 +286,13 @@ async function themeImages(t: MapTheme): Promise<Record<string, HTMLImageElement
     ["line-wall", wallPatternSvg(t), 128],
     ["line-trail", trailPatternSvg(t), 48],
   ];
+  if (t.modern) {
+    entries.push(
+      ...EVENT_TYPES.map((k): [string, string, number] => [`event-${k}`, dotSvg(t.events[k], t.ring), 64]),
+      ["capital", capitalDotSvg(t.capital, t.ring), 64],
+      ["dot-city", dotSvg(t.labelMuted, t.ring, 4.5), 32],
+    );
+  }
   const imgs = await Promise.all(entries.map(([, svg, size]) => svgToImage(svg, size)));
   return Object.fromEntries(entries.map(([name], i) => [name, imgs[i]]));
 }
@@ -292,6 +308,7 @@ const TERRAIN_TINT: Record<string, Record<(typeof TERRAIN_KINDS)[number], string
   night: { desert: "#3a3326", mountains: "#2c2a2a", plateau: "#2d2b24", tundra: "#22303a", wetland: "#1f3029" },
   survey: { desert: "#efe2bf", mountains: "#e3d9c6", plateau: "#ebe3cc", tundra: "#e4eaea", wetland: "#dfe8d6" },
   clay: { desert: "#e6c98f", mountains: "#c9b08a", plateau: "#d6bd92", tundra: "#d7d3c4", wetland: "#b9bf8c" },
+  atlas: { desert: "#efe5cf", mountains: "#e9e5dc", plateau: "#ece5d6", tundra: "#e8edee", wetland: "#e1eadc" },
 };
 
 /** Farmland in two tones, ripe and green, so neighbouring plots read as different crops. */
@@ -299,6 +316,7 @@ const FIELD_TINT: Record<string, [string, string]> = {
   night: ["#6b5f3e", "#3f5240"],
   survey: ["#dcc78e", "#b3c193"],
   clay: ["#d9b46a", "#a7ad6a"],
+  atlas: ["#e2d6ae", "#c9d4ad"],
 };
 
 /** Cities in three tiers of prominence, the best known appearing first. */
@@ -373,8 +391,90 @@ function reliefLayer(t: MapTheme): maplibregl.LayerSpecification {
       "hillshade-highlight-color": t.relief.highlight,
       "hillshade-accent-color": t.relief.accent,
       "hillshade-illumination-anchor": "map",
+      // Igor's method shades slopes cleanly without flattening the plains, as in print atlases.
+      ...(t.modern ? { "hillshade-method": "igor" as const } : {}),
     },
   };
+}
+
+/** Illustrated layers that the modern Atlas theme hides; the code that updates them keeps working. */
+const ILLUSTRATED = new Set([
+  "land-texture", "terrain-texture", "cover-texture", "mountain-texture", "coast-ink-retrace", "polity-edge", "polity-paper",
+  "polity-line-retrace", "murals", "ranges", "great-wall", "roads", "scenery-1", "scenery-2", "scenery-3", "scenery-4",
+  "travellers", "villages", "inhabitants",
+]);
+
+/**
+ * Turns the illustrated style into a modern reference atlas: pen drawings and
+ * textures hidden, hairline borders, dot markers, landmarks as photographs.
+ */
+function modernize(layers: maplibregl.LayerSpecification[], t: MapTheme): maplibregl.LayerSpecification[] {
+  return layers.map((l) => {
+    const layer = { ...l, layout: { ...(l.layout ?? {}) }, paint: { ...(l.paint ?? {}) } } as Record<string, any>;
+    if (ILLUSTRATED.has(l.id)) layer.layout.visibility = "none";
+    switch (l.id) {
+      case "coast-ink":
+        layer.paint["line-color"] = t.coast.color;
+        layer.paint["line-opacity"] = 0.9;
+        layer.paint["line-width"] = ["interpolate", ["linear"], ["zoom"], 1, 0.4, 6, 0.9];
+        break;
+      case "polity-line":
+        layer.paint["line-width"] = ["interpolate", ["linear"], ["zoom"], 1, 0.35, 5, 0.9, 8, 1.4];
+        break;
+      case "cover-tint":
+        layer.paint["fill-opacity"] = 0.42;
+        break;
+      case "cover-margin":
+        layer.paint["line-opacity"] = 0.35;
+        break;
+      case "routes-land":
+        delete layer.paint["line-pattern"];
+        layer.paint["line-color"] = t.labelMuted;
+        layer.paint["line-width"] = ["interpolate", ["linear"], ["zoom"], 1, 0.6, 5, 1.2];
+        layer.paint["line-dasharray"] = [3, 2];
+        layer.paint["line-opacity"] = 0.55;
+        break;
+      case "routes-sea":
+        layer.paint["line-opacity"] = 0.45;
+        break;
+      case "capitals":
+        layer.layout["icon-image"] = "capital";
+        layer.layout["icon-size"] = ["interpolate", ["linear"], ["zoom"], 3, 0.42, 7, 0.6];
+        break;
+      case "cities-1":
+      case "cities-2":
+      case "cities-3":
+        layer.layout["icon-image"] = "dot-city";
+        layer.layout["icon-size"] = ["interpolate", ["linear"], ["zoom"], 2.2, 0.55, 7, 0.8];
+        layer.layout["icon-anchor"] = "center";
+        layer.layout["text-anchor"] = "left";
+        layer.layout["text-offset"] = ["literal", [0.6, 0]];
+        break;
+      case "events-more":
+        layer.layout["icon-size"] = ["interpolate", ["linear"], ["zoom"], 2.8, 0.42, 6, 0.55];
+        break;
+      case "events-key":
+        layer.layout["icon-size"] = ["interpolate", ["linear"], ["zoom"], 1, 0.55, 6, 0.75];
+        break;
+      case "drawings-1":
+      case "drawings-2":
+      case "drawings-3": {
+        // A round photograph of the place, where one exists; otherwise its drawing.
+        layer.layout["icon-image"] = ["case", ["get", "photo"], ["concat", "photo-", ["get", "id"]], ["concat", "draw-", ["get", "kind"]]];
+        // The pin's point marks the place, so the city or capital beneath stays visible.
+        layer.layout["icon-anchor"] = "bottom";
+        // 128px medallions at pixel ratio 2: 64 CSS px at size 1.
+        layer.layout["icon-size"] = ["interpolate", ["linear"], ["zoom"], 1.4, ["*", 0.5, ["get", "s"]], 4, ["*", 0.68, ["get", "s"]], 7, ["*", 0.95, ["get", "s"]], 9, ["*", 1.2, ["get", "s"]]];
+        // Photographs always show; labels make way for them.
+        layer.layout["icon-allow-overlap"] = true;
+        layer.layout["text-offset"] = [0, 0.3];
+        layer.layout["text-anchor"] = "top";
+        layer.layout["text-size"] = 11.5;
+        break;
+      }
+    }
+    return layer as maplibregl.LayerSpecification;
+  });
 }
 
 function terrainColor(tint: Record<string, string>, t: MapTheme, themeName: string, green: boolean): maplibregl.ExpressionSpecification {
@@ -1015,6 +1115,12 @@ function styleFor(land: GeoJSON.FeatureCollection, t: MapTheme, themeName: strin
   } as maplibregl.StyleSpecification;
 }
 
+/** The style for a theme: the illustrated map, or the modern Atlas made from it. */
+function themedStyle(land: GeoJSON.FeatureCollection, t: MapTheme, themeName: string, era: LetteringEra): maplibregl.StyleSpecification {
+  const style = styleFor(land, t, themeName, era);
+  return t.modern ? { ...style, layers: modernize(style.layers, t) } : style;
+}
+
 /** Layers whose text font follows the lettering era, and which face each uses. */
 const FONT_ROLES: Record<string, keyof Lettering> = {
   "sea-label": "italic",
@@ -1096,12 +1202,13 @@ export class AtlasMap {
       maxZoom: 9,
       attributionControl: false,
       fadeDuration: reduceMotion ? 0 : 200,
-      style: styleFor(land, currentTheme(), document.documentElement.dataset.theme ?? "night", this.era),
+      style: themedStyle(land, currentTheme(), document.documentElement.dataset.theme ?? "night", this.era),
     });
     // Images are pre-rendered, so they can be supplied synchronously on demand.
     this.map.setMissingStyleImageResolver((id: string) => {
       const img = this.images[id];
       if (img && !this.map.hasImage(id)) this.map.addImage(id, img, { pixelRatio: 2 });
+      else if (id.startsWith("photo-") && !this.map.hasImage(id)) this.loadPhoto(id);
     });
 
     if (!this.secondary) this.addControls();
@@ -1111,6 +1218,24 @@ export class AtlasMap {
     window.addEventListener("atlas-theme", () => this.applyTheme());
     window.addEventListener("resize", () => this.updatePadding());
     this.updatePadding();
+  }
+
+  /**
+   * Photographs load only when a landmark comes into view: a blank placeholder
+   * now, swapped for the photo medallion once it arrives.
+   */
+  private loadPhoto(id: string) {
+    const blank = new ImageData(MEDALLION_PX, MEDALLION_PX);
+    this.map.addImage(id, blank, { pixelRatio: 2 });
+    const src = drawingImage(id.slice("photo-".length))?.thumb;
+    if (!src) return;
+    medallion(src)
+      .then((data) => {
+        if (this.map.hasImage(id)) this.map.updateImage(id, data);
+      })
+      .catch(() => {
+        /* the drawing's placeholder stays blank; the label still shows */
+      });
   }
 
   private addControls() {
@@ -1130,7 +1255,7 @@ export class AtlasMap {
     const t = currentTheme();
     this.images = await themeImages(t);
     for (const id of Object.keys(this.images)) if (this.map.hasImage(id)) this.map.removeImage(id);
-    this.map.setStyle(styleFor(this.land, t, document.documentElement.dataset.theme ?? "night", this.era), { diff: false });
+    this.map.setStyle(themedStyle(this.land, t, document.documentElement.dataset.theme ?? "night", this.era), { diff: false });
     this.green = false; // the new style starts with the ordinary desert colours
     this.shown = null;
     this.map.once("style.load", () => {
@@ -1245,7 +1370,8 @@ export class AtlasMap {
 
   async setYear(layers: YearLayers) {
     this.last = layers;
-    await this.ready;
+    // Landmark photos are looked up by id, so the image index must be in first.
+    await Promise.all([this.ready, loadImages()]);
     const { data, featured, more, drawings, surveyor } = layers;
 
     const era = letteringEra(data.year);
@@ -1299,7 +1425,7 @@ export class AtlasMap {
       type: "FeatureCollection",
       features: drawings.map((d) => ({
         type: "Feature",
-        properties: { id: d.id, name: d.name, kind: d.kind, tier: d.tier, quip: d.quip, s: d.size ?? (d.tier === 1 ? 1.35 : d.tier === 2 ? 1.05 : 0.85) },
+        properties: { id: d.id, name: d.name, kind: d.kind, tier: d.tier, quip: d.quip, photo: !!drawingImage(d.id), s: d.size ?? (d.tier === 1 ? 1.35 : d.tier === 2 ? 1.05 : 0.85) },
         geometry: { type: "Point", coordinates: [d.lon, d.lat] },
       })),
     });

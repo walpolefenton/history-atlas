@@ -1,0 +1,1735 @@
+{
+ "note": "Lead images of Wikipedia articles, hosted on Wikimedia Commons, with their licence and artist. Built by scripts/fetch-images.mjs.",
+ "drawings": {
+  "gobekli-tepe": {
+   "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/d5/G%C3%B6bekli_Tepe%2C_Urfa.jpg/500px-G%C3%B6bekli_Tepe%2C_Urfa.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "w": 480,
+   "h": 319,
+   "file": "Göbekli_Tepe,_Urfa.jpg",
+   "page": "Göbekli Tepe",
+   "license": "CC BY-SA 3.0",
+   "artist": "Teomancimit"
+  },
+  "stonehenge": {
+   "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/3c/Stonehenge2007_07_30.jpg/500px-Stonehenge2007_07_30.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "w": 480,
+   "h": 360,
+   "file": "Stonehenge2007_07_30.jpg",
+   "page": "Stonehenge",
+   "license": "CC BY 2.0",
+   "artist": "garethwiscombe"
+  },
+  "giza": {
+   "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e7/Great_Pyramid_of_Giza_-_Pyramid_of_Khufu.jpg/500px-Great_Pyramid_of_Giza_-_Pyramid_of_Khufu.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "w": 480,
+   "h": 270,
+   "file": "Great_Pyramid_of_Giza_-_Pyramid_of_Khufu.jpg",
+   "page": "Great Pyramid of Giza",
+   "license": "CC BY-SA 4.0",
+   "artist": "Douwe C. van der Zee"
+  },
+  "mohenjo-daro": {
+   "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/03/Mohenjodaro_-_view_of_the_stupa_mound.JPG/500px-Mohenjodaro_-_view_of_the_stupa_mound.JPG?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "w": 480,
+   "h": 360,
+   "file": "Mohenjodaro_-_view_of_the_stupa_mound.JPG",
+   "page": "Mohenjo-daro",
+   "license": "CC BY-SA 3.0",
+   "artist": "Saqib Qayyum"
+  },
+  "ur-ziggurat": {
+   "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/6b/Ziggarat_of_Ur_001.jpg/500px-Ziggarat_of_Ur_001.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "w": 480,
+   "h": 209,
+   "file": "Ziggarat_of_Ur_001.jpg",
+   "page": "Ziggurat of Ur",
+   "license": "Public domain",
+   "artist": "Tla2006 at English Wikipedia"
+  },
+  "knossos": {
+   "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/18/Crete_integrated_map-en.svg/500px-Crete_integrated_map-en.svg.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "w": 480,
+   "h": 227,
+   "file": "Crete_integrated_map-en.svg",
+   "page": "Knossos",
+   "license": "CC BY-SA 4.0",
+   "artist": "Eric Gaba (Sting)"
+  },
+  "abu-simbel": {
+   "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/b5/Ramsis%2C_Aswan_Governorate%2C_Egypt_-_panoramio.jpg/500px-Ramsis%2C_Aswan_Governorate%2C_Egypt_-_panoramio.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "w": 480,
+   "h": 360,
+   "file": "Ramsis,_Aswan_Governorate,_Egypt_-_panoramio.jpg",
+   "page": "Abu Simbel",
+   "license": "CC BY 3.0",
+   "artist": "youssef_alam"
+  },
+  "parthenon": {
+   "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/da/The_Parthenon_in_Athens.jpg/500px-The_Parthenon_in_Athens.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "w": 480,
+   "h": 337,
+   "file": "The_Parthenon_in_Athens.jpg",
+   "page": "Parthenon",
+   "license": "CC BY 2.0",
+   "artist": "Steve Swayne"
+  },
+  "lighthouse-alexandria": {
+   "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/22/Lighthouse_-_Thiersch.png/500px-Lighthouse_-_Thiersch.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "w": 480,
+   "h": 408,
+   "file": "Lighthouse_-_Thiersch.png",
+   "page": "Lighthouse of Alexandria",
+   "license": "Public domain",
+   "artist": "Prof. Hermann Thiersch (1874–1939)"
+  },
+  "sanchi": {
+   "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/12/East_Gateway_-_Stupa_1_-_Sanchi_Hill_2013-02-21_4398.JPG/500px-East_Gateway_-_Stupa_1_-_Sanchi_Hill_2013-02-21_4398.JPG?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "w": 480,
+   "h": 723,
+   "file": "East_Gateway_-_Stupa_1_-_Sanchi_Hill_2013-02-21_4398.JPG",
+   "page": "Sanchi Stupa",
+   "license": "CC BY 3.0",
+   "artist": "Biswarup Ganguly"
+  },
+  "great-wall": {
+   "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/23/The_Great_Wall_of_China_at_Jinshanling-edit.jpg/500px-The_Great_Wall_of_China_at_Jinshanling-edit.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "w": 480,
+   "h": 319,
+   "file": "The_Great_Wall_of_China_at_Jinshanling-edit.jpg",
+   "page": "Great Wall of China",
+   "license": "CC BY-SA 3.0",
+   "artist": "Severin.stalder"
+  },
+  "terracotta-army": {
+   "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/88/51714-Terracota-Army.jpg/500px-51714-Terracota-Army.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "w": 480,
+   "h": 318,
+   "file": "51714-Terracota-Army.jpg",
+   "page": "Terracotta Army",
+   "license": "CC BY 2.0",
+   "artist": "xiquinhosilva"
+  },
+  "petra": {
+   "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e8/Al_Deir_Petra.JPG/500px-Al_Deir_Petra.JPG?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "w": 480,
+   "h": 320,
+   "file": "Al_Deir_Petra.JPG",
+   "page": "Petra",
+   "license": "CC BY-SA 3.0",
+   "artist": "Azurfrog"
+  },
+  "colosseum": {
+   "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/de/Colosseo_2020.jpg/500px-Colosseo_2020.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "w": 480,
+   "h": 336,
+   "file": "Colosseo_2020.jpg",
+   "page": "Colosseum",
+   "license": "CC BY-SA 4.0",
+   "artist": "FeaturedPics"
+  },
+  "pantheon": {
+   "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/7b/Pantheon_%28Rome%29_-_Right_side_and_front.jpg/500px-Pantheon_%28Rome%29_-_Right_side_and_front.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "w": 480,
+   "h": 386,
+   "file": "Pantheon_(Rome)_-_Right_side_and_front.jpg",
+   "page": "Pantheon, Rome",
+   "license": "CC BY-SA 4.0",
+   "artist": "NikonZ7II"
+  },
+  "teotihuacan": {
+   "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/3b/2020-02-11_Teotihuacan_la_Avenida_de_los_Muertos_y_la_Pir%C3%A1mide_del_Sol.jpg/500px-2020-02-11_Teotihuacan_la_Avenida_de_los_Muertos_y_la_Pir%C3%A1mide_del_Sol.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "w": 480,
+   "h": 270,
+   "file": "2020-02-11_Teotihuacan_la_Avenida_de_los_Muertos_y_la_Pirámide_del_Sol.jpg",
+   "page": "Pyramid of the Sun",
+   "license": "CC BY-SA 4.0",
+   "artist": "Burkhard Mücke"
+  },
+  "hagia-sophia": {
+   "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/4a/Hagia_Sophia_%28228968325%29.jpeg/500px-Hagia_Sophia_%28228968325%29.jpeg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "w": 480,
+   "h": 290,
+   "file": "Hagia_Sophia_(228968325).jpeg",
+   "page": "Hagia Sophia",
+   "license": "CC BY-SA 3.0",
+   "artist": "Adli Wahid"
+  },
+  "dome-rock": {
+   "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/1b/Jerusalem_DomeoftheRock_J65_%28cropped%29.JPG/500px-Jerusalem_DomeoftheRock_J65_%28cropped%29.JPG?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "w": 480,
+   "h": 324,
+   "file": "Jerusalem_DomeoftheRock_J65_(cropped).JPG",
+   "page": "Dome of the Rock",
+   "license": "CC BY-SA 4.0",
+   "artist": "Ludvig14"
+  },
+  "tikal": {
+   "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/75/Tikal_3.jpg/500px-Tikal_3.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "w": 480,
+   "h": 320,
+   "file": "Tikal_3.jpg",
+   "page": "Tikal",
+   "license": "CC BY-SA 4.0",
+   "artist": "Mundo Maya"
+  },
+  "borobudur": {
+   "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/25/Pradaksina.jpg/500px-Pradaksina.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "w": 480,
+   "h": 320,
+   "file": "Pradaksina.jpg",
+   "page": "Borobudur",
+   "license": "CC BY-SA 4.0",
+   "artist": "Heri nugroho"
+  },
+  "cahokia": {
+   "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/a4/Monks_Mound_-_Summer_2024.jpg/500px-Monks_Mound_-_Summer_2024.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "w": 480,
+   "h": 320,
+   "file": "Monks_Mound_-_Summer_2024.jpg",
+   "page": "Cahokia",
+   "license": "CC BY 4.0",
+   "artist": "Skubasteve834"
+  },
+  "chichen-itza": {
+   "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/51/Chichen_Itza_3.jpg/500px-Chichen_Itza_3.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "w": 480,
+   "h": 255,
+   "file": "Chichen_Itza_3.jpg",
+   "page": "El Castillo, Chichen Itza",
+   "license": "CC BY-SA 4.0",
+   "artist": "Daniel Schwen"
+  },
+  "tower-london": {
+   "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/ec/Tower_of_London_from_the_Shard_%288515883950%29.jpg/500px-Tower_of_London_from_the_Shard_%288515883950%29.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "w": 480,
+   "h": 312,
+   "file": "Tower_of_London_from_the_Shard_(8515883950).jpg",
+   "page": "Tower of London",
+   "license": "CC BY 2.0",
+   "artist": "[Duncan] from Nottingham, UK"
+  },
+  "angkor-wat": {
+   "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/41/Angkor_Wat.jpg/500px-Angkor_Wat.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "w": 480,
+   "h": 326,
+   "file": "Angkor_Wat.jpg",
+   "page": "Angkor Wat",
+   "license": "CC BY-SA 4.0",
+   "artist": "Bjørn Christian Tørrissen"
+  },
+  "lalibela": {
+   "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/aa/Lalibela%2C_san_giorgio%2C_esterno_24.jpg/500px-Lalibela%2C_san_giorgio%2C_esterno_24.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "w": 480,
+   "h": 416,
+   "file": "Lalibela,_san_giorgio,_esterno_24.jpg",
+   "page": "Lalibela",
+   "license": "CC BY 3.0",
+   "artist": "Sailko"
+  },
+  "great-zimbabwe": {
+   "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/d4/Conical_Tower_-_Great_Enclosure_III_%2833736918448%29.jpg/500px-Conical_Tower_-_Great_Enclosure_III_%2833736918448%29.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "w": 480,
+   "h": 320,
+   "file": "Conical_Tower_-_Great_Enclosure_III_(33736918448).jpg",
+   "page": "Great Zimbabwe",
+   "license": "CC BY-SA 2.0",
+   "artist": "Andrew Moore from Johannesburg, South Africa"
+  },
+  "alhambra": {
+   "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/de/Dawn_Charles_V_Palace_Alhambra_Granada_Andalusia_Spain.jpg/500px-Dawn_Charles_V_Palace_Alhambra_Granada_Andalusia_Spain.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "w": 480,
+   "h": 319,
+   "file": "Dawn_Charles_V_Palace_Alhambra_Granada_Andalusia_Spain.jpg",
+   "page": "Alhambra",
+   "license": "CC0",
+   "artist": "Jebulon"
+  },
+  "moai": {
+   "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/50/AhuTongariki.JPG/500px-AhuTongariki.JPG?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "w": 480,
+   "h": 360,
+   "file": "AhuTongariki.JPG",
+   "page": "Moai",
+   "license": "CC BY 2.5",
+   "artist": "Ian Sewell"
+  },
+  "notre-dame": {
+   "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/f/f7/Notre-Dame_de_Paris%2C_4_October_2017.jpg/500px-Notre-Dame_de_Paris%2C_4_October_2017.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "w": 480,
+   "h": 317,
+   "file": "Notre-Dame_de_Paris,_4_October_2017.jpg",
+   "page": "Notre-Dame de Paris",
+   "license": "CC0",
+   "artist": "Ali Sabbagh"
+  },
+  "djinguereber": {
+   "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/dd/Djingareiber_cour.jpg/500px-Djingareiber_cour.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "w": 480,
+   "h": 640,
+   "file": "Djingareiber_cour.jpg",
+   "page": "Djinguereber Mosque",
+   "license": "CC BY-SA 2.0 fr",
+   "artist": "KaTeznik"
+  },
+  "kinkakuji": {
+   "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/0f/Golden_Pavilion_Kinkaku-ji_water_mirror_2024.jpg/500px-Golden_Pavilion_Kinkaku-ji_water_mirror_2024.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "w": 480,
+   "h": 720,
+   "file": "Golden_Pavilion_Kinkaku-ji_water_mirror_2024.jpg",
+   "page": "Kinkaku-ji",
+   "license": "CC BY-SA 4.0",
+   "artist": "Nacaru"
+  },
+  "forbidden-city": {
+   "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/ef/The_Forbidden_City_-_View_from_Coal_Hill.jpg/500px-The_Forbidden_City_-_View_from_Coal_Hill.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "w": 480,
+   "h": 240,
+   "file": "The_Forbidden_City_-_View_from_Coal_Hill.jpg",
+   "page": "Forbidden City",
+   "license": "CC BY-SA 3.0",
+   "artist": "Pixelflake"
+  },
+  "machu-picchu": {
+   "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/bb/Machu_Picchu%2C_2023_%28012%29.jpg/500px-Machu_Picchu%2C_2023_%28012%29.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "w": 480,
+   "h": 320,
+   "file": "Machu_Picchu,_2023_(012).jpg",
+   "page": "Machu Picchu",
+   "license": "CC BY-SA 4.0",
+   "artist": "Draceane"
+  },
+  "kremlin": {
+   "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/46/Moscow_Kremlin_%288281675670%29.jpg/500px-Moscow_Kremlin_%288281675670%29.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "w": 480,
+   "h": 322,
+   "file": "Moscow_Kremlin_(8281675670).jpg",
+   "page": "Kremlin",
+   "license": "CC BY 2.0",
+   "artist": "Pavel Kazachkov from Moscow, Russia"
+  },
+  "templo-mayor": {
+   "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/07/Model_of_Tenochtitlan_Ceremonial_Center_Great_Temple_%289755406755%29.jpg/500px-Model_of_Tenochtitlan_Ceremonial_Center_Great_Temple_%289755406755%29.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "w": 480,
+   "h": 320,
+   "file": "Model_of_Tenochtitlan_Ceremonial_Center_Great_Temple_(9755406755).jpg",
+   "page": "Templo Mayor",
+   "license": "CC0",
+   "artist": "Gary Todd from Xinzheng, China"
+  },
+  "st-peters": {
+   "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/f/f5/Basilica_di_San_Pietro_in_Vaticano_September_2015-1a.jpg/500px-Basilica_di_San_Pietro_in_Vaticano_September_2015-1a.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "w": 480,
+   "h": 251,
+   "file": "Basilica_di_San_Pietro_in_Vaticano_September_2015-1a.jpg",
+   "page": "St. Peter's Basilica",
+   "license": "CC BY-SA 4.0",
+   "artist": "Alvesgaspar"
+  },
+  "taj-mahal": {
+   "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/1d/Taj_Mahal_%28Edited%29.jpeg/500px-Taj_Mahal_%28Edited%29.jpeg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "w": 480,
+   "h": 316,
+   "file": "Taj_Mahal_(Edited).jpeg",
+   "page": "Taj Mahal",
+   "license": "CC BY-SA 4.0",
+   "artist": "Yann; edited by Jim Carter"
+  },
+  "potala": {
+   "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/b6/Potala_Palace_HQ.jpg/500px-Potala_Palace_HQ.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "w": 480,
+   "h": 270,
+   "file": "Potala_Palace_HQ.jpg",
+   "page": "Potala Palace",
+   "license": "CC BY-SA 4.0",
+   "artist": "Lhasa Government"
+  },
+  "versailles": {
+   "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/95/Vue_a%C3%A9rienne_du_domaine_de_Versailles_par_ToucanWings_-_Creative_Commons_By_Sa_3.0_-_081_%28cropped%29.jpg/500px-Vue_a%C3%A9rienne_du_domaine_de_Versailles_par_ToucanWings_-_Creative_Commons_By_Sa_3.0_-_081_%28cropped%29.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "w": 480,
+   "h": 293,
+   "file": "Vue_aérienne_du_domaine_de_Versailles_par_ToucanWings_-_Creative_Commons_By_Sa_3.0_-_081_(cropped).jpg",
+   "page": "Palace of Versailles",
+   "license": "CC BY-SA 3.0",
+   "artist": "ToucanWings"
+  },
+  "big-ben": {
+   "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/05/Elizabeth_Tower_and_the_north_front_of_the_Palace_of_Westminster%2C_London.jpg/500px-Elizabeth_Tower_and_the_north_front_of_the_Palace_of_Westminster%2C_London.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "w": 480,
+   "h": 853,
+   "file": "Elizabeth_Tower_and_the_north_front_of_the_Palace_of_Westminster,_London.jpg",
+   "page": "Big Ben",
+   "license": "CC BY-SA 4.0",
+   "artist": "Christian David"
+  },
+  "statue-liberty": {
+   "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/89/Front_view_of_Statue_of_Liberty_%28cropped%29.jpg/500px-Front_view_of_Statue_of_Liberty_%28cropped%29.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "w": 480,
+   "h": 736,
+   "file": "Front_view_of_Statue_of_Liberty_(cropped).jpg",
+   "page": "Statue of Liberty",
+   "license": "CC0",
+   "artist": "AskALotl"
+  },
+  "eiffel": {
+   "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/85/Tour_Eiffel_Wikimedia_Commons_%28cropped%29.jpg/500px-Tour_Eiffel_Wikimedia_Commons_%28cropped%29.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "w": 480,
+   "h": 799,
+   "file": "Tour_Eiffel_Wikimedia_Commons_(cropped).jpg",
+   "page": "Eiffel Tower",
+   "license": "Public domain",
+   "artist": "Benh LIEU SONG"
+  },
+  "empire-state": {
+   "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/10/Empire_State_Building_%28aerial_view%29.jpg/500px-Empire_State_Building_%28aerial_view%29.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "w": 480,
+   "h": 721,
+   "file": "Empire_State_Building_(aerial_view).jpg",
+   "page": "Empire State Building",
+   "license": "Public domain",
+   "artist": "Sam Valadi"
+  },
+  "christ-redeemer": {
+   "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/4f/Christ_the_Redeemer_-_Cristo_Redentor.jpg/500px-Christ_the_Redeemer_-_Cristo_Redentor.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "w": 480,
+   "h": 720,
+   "file": "Christ_the_Redeemer_-_Cristo_Redentor.jpg",
+   "page": "Christ the Redeemer (statue)",
+   "license": "CC BY-SA 3.0 de",
+   "artist": "Arne Müseler"
+  },
+  "berlin-wall": {
+   "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/5d/Berlinermauer.jpg/500px-Berlinermauer.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "w": 480,
+   "h": 365,
+   "file": "Berlinermauer.jpg",
+   "page": "Berlin Wall",
+   "license": "CC BY-SA 3.0",
+   "artist": "Noir"
+  },
+  "opera-house": {
+   "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/a0/Sydney_Australia._%2821339175489%29.jpg/500px-Sydney_Australia._%2821339175489%29.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "w": 480,
+   "h": 295,
+   "file": "Sydney_Australia._(21339175489).jpg",
+   "page": "Sydney Opera House",
+   "license": "CC0",
+   "artist": "Bernard Spragg. NZ from Christchurch, New Zealand"
+  },
+  "burj-khalifa": {
+   "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/90/Burj_Khalifa_%28worlds_tallest_building%29_and_the_Dubai_skyline_%2825781049892%29.jpg/500px-Burj_Khalifa_%28worlds_tallest_building%29_and_the_Dubai_skyline_%2825781049892%29.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "w": 480,
+   "h": 321,
+   "file": "Burj_Khalifa_(worlds_tallest_building)_and_the_Dubai_skyline_(25781049892).jpg",
+   "page": "Burj Khalifa",
+   "license": "CC BY 2.0",
+   "artist": "imran shahabuddin"
+  },
+  "beringia": {
+   "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/52/Beringia_land_bridge-noaagov.gif/500px-Beringia_land_bridge-noaagov.gif?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "w": 480,
+   "h": 314,
+   "file": "Beringia_land_bridge-noaagov.gif",
+   "page": "Beringia",
+   "license": "Public domain",
+   "artist": "NOAA"
+  },
+  "mammoth-wrangel": {
+   "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/82/%D0%9D%D0%B8%D0%B7%D0%BA%D0%B0%D1%8F_%D0%BE%D0%B1%D0%BB%D0%B0%D1%87%D0%BD%D0%BE%D1%81%D1%82%D1%8C_%D0%BD%D0%B0%D0%B4_%D0%A1%D0%BE%D0%BC%D0%BD%D0%B8%D1%82%D0%B5%D0%BB%D1%8C%D0%BD%D1%8B%D0%BC%D0%B8_%D0%B3%D0%BE%D1%80%D0%B0%D0%BC%D0%B8.jpg/500px-%D0%9D%D0%B8%D0%B7%D0%BA%D0%B0%D1%8F_%D0%BE%D0%B1%D0%BB%D0%B0%D1%87%D0%BD%D0%BE%D1%81%D1%82%D1%8C_%D0%BD%D0%B0%D0%B4_%D0%A1%D0%BE%D0%BC%D0%BD%D0%B8%D1%82%D0%B5%D0%BB%D1%8C%D0%BD%D1%8B%D0%BC%D0%B8_%D0%B3%D0%BE%D1%80%D0%B0%D0%BC%D0%B8.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "w": 480,
+   "h": 360,
+   "file": "Низкая_облачность_над_Сомнительными_горами.jpg",
+   "page": "Wrangel Island",
+   "license": "CC BY-SA 4.0",
+   "artist": "Анастасия Игоревна Петухова"
+  },
+  "mammoth-steppe": {
+   "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/f/f1/Ukok_Plateau.jpg/500px-Ukok_Plateau.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "w": 480,
+   "h": 360,
+   "file": "Ukok_Plateau.jpg",
+   "page": "Mammoth steppe",
+   "license": "CC BY 2.5",
+   "artist": "The original uploader was Kobsev at Russian Wikipedia."
+  },
+  "dodo": {
+   "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/50/Oxford_Dodo_display.jpg/500px-Oxford_Dodo_display.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "w": 480,
+   "h": 317,
+   "file": "Oxford_Dodo_display.jpg",
+   "page": "Dodo",
+   "license": "CC BY 2.0",
+   "artist": "BazzaDaRambler"
+  },
+  "trojan-horse": {
+   "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/51/Mykonos_vase.jpg/500px-Mykonos_vase.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "w": 480,
+   "h": 360,
+   "file": "Mykonos_vase.jpg",
+   "page": "Trojan Horse",
+   "license": "CC BY-SA 2.0",
+   "artist": "Travelling Runes"
+  },
+  "hannibal": {
+   "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/48/Hannibal_route_of_invasion-en.svg/500px-Hannibal_route_of_invasion-en.svg.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "w": 480,
+   "h": 301,
+   "file": "Hannibal_route_of_invasion-en.svg",
+   "page": "Hannibal's crossing of the Alps",
+   "license": "CC BY-SA 3.0",
+   "artist": "Pinpin"
+  },
+  "silk-road": {
+   "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/49/Silk_road_Kazakhstan.svg/500px-Silk_road_Kazakhstan.svg.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "w": 480,
+   "h": 480,
+   "file": "Silk_road_Kazakhstan.svg",
+   "page": "Silk Road",
+   "license": "CC BY-SA 4.0",
+   "artist": "User:Kelvin Case User:Turkish Flame User:SmallJarsWithGreenLabels"
+  },
+  "vesuvius": {
+   "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/d1/Destruction_of_Pompeii_and_Herculaneum.jpg/500px-Destruction_of_Pompeii_and_Herculaneum.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "w": 480,
+   "h": 299,
+   "file": "Destruction_of_Pompeii_and_Herculaneum.jpg",
+   "page": "Eruption of Mount Vesuvius in 79 AD",
+   "license": "Public domain",
+   "artist": "John Martin"
+  },
+  "trans-sahara": {
+   "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/d8/French_language_map_of_Central_and_Eastern_Africa_1862.jpg/500px-French_language_map_of_Central_and_Eastern_Africa_1862.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "w": 480,
+   "h": 560,
+   "file": "French_language_map_of_Central_and_Eastern_Africa_1862.jpg",
+   "page": "Trans-Saharan trade",
+   "license": "Public domain",
+   "artist": "Pierre Trémaux"
+  },
+  "here-be-dragons": {
+   "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/ea/Carta_Marina.jpeg/500px-Carta_Marina.jpeg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "w": 480,
+   "h": 356,
+   "file": "Carta_Marina.jpeg",
+   "page": "Carta marina",
+   "license": "Public domain",
+   "artist": "Olaus Magnus"
+  },
+  "vinland": {
+   "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/68/Authentic_Viking_recreation.jpg/500px-Authentic_Viking_recreation.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "w": 480,
+   "h": 360,
+   "file": "Authentic_Viking_recreation.jpg",
+   "page": "L'Anse aux Meadows",
+   "license": "CC BY 2.0",
+   "artist": "Dylan Kereluk from White Rock, Canada"
+  },
+  "polynesia": {
+   "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/21/Hokule%27aSailing2009.jpg/500px-Hokule%27aSailing2009.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "w": 480,
+   "h": 360,
+   "file": "Hokule'aSailing2009.jpg",
+   "page": "Polynesian navigation",
+   "license": "CC BY 2.0",
+   "artist": "HongKongHuey"
+  },
+  "marco-polo": {
+   "thumb": "https://upload.wikimedia.org/wikipedia/commons/f/ff/Frontispice_%C3%A9dition_de_Nuremberg_1477_%28cropped%29.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail_unscaled",
+   "w": 363,
+   "h": 623,
+   "file": "Frontispice_édition_de_Nuremberg_1477_(cropped).png",
+   "page": "Marco Polo",
+   "license": "Public domain",
+   "artist": "Unknown authorUnknown author"
+  },
+  "mansa-musa": {
+   "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/46/Catalan_Atlas_BNF_Sheet_6_Mansa_Musa_%28cropped%29.jpg/500px-Catalan_Atlas_BNF_Sheet_6_Mansa_Musa_%28cropped%29.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "w": 480,
+   "h": 548,
+   "file": "Catalan_Atlas_BNF_Sheet_6_Mansa_Musa_(cropped).jpg",
+   "page": "Mansa Musa",
+   "license": "Public domain",
+   "artist": "attributed to Abraham Cresques"
+  },
+  "zheng-he": {
+   "thumb": "https://upload.wikimedia.org/wikipedia/commons/7/7f/ZhengHeShips.gif?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail_unscaled",
+   "w": 426,
+   "h": 480,
+   "file": "ZhengHeShips.gif",
+   "page": "Ming treasure voyages",
+   "license": "Public domain",
+   "artist": ""
+  },
+  "gutenberg": {
+   "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/96/Gutenberg_press.png/500px-Gutenberg_press.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "w": 480,
+   "h": 640,
+   "file": "Gutenberg_press.png",
+   "page": "Printing press",
+   "license": "CC0",
+   "artist": "International Printing Museum"
+  },
+  "columbus": {
+   "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/b5/Kolumbus-Santa-Maria.jpg/500px-Kolumbus-Santa-Maria.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "w": 480,
+   "h": 390,
+   "file": "Kolumbus-Santa-Maria.jpg",
+   "page": "Santa María (ship)",
+   "license": "Public domain",
+   "artist": "Possibly by Edward H. Hart."
+  },
+  "victoria": {
+   "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/6b/Detail_from_a_map_of_Ortelius_-_Magellan%27s_ship_Victoria.png/500px-Detail_from_a_map_of_Ortelius_-_Magellan%27s_ship_Victoria.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "w": 480,
+   "h": 293,
+   "file": "Detail_from_a_map_of_Ortelius_-_Magellan's_ship_Victoria.png",
+   "page": "Magellan expedition",
+   "license": "Public domain",
+   "artist": "Abraham Ortelius"
+  },
+  "mayflower": {
+   "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/9d/Copyrighted_and_Published_by_A_S_Burbank%2C_The_Mayflower_at_Sea_%28NBY_21340%29.jpg/500px-Copyrighted_and_Published_by_A_S_Burbank%2C_The_Mayflower_at_Sea_%28NBY_21340%29.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "w": 480,
+   "h": 310,
+   "file": "Copyrighted_and_Published_by_A_S_Burbank,_The_Mayflower_at_Sea_(NBY_21340).jpg",
+   "page": "Mayflower",
+   "license": "Public domain",
+   "artist": "Unknown authorUnknown author"
+  },
+  "kraken": {
+   "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/44/Le_Poulpe_Colossal.jpg/500px-Le_Poulpe_Colossal.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "w": 480,
+   "h": 774,
+   "file": "Le_Poulpe_Colossal.jpg",
+   "page": "Kraken",
+   "license": "Public domain",
+   "artist": "Pierre Denys de Montfort (1766–1820) / Étienne Claude Voysard (1746–1812.)"
+  },
+  "montgolfier": {
+   "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/53/Joseph-montgolfier.jpg/500px-Joseph-montgolfier.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "w": 480,
+   "h": 606,
+   "file": "Joseph-montgolfier.jpg",
+   "page": "Montgolfier brothers",
+   "license": "Public domain",
+   "artist": "Unidentified painter"
+  },
+  "golden-spike": {
+   "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/5d/East_and_West_Shaking_hands_at_the_laying_of_last_rail_Union_Pacific_Railroad_-_Restoration.jpg/500px-East_and_West_Shaking_hands_at_the_laying_of_last_rail_Union_Pacific_Railroad_-_Restoration.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "w": 480,
+   "h": 365,
+   "file": "East_and_West_Shaking_hands_at_the_laying_of_last_rail_Union_Pacific_Railroad_-_Restoration.jpg",
+   "page": "First transcontinental railroad",
+   "license": "Public domain",
+   "artist": "Andrew J. Russell / Adam Cuerden"
+  },
+  "krakatoa": {
+   "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/a3/De_uitbarsting_van_de_Krakatau%2C_KITLV_5888.tiff/lossy-page1-500px-De_uitbarsting_van_de_Krakatau%2C_KITLV_5888.tiff.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "w": 480,
+   "h": 649,
+   "file": "De_uitbarsting_van_de_Krakatau,_KITLV_5888.tiff",
+   "page": "1883 eruption of Krakatoa",
+   "license": "Public domain",
+   "artist": "AnonymousUnknown author"
+  },
+  "wright-flyer": {
+   "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/86/First_flight2.jpg/500px-First_flight2.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "w": 480,
+   "h": 311,
+   "file": "First_flight2.jpg",
+   "page": "Wright Flyer",
+   "license": "Public domain",
+   "artist": "John T. Daniels"
+  },
+  "titanic": {
+   "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/6d/RMS_Titanic_3_%28cropped_to_ship%29.jpg/500px-RMS_Titanic_3_%28cropped_to_ship%29.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "w": 480,
+   "h": 294,
+   "file": "RMS_Titanic_3_(cropped_to_ship).jpg",
+   "page": "Titanic",
+   "license": "Public domain",
+   "artist": "Francis Godolphin Osbourne Stuart"
+  },
+  "lindbergh": {
+   "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/5f/Spirit_Of_St_Louis2.jpg/500px-Spirit_Of_St_Louis2.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "w": 480,
+   "h": 238,
+   "file": "Spirit_Of_St_Louis2.jpg",
+   "page": "Spirit of St. Louis",
+   "license": "CC BY-SA 3.0",
+   "artist": "Ad Meskens, zie ook:vliegtuigen"
+  },
+  "hindenburg": {
+   "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/1c/Hindenburg_disaster.jpg/500px-Hindenburg_disaster.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "w": 480,
+   "h": 384,
+   "file": "Hindenburg_disaster.jpg",
+   "page": "Hindenburg disaster",
+   "license": "Public domain",
+   "artist": "Sam Shere"
+  },
+  "sputnik": {
+   "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/b7/%D0%9F%D0%B5%D1%80%D0%B2%D1%8B%D0%B9_%D0%B2_%D0%BC%D0%B8%D1%80%D0%B5_%D0%B8%D1%81%D0%BA%D1%83%D1%81%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D1%8B%D0%B9_%D1%81%D0%BF%D1%83%D1%82%D0%BD%D0%B8%D0%BA_%D0%97%D0%B5%D0%BC%D0%BB%D0%B8.jpg/500px-%D0%9F%D0%B5%D1%80%D0%B2%D1%8B%D0%B9_%D0%B2_%D0%BC%D0%B8%D1%80%D0%B5_%D0%B8%D1%81%D0%BA%D1%83%D1%81%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D1%8B%D0%B9_%D1%81%D0%BF%D1%83%D1%82%D0%BD%D0%B8%D0%BA_%D0%97%D0%B5%D0%BC%D0%BB%D0%B8.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "w": 480,
+   "h": 360,
+   "file": "Первый_в_мире_искусственный_спутник_Земли.jpg",
+   "page": "Sputnik 1",
+   "license": "CC BY-SA 3.0",
+   "artist": "Andrey Butko"
+  },
+  "einkorn": {
+   "thumb": "https://upload.wikimedia.org/wikipedia/commons/5/59/Triticum_monococcum0.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail_unscaled",
+   "w": 480,
+   "h": 640,
+   "file": "Triticum_monococcum0.jpg",
+   "page": "Einkorn",
+   "license": "CC BY-SA 3.0",
+   "artist": ""
+  },
+  "rice": {
+   "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/0a/20201102.Hengnan.Hybrid_rice_Sanyou-1.6.jpg/500px-20201102.Hengnan.Hybrid_rice_Sanyou-1.6.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "w": 480,
+   "h": 270,
+   "file": "20201102.Hengnan.Hybrid_rice_Sanyou-1.6.jpg",
+   "page": "Rice",
+   "license": "CC BY 3.0",
+   "artist": "China News Service"
+  },
+  "maize": {
+   "thumb": "https://upload.wikimedia.org/wikipedia/commons/e/e3/Zea_mays_-_K%C3%B6hler%E2%80%93s_Medizinal-Pflanzen-283.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail_unscaled",
+   "w": 436,
+   "h": 594,
+   "file": "Zea_mays_-_Köhler–s_Medizinal-Pflanzen-283.jpg",
+   "page": "Maize",
+   "license": "Public domain",
+   "artist": "Franz Eugen Köhler, Köhler's Medizinal-Pflanzen"
+  },
+  "green-sahara": {
+   "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/a7/Sahara_satellite_hires.jpg/500px-Sahara_satellite_hires.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "w": 480,
+   "h": 269,
+   "file": "Sahara_satellite_hires.jpg",
+   "page": "African humid period",
+   "license": "Public domain",
+   "artist": "NASA"
+  },
+  "aurochs": {
+   "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/55/Copenhagen_Aurochse.jpg/500px-Copenhagen_Aurochse.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "w": 480,
+   "h": 621,
+   "file": "Copenhagen_Aurochse.jpg",
+   "page": "Aurochs",
+   "license": "CC BY-SA 2.0",
+   "artist": "Marcus Sümnick from Rostock, Germany"
+  },
+  "moa": {
+   "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/af/Dinornis_maximus%2C_Natural_History_Museum_%28PV_A_608%29.jpg/500px-Dinornis_maximus%2C_Natural_History_Museum_%28PV_A_608%29.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "w": 480,
+   "h": 818,
+   "file": "Dinornis_maximus,_Natural_History_Museum_(PV_A_608).jpg",
+   "page": "Moa",
+   "license": "CC BY 4.0",
+   "artist": "Natural History Museum, London"
+  },
+  "potato": {
+   "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/34/VegCorn_%28cropped%29.jpg/500px-VegCorn_%28cropped%29.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "w": 480,
+   "h": 348,
+   "file": "VegCorn_(cropped).jpg",
+   "page": "Columbian exchange",
+   "license": "Public domain",
+   "artist": ""
+  },
+  "tulip-mania": {
+   "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/6a/Jan_Brueghel_the_Younger%2C_Satire_on_Tulip_Mania%2C_c._1640.jpg/500px-Jan_Brueghel_the_Younger%2C_Satire_on_Tulip_Mania%2C_c._1640.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "w": 480,
+   "h": 307,
+   "file": "Jan_Brueghel_the_Younger,_Satire_on_Tulip_Mania,_c._1640.jpg",
+   "page": "Tulip mania",
+   "license": "Public domain",
+   "artist": "Jan Brueghel the Younger"
+  },
+  "frost-fair": {
+   "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/69/Thomas_Wyke-_Thames_frost_fair.JPG/500px-Thomas_Wyke-_Thames_frost_fair.JPG?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "w": 480,
+   "h": 501,
+   "file": "Thomas_Wyke-_Thames_frost_fair.JPG",
+   "page": "River Thames frost fairs",
+   "license": "Public domain",
+   "artist": "Thomas Wyke"
+  },
+  "tambora": {
+   "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/f/f3/1815_tambora_explosion-2.png/500px-1815_tambora_explosion-2.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "w": 480,
+   "h": 215,
+   "file": "1815_tambora_explosion-2.png",
+   "page": "1815 eruption of Mount Tambora",
+   "license": "CC BY-SA 3.0",
+   "artist": "myself"
+  },
+  "passenger-pigeon": {
+   "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/03/Bird_lore_%281913%29_%2814562557107%29.jpg/500px-Bird_lore_%281913%29_%2814562557107%29.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "w": 480,
+   "h": 640,
+   "file": "Bird_lore_(1913)_(14562557107).jpg",
+   "page": "Passenger pigeon",
+   "license": "Public domain",
+   "artist": "J. G. Hubbard, Internet Archive Book Images"
+  },
+  "dust-bowl": {
+   "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/bb/Farmer_walking_in_dust_storm_Cimarron_County_Oklahoma2.jpg/500px-Farmer_walking_in_dust_storm_Cimarron_County_Oklahoma2.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "w": 480,
+   "h": 469,
+   "file": "Farmer_walking_in_dust_storm_Cimarron_County_Oklahoma2.jpg",
+   "page": "Dust Bowl",
+   "license": "Public domain",
+   "artist": "Arthur Rothstein"
+  },
+  "thylacine": {
+   "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/ed/Thylacinus_cropped.png/500px-Thylacinus_cropped.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "w": 480,
+   "h": 342,
+   "file": "Thylacinus_cropped.png",
+   "page": "Thylacine",
+   "license": "Public domain",
+   "artist": "E.J. Keller"
+  },
+  "chernobyl-wolves": {
+   "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/70/Checkpoint_ditkatky_chernobyl_zone.JPG/500px-Checkpoint_ditkatky_chernobyl_zone.JPG?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "w": 480,
+   "h": 360,
+   "file": "Checkpoint_ditkatky_chernobyl_zone.JPG",
+   "page": "Chernobyl exclusion zone",
+   "license": "CC BY 4.0",
+   "artist": "Nick Rush-Cooper (Cooper42)"
+  },
+  "persepolis": {
+   "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/5c/2018-09-21_Iran%2C_Persepolis%2C_Tachara_%28from_the_southeast%29.jpg/500px-2018-09-21_Iran%2C_Persepolis%2C_Tachara_%28from_the_southeast%29.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "w": 480,
+   "h": 318,
+   "file": "2018-09-21_Iran,_Persepolis,_Tachara_(from_the_southeast).jpg",
+   "page": "Persepolis",
+   "license": "CC BY 4.0",
+   "artist": "Laurens R. Krol"
+  },
+  "ishtar-gate": {
+   "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/1f/Berl%C3%ADn%2C_Museo_de_P%C3%A9rgamo_05.jpg/500px-Berl%C3%ADn%2C_Museo_de_P%C3%A9rgamo_05.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "w": 480,
+   "h": 298,
+   "file": "Berlín,_Museo_de_Pérgamo_05.jpg",
+   "page": "Ishtar Gate",
+   "license": "CC BY-SA 4.0",
+   "artist": "LBM1948"
+  },
+  "pont-du-gard": {
+   "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/42/Pont_du_Gard_BLS.jpg/500px-Pont_du_Gard_BLS.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "w": 480,
+   "h": 185,
+   "file": "Pont_du_Gard_BLS.jpg",
+   "page": "Pont du Gard",
+   "license": "CC BY-SA 3.0",
+   "artist": "Benh LIEU SONG (Flickr)"
+  },
+  "hadrians-wall": {
+   "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/ce/Hadrians_Wall_map.svg/500px-Hadrians_Wall_map.svg.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "w": 480,
+   "h": 597,
+   "file": "Hadrians_Wall_map.svg",
+   "page": "Hadrian's Wall",
+   "license": "CC BY-SA 3.0",
+   "artist": "Hadrians_Wall_map.png: Created by NormanEinstein, September 20, 2005 derivative work: Talifero (talk)"
+  },
+  "mezquita": {
+   "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/6c/Mezquita_de_C%C3%B3rdoba_desde_el_aire_%28C%C3%B3rdoba%2C_Espa%C3%B1a%29.jpg/500px-Mezquita_de_C%C3%B3rdoba_desde_el_aire_%28C%C3%B3rdoba%2C_Espa%C3%B1a%29.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "w": 480,
+   "h": 319,
+   "file": "Mezquita_de_Córdoba_desde_el_aire_(Córdoba,_España).jpg",
+   "page": "Mosque–Cathedral of Córdoba",
+   "license": "CC BY-SA 2.0",
+   "artist": "Toni Castillo Quero"
+  },
+  "shwedagon": {
+   "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/c4/Shwedagon_Pagoda_2017.jpg/500px-Shwedagon_Pagoda_2017.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "w": 480,
+   "h": 308,
+   "file": "Shwedagon_Pagoda_2017.jpg",
+   "page": "Shwedagon Pagoda",
+   "license": "CC BY-SA 4.0",
+   "artist": "Bjørn Christian Tørrissen"
+  },
+  "mont-saint-michel": {
+   "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/78/Mont-Saint-Michel_vu_du_ciel.jpg/500px-Mont-Saint-Michel_vu_du_ciel.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "w": 480,
+   "h": 270,
+   "file": "Mont-Saint-Michel_vu_du_ciel.jpg",
+   "page": "Mont-Saint-Michel",
+   "license": "CC BY-SA 4.0",
+   "artist": "Amaustan"
+  },
+  "pisa": {
+   "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/4b/Italy_-_Pisa_-_Leaning_Tower.jpg/500px-Italy_-_Pisa_-_Leaning_Tower.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "w": 480,
+   "h": 670,
+   "file": "Italy_-_Pisa_-_Leaning_Tower.jpg",
+   "page": "Leaning Tower of Pisa",
+   "license": "CC BY-SA 3.0 de",
+   "artist": "Arne Müseler"
+  },
+  "st-basils": {
+   "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/18/Saint_Basil%27s_Cathedral_in_Moscow.jpg/500px-Saint_Basil%27s_Cathedral_in_Moscow.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "w": 480,
+   "h": 532,
+   "file": "Saint_Basil's_Cathedral_in_Moscow.jpg",
+   "page": "Saint Basil's Cathedral",
+   "license": "CC BY-SA 4.0",
+   "artist": "Tsy1980"
+  },
+  "djenne": {
+   "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/75/Djenne_great_mud_mosque.jpg/500px-Djenne_great_mud_mosque.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "w": 480,
+   "h": 319,
+   "file": "Djenne_great_mud_mosque.jpg",
+   "page": "Great Mosque of Djenné",
+   "license": "CC BY-SA 3.0",
+   "artist": "Ruud Zwart"
+  },
+  "sagrada-familia": {
+   "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/ef/SF_maig_2_cropped.jpg/500px-SF_maig_2_cropped.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "w": 480,
+   "h": 699,
+   "file": "SF_maig_2_cropped.jpg",
+   "page": "Sagrada Família",
+   "license": "CC BY-SA 4.0",
+   "artist": "Canaan"
+  },
+  "neuschwanstein": {
+   "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/f/f8/Schloss_Neuschwanstein_2013.jpg/500px-Schloss_Neuschwanstein_2013.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "w": 480,
+   "h": 359,
+   "file": "Schloss_Neuschwanstein_2013.jpg",
+   "page": "Neuschwanstein Castle",
+   "license": "CC BY-SA 3.0 de",
+   "artist": "Thomas Wolf, www.foto-tw.de"
+  },
+  "tower-bridge": {
+   "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/59/Tower_Bridge_at_Dawn.jpg/500px-Tower_Bridge_at_Dawn.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "w": 480,
+   "h": 320,
+   "file": "Tower_Bridge_at_Dawn.jpg",
+   "page": "Tower Bridge",
+   "license": "CC BY-SA 3.0",
+   "artist": "Fuzzypiggy"
+  },
+  "golden-gate": {
+   "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/bf/Golden_Gate_Bridge_as_seen_from_Battery_East.jpg/500px-Golden_Gate_Bridge_as_seen_from_Battery_East.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "w": 480,
+   "h": 300,
+   "file": "Golden_Gate_Bridge_as_seen_from_Battery_East.jpg",
+   "page": "Golden Gate Bridge",
+   "license": "CC BY-SA 4.0",
+   "artist": "Frank Schulenburg"
+  },
+  "lascaux": {
+   "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/1e/Lascaux_painting.jpg/500px-Lascaux_painting.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "w": 480,
+   "h": 315,
+   "file": "Lascaux_painting.jpg",
+   "page": "Lascaux",
+   "license": "Public domain",
+   "artist": "EU"
+  },
+  "doggerland": {
+   "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/3b/Doggerland.png/500px-Doggerland.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "w": 480,
+   "h": 511,
+   "file": "Doggerland.png",
+   "page": "Doggerland",
+   "license": "CC BY 4.0",
+   "artist": "James Walker, Vincent Gaffney,Simon Fitch,Merle Muru, Andrew Fraser, Martin Bates and Richard Bates"
+  },
+  "otzi": {
+   "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/ee/Otzi-Quinson.jpg/500px-Otzi-Quinson.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "w": 480,
+   "h": 342,
+   "file": "Otzi-Quinson.jpg",
+   "page": "Ötzi",
+   "license": "CC BY-SA 3.0",
+   "artist": "120"
+  },
+  "nok": {
+   "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/7c/Verbreitung_Nok-Kultur-en.png/500px-Verbreitung_Nok-Kultur-en.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "w": 480,
+   "h": 391,
+   "file": "Verbreitung_Nok-Kultur-en.png",
+   "page": "Nok culture",
+   "license": "CC BY-SA 3.0",
+   "artist": "NordNordWest"
+  },
+  "nazca": {
+   "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/f/f7/L%C3%ADneas_de_Nazca%2C_Nazca%2C_Per%C3%BA%2C_2015-07-29%2C_DD_49.JPG/500px-L%C3%ADneas_de_Nazca%2C_Nazca%2C_Per%C3%BA%2C_2015-07-29%2C_DD_49.JPG?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "w": 480,
+   "h": 319,
+   "file": "Líneas_de_Nazca,_Nazca,_Perú,_2015-07-29,_DD_49.JPG",
+   "page": "Nazca lines",
+   "license": "CC BY-SA 4.0",
+   "artist": "Diego Delso"
+  },
+  "antikythera": {
+   "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/c8/Antikythera_Fragment_A_%28Front%29.webp/500px-Antikythera_Fragment_A_%28Front%29.webp?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "w": 480,
+   "h": 480,
+   "file": "Antikythera_Fragment_A_(Front).webp",
+   "page": "Antikythera mechanism",
+   "license": "CC BY 4.0",
+   "artist": "Logg Tandy"
+  },
+  "ajanta": {
+   "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/c3/Ajanta_%2863%29.jpg/500px-Ajanta_%2863%29.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "w": 480,
+   "h": 360,
+   "file": "Ajanta_(63).jpg",
+   "page": "Ajanta Caves",
+   "license": "CC BY 2.5",
+   "artist": "No machine-readable author provided. Soman assumed (based on copyright claims)."
+  },
+  "dunhuang": {
+   "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/9e/Mogao_Caves_%2854376969262%29.jpg/500px-Mogao_Caves_%2854376969262%29.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "w": 480,
+   "h": 320,
+   "file": "Mogao_Caves_(54376969262).jpg",
+   "page": "Mogao Caves",
+   "license": "CC BY 2.0",
+   "artist": "xiquinhosilva"
+  },
+  "compass-song": {
+   "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/8e/2016_Busola.JPG/500px-2016_Busola.JPG?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "w": 480,
+   "h": 432,
+   "file": "2016_Busola.JPG",
+   "page": "Compass",
+   "license": "CC BY-SA 4.0",
+   "artist": "Jacek Halicki"
+  },
+  "bayeux": {
+   "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/9c/Odo_bayeux_tapestry.png/500px-Odo_bayeux_tapestry.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "w": 480,
+   "h": 348,
+   "file": "Odo_bayeux_tapestry.png",
+   "page": "Bayeux Tapestry",
+   "license": "Public domain",
+   "artist": ""
+  },
+  "mona-lisa": {
+   "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/6a/Mona_Lisa.jpg/500px-Mona_Lisa.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "w": 480,
+   "h": 726,
+   "file": "Mona_Lisa.jpg",
+   "page": "Mona Lisa",
+   "license": "Public domain",
+   "artist": "Leonardo da Vinci"
+  },
+  "coffeehouses": {
+   "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/f/fd/Caf%C3%A9_de_Flore.jpg/500px-Caf%C3%A9_de_Flore.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "w": 480,
+   "h": 360,
+   "file": "Café_de_Flore.jpg",
+   "page": "Coffeehouse",
+   "license": "Public domain",
+   "artist": "Arnaud 25"
+  },
+  "globe-theatre": {
+   "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e9/Wenceslaus-Hollar-The-second-Globe-playhouse-detail.png/500px-Wenceslaus-Hollar-The-second-Globe-playhouse-detail.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "w": 480,
+   "h": 315,
+   "file": "Wenceslaus-Hollar-The-second-Globe-playhouse-detail.png",
+   "page": "Globe Theatre",
+   "license": "Public domain",
+   "artist": "en:Wenceslaus Hollar"
+  },
+  "galileo": {
+   "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/f/fc/Galileo_Galilei_%281564-1642%29_RMG_BHC2700.tiff/lossy-page1-500px-Galileo_Galilei_%281564-1642%29_RMG_BHC2700.tiff.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "w": 480,
+   "h": 610,
+   "file": "Galileo_Galilei_(1564-1642)_RMG_BHC2700.tiff",
+   "page": "Galileo Galilei",
+   "license": "Public domain",
+   "artist": "Justus Sustermans"
+  },
+  "newton": {
+   "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/f/f7/Portrait_of_Sir_Isaac_Newton%2C_1689_%28brightened%29.jpg/500px-Portrait_of_Sir_Isaac_Newton%2C_1689_%28brightened%29.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "w": 480,
+   "h": 578,
+   "file": "Portrait_of_Sir_Isaac_Newton,_1689_(brightened).jpg",
+   "page": "Isaac Newton",
+   "license": "Public domain",
+   "artist": "Godfrey Kneller"
+  },
+  "pirate-republic": {
+   "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/70/Flag_of_the_Flying_Gang.svg/500px-Flag_of_the_Flying_Gang.svg.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "w": 480,
+   "h": 320,
+   "file": "Flag_of_the_Flying_Gang.svg",
+   "page": "Flying Gang",
+   "license": "CC BY-SA 3.0",
+   "artist": "RootOfAllLight"
+  },
+  "endeavour": {
+   "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/32/HMS_Endeavour_off_the_coast_of_New_Holland%2C_by_Samuel_Atkins_c.1794.jpg/500px-HMS_Endeavour_off_the_coast_of_New_Holland%2C_by_Samuel_Atkins_c.1794.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "w": 480,
+   "h": 346,
+   "file": "HMS_Endeavour_off_the_coast_of_New_Holland,_by_Samuel_Atkins_c.1794.jpg",
+   "page": "HMS Endeavour",
+   "license": "Public domain",
+   "artist": "Samuel Atkins (c.1760-1810)"
+  },
+  "beagle": {
+   "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/22/HMS_Beagle_by_Conrad_Martens.jpg/500px-HMS_Beagle_by_Conrad_Martens.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "w": 480,
+   "h": 319,
+   "file": "HMS_Beagle_by_Conrad_Martens.jpg",
+   "page": "Second voyage of HMS Beagle",
+   "license": "Public domain",
+   "artist": "Conrad Martens (1801 - 21 August 1878)"
+  },
+  "gold-rush": {
+   "thumb": "https://upload.wikimedia.org/wikipedia/commons/0/04/1850_Woman_and_Men_in_California_Gold_Rush.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail_unscaled",
+   "w": 500,
+   "h": 362,
+   "file": "1850_Woman_and_Men_in_California_Gold_Rush.jpg",
+   "page": "California gold rush",
+   "license": "Public domain",
+   "artist": "Unknown authorUnknown author"
+  },
+  "telegraph-cable": {
+   "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/a6/Landing_of_the_Atlantic_Cable_of_1866%2C_Heart%27s_Content%2C_Newfoundland.jpg/500px-Landing_of_the_Atlantic_Cable_of_1866%2C_Heart%27s_Content%2C_Newfoundland.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "w": 480,
+   "h": 335,
+   "file": "Landing_of_the_Atlantic_Cable_of_1866,_Heart's_Content,_Newfoundland.jpg",
+   "page": "Transatlantic telegraph cable",
+   "license": "Public domain",
+   "artist": "Robert Charles Dudley"
+  },
+  "panama-canal": {
+   "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/68/Panama_Canal_Map_EN.svg/500px-Panama_Canal_Map_EN.svg.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "w": 480,
+   "h": 496,
+   "file": "Panama_Canal_Map_EN.svg",
+   "page": "Panama Canal",
+   "license": "CC BY-SA 2.0",
+   "artist": "Thoroe"
+  },
+  "penicillin": {
+   "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/99/Penicillin_core.svg/500px-Penicillin_core.svg.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "w": 480,
+   "h": 321,
+   "file": "Penicillin_core.svg",
+   "page": "Penicillin",
+   "license": "Public domain",
+   "artist": "Yikrazuul"
+  },
+  "earhart": {
+   "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/72/Amelia_Earhart_standing_under_nose_of_her_Lockheed_Model_10-E_Electra%2C_small_%28cropped%29.jpg/500px-Amelia_Earhart_standing_under_nose_of_her_Lockheed_Model_10-E_Electra%2C_small_%28cropped%29.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "w": 480,
+   "h": 645,
+   "file": "Amelia_Earhart_standing_under_nose_of_her_Lockheed_Model_10-E_Electra,_small_(cropped).jpg",
+   "page": "Amelia Earhart",
+   "license": "Public domain",
+   "artist": "Underwood &amp; Underwood (active 1880 – c. 1950)[1]"
+  },
+  "kon-tiki": {
+   "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/3e/Kon-Tiki%2C_Kon-Tiki_Museum%2C_2019_%2802%29.jpg/500px-Kon-Tiki%2C_Kon-Tiki_Museum%2C_2019_%2802%29.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "w": 480,
+   "h": 599,
+   "file": "Kon-Tiki,_Kon-Tiki_Museum,_2019_(02).jpg",
+   "page": "Kon-Tiki expedition",
+   "license": "CC BY-SA 4.0",
+   "artist": "Bahnfrend"
+  },
+  "www": {
+   "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/21/Chrome_on_Linux.png/500px-Chrome_on_Linux.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "w": 480,
+   "h": 260,
+   "file": "Chrome_on_Linux.png",
+   "page": "World Wide Web",
+   "license": "CC BY-SA 4.0",
+   "artist": "Liamd967"
+  },
+  "great-wave": {
+   "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/a5/Tsunami_by_hokusai_19th_century.jpg/500px-Tsunami_by_hokusai_19th_century.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "w": 480,
+   "h": 323,
+   "file": "Tsunami_by_hokusai_19th_century.jpg",
+   "page": "The Great Wave off Kanagawa",
+   "license": "Public domain",
+   "artist": "Katsushika Hokusai"
+  },
+  "laki": {
+   "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/46/Laki_fissure_%283%29.jpg/500px-Laki_fissure_%283%29.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "w": 480,
+   "h": 321,
+   "file": "Laki_fissure_(3).jpg",
+   "page": "Laki",
+   "license": "CC BY-SA 3.0",
+   "artist": "Chmee2/Valtameri"
+  },
+  "horse-return": {
+   "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/96/Scene_from_the_Cannon_Quarter_Horse_ranch_near_the_town_of_Venus_in_north-central_Texas_LCCN2015630745.tif/lossy-page1-500px-Scene_from_the_Cannon_Quarter_Horse_ranch_near_the_town_of_Venus_in_north-central_Texas_LCCN2015630745.tif.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "w": 480,
+   "h": 357,
+   "file": "Scene_from_the_Cannon_Quarter_Horse_ranch_near_the_town_of_Venus_in_north-central_Texas_LCCN2015630745.tif",
+   "page": "Horses in the United States",
+   "license": "Public domain",
+   "artist": "Carol M. Highsmith"
+  },
+  "rinderpest": {
+   "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/5b/Rinderpest_Virus.JPG/500px-Rinderpest_Virus.JPG?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "w": 480,
+   "h": 350,
+   "file": "Rinderpest_Virus.JPG",
+   "page": "Rinderpest",
+   "license": "CC BY-SA 2.5",
+   "artist": "The picture was given by the copyright holder, dr. Rajnish Kaushik, who would also like to thank Prof. M. S. Shaila, MCB"
+  },
+  "yellowstone": {
+   "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/60/Grand_Canyon_of_the_Yellowstone_Lower_Falls_%2895819p%29.jpg/500px-Grand_Canyon_of_the_Yellowstone_Lower_Falls_%2895819p%29.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "w": 480,
+   "h": 582,
+   "file": "Grand_Canyon_of_the_Yellowstone_Lower_Falls_(95819p).jpg",
+   "page": "Yellowstone National Park",
+   "license": "CC BY-SA 4.0",
+   "artist": "Rhododendrites"
+  },
+  "great-barrier-reef": {
+   "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/4f/ISS-45_StoryOfWater%2C_Great_Barrier_Reef%2C_Australia.jpg/500px-ISS-45_StoryOfWater%2C_Great_Barrier_Reef%2C_Australia.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "w": 480,
+   "h": 320,
+   "file": "ISS-45_StoryOfWater,_Great_Barrier_Reef,_Australia.jpg",
+   "page": "Great Barrier Reef",
+   "license": "Public domain",
+   "artist": "NASA/Kjell Lindgren"
+  },
+  "antarctica-sighted": {
+   "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/f/f2/Antarctica_%28orthographic_projection%29.svg/500px-Antarctica_%28orthographic_projection%29.svg.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "w": 480,
+   "h": 479,
+   "file": "Antarctica_(orthographic_projection).svg",
+   "page": "Antarctica",
+   "license": "CC BY-SA 3.0",
+   "artist": "Heraldry"
+  },
+  "steller-sea-cow": {
+   "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/19/Hydrodamalis_gigas_skeleton_-_Finnish_Museum_of_Natural_History_-_DSC04529.JPG/500px-Hydrodamalis_gigas_skeleton_-_Finnish_Museum_of_Natural_History_-_DSC04529.JPG?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "w": 480,
+   "h": 209,
+   "file": "Hydrodamalis_gigas_skeleton_-_Finnish_Museum_of_Natural_History_-_DSC04529.JPG",
+   "page": "Steller's sea cow",
+   "license": "CC0",
+   "artist": "Daderot"
+  },
+  "great-auk": {
+   "thumb": "https://upload.wikimedia.org/wikipedia/commons/4/4e/Great_Auk_%28Pinguinis_impennis%29_specimen%2C_Kelvingrove%2C_Glasgow_-_geograph.org.uk_-_1108249.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail_unscaled",
+   "w": 426,
+   "h": 640,
+   "file": "Great_Auk_(Pinguinis_impennis)_specimen,_Kelvingrove,_Glasgow_-_geograph.org.uk_-_1108249.jpg",
+   "page": "Great auk",
+   "license": "CC BY-SA 2.0",
+   "artist": "Mike Pennington"
+  },
+  "spindletop": {
+   "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/d8/Lucas_gusher.jpg/500px-Lucas_gusher.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "w": 480,
+   "h": 653,
+   "file": "Lucas_gusher.jpg",
+   "page": "Spindletop",
+   "license": "Public domain",
+   "artist": "Note: Image is available at [1] on the Paleontological Research Institution web site. The site credits the American Petr"
+  },
+  "chisholm-trail": {
+   "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/87/1873_Map_of_Chisholm_Trail_with_subsidiary_trails_in_Texas.jpg/500px-1873_Map_of_Chisholm_Trail_with_subsidiary_trails_in_Texas.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "w": 480,
+   "h": 656,
+   "file": "1873_Map_of_Chisholm_Trail_with_subsidiary_trails_in_Texas.jpg",
+   "page": "Chisholm Trail",
+   "license": "Public domain",
+   "artist": "Adrian W. Ziegelasch, 1893–1930, download and cleanup by Steve Meirowsky"
+  },
+  "hollywood": {
+   "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/2f/Hollywood_sign_%288485145044%29.jpg/500px-Hollywood_sign_%288485145044%29.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "w": 480,
+   "h": 320,
+   "file": "Hollywood_sign_(8485145044).jpg",
+   "page": "Cinema of the United States",
+   "license": "CC BY-SA 2.0",
+   "artist": "Gnaphron"
+  },
+  "model-t": {
+   "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/12/1925_Ford_Model_T_touring.jpg/500px-1925_Ford_Model_T_touring.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "w": 480,
+   "h": 360,
+   "file": "1925_Ford_Model_T_touring.jpg",
+   "page": "Ford Model T",
+   "license": "Public domain",
+   "artist": "ModelTMitch"
+  },
+  "opry": {
+   "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/7d/Grand_Ole_Opry_logo.svg/500px-Grand_Ole_Opry_logo.svg.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "w": 480,
+   "h": 240,
+   "file": "Grand_Ole_Opry_logo.svg",
+   "page": "Grand Ole Opry",
+   "license": "Public domain",
+   "artist": "Grand Ole Opry"
+  },
+  "cape-canaveral": {
+   "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/3b/STORIE_Launch_and_Install_on_the_Space_Station_%28SVS15043_-_4~orig%29.jpg/500px-STORIE_Launch_and_Install_on_the_Space_Station_%28SVS15043_-_4~orig%29.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "w": 480,
+   "h": 320,
+   "file": "STORIE_Launch_and_Install_on_the_Space_Station_(SVS15043_-_4~orig).jpg",
+   "page": "Cape Canaveral Space Force Station",
+   "license": "CC0",
+   "artist": "NASA's Scientific Visualization Studio - SpaceX"
+  },
+  "liberty-bell": {
+   "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/37/Liberty_Bell_2017a.jpg/500px-Liberty_Bell_2017a.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "w": 480,
+   "h": 523,
+   "file": "Liberty_Bell_2017a.jpg",
+   "page": "Liberty Bell",
+   "license": "CC BY 2.0",
+   "artist": "William Zhang"
+  },
+  "harvard": {
+   "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/cc/Harvard_University_coat_of_arms.svg/500px-Harvard_University_coat_of_arms.svg.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "w": 480,
+   "h": 467,
+   "file": "Harvard_University_coat_of_arms.svg",
+   "page": "Harvard University",
+   "license": "Public domain",
+   "artist": "Harvard University"
+  },
+  "portland-head": {
+   "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/41/Portland_Head_Light_-_Cape_Elizabeth_-_Maine_-_USA.jpg/500px-Portland_Head_Light_-_Cape_Elizabeth_-_Maine_-_USA.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "w": 480,
+   "h": 320,
+   "file": "Portland_Head_Light_-_Cape_Elizabeth_-_Maine_-_USA.jpg",
+   "page": "Portland Head Light",
+   "license": "CC BY-SA 4.0",
+   "artist": "Chuck Homler d/b/a Focus On Wildlife"
+  },
+  "chicago-skyscraper": {
+   "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/38/Home_Insurance_Building.JPG/500px-Home_Insurance_Building.JPG?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "w": 480,
+   "h": 640,
+   "file": "Home_Insurance_Building.JPG",
+   "page": "Home Insurance Building",
+   "license": "Public domain",
+   "artist": "Chicago Architectural Photographing Company"
+  },
+  "pittsburgh-steel": {
+   "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/d6/Ascending_the_Duquesne_Incline.jpg/500px-Ascending_the_Duquesne_Incline.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "w": 480,
+   "h": 320,
+   "file": "Ascending_the_Duquesne_Incline.jpg",
+   "page": "Pittsburgh",
+   "license": "CC BY-SA 4.0",
+   "artist": "Dllu"
+  },
+  "kentucky-derby": {
+   "thumb": "https://upload.wikimedia.org/wikipedia/commons/8/84/Kentucky_Derby_race%2C_Louisville%2C_Kentucky.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail_unscaled",
+   "w": 400,
+   "h": 300,
+   "file": "Kentucky_Derby_race,_Louisville,_Kentucky.jpg",
+   "page": "Kentucky Derby",
+   "license": "Attribution",
+   "artist": "The original uploader was Sayeth at English Wikipedia."
+  },
+  "wisconsin-dairy": {
+   "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/22/Flag_of_Wisconsin.svg/500px-Flag_of_Wisconsin.svg.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "w": 480,
+   "h": 320,
+   "file": "Flag_of_Wisconsin.svg",
+   "page": "Wisconsin",
+   "license": "Public domain",
+   "artist": ""
+  },
+  "kansas-wheat": {
+   "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/da/Flag_of_Kansas.svg/500px-Flag_of_Kansas.svg.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "w": 480,
+   "h": 288,
+   "file": "Flag_of_Kansas.svg",
+   "page": "Kansas",
+   "license": "Public domain",
+   "artist": "Xrmap"
+  },
+  "iowa-corn": {
+   "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/67/Corn_harvested_acres_by_county.webp/500px-Corn_harvested_acres_by_county.webp?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "w": 480,
+   "h": 344,
+   "file": "Corn_harvested_acres_by_county.webp",
+   "page": "Corn Belt",
+   "license": "Public domain",
+   "artist": "USDA"
+  },
+  "boeing": {
+   "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/c7/Boeing_Virginia_Headquarters_%28cropped_and_brighter%29.jpg/500px-Boeing_Virginia_Headquarters_%28cropped_and_brighter%29.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "w": 480,
+   "h": 240,
+   "file": "Boeing_Virginia_Headquarters_(cropped_and_brighter).jpg",
+   "page": "Boeing",
+   "license": "CC BY-SA 2.0",
+   "artist": "mr_t_77"
+  },
+  "surfing": {
+   "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/4e/Mavericks_Surf_Contest_2010b.jpg/500px-Mavericks_Surf_Contest_2010b.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "w": 480,
+   "h": 318,
+   "file": "Mavericks_Surf_Contest_2010b.jpg",
+   "page": "Surfing",
+   "license": "CC BY-SA 3.0",
+   "artist": "Shalom Jacobovitz"
+  },
+  "fur-trade": {
+   "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/04/Hudson%27s_Bay_Company_Official_Logo_2013.svg/500px-Hudson%27s_Bay_Company_Official_Logo_2013.svg.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "w": 480,
+   "h": 320,
+   "file": "Hudson's_Bay_Company_Official_Logo_2013.svg",
+   "page": "Hudson's Bay Company",
+   "license": "Public domain",
+   "artist": "Unknown authorUnknown author"
+  },
+  "klondike": {
+   "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/46/ChilkootPass_steps.jpg/500px-ChilkootPass_steps.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "w": 480,
+   "h": 446,
+   "file": "ChilkootPass_steps.jpg",
+   "page": "Klondike Gold Rush",
+   "license": "Public domain",
+   "artist": "Cantwell, George G."
+  },
+  "kinderdijk": {
+   "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/f/ff/KinderdijkMolens02.jpg/500px-KinderdijkMolens02.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "w": 480,
+   "h": 359,
+   "file": "KinderdijkMolens02.jpg",
+   "page": "Kinderdijk",
+   "license": "CC BY-SA 3.0",
+   "artist": "Lucas Hirschegger"
+  },
+  "irish-famine": {
+   "thumb": "https://upload.wikimedia.org/wikipedia/commons/9/97/Skibbereen_by_James_Mahony%2C_1847.JPG?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail_unscaled",
+   "w": 405,
+   "h": 560,
+   "file": "Skibbereen_by_James_Mahony,_1847.JPG",
+   "page": "Great Famine (Ireland)",
+   "license": "Public domain",
+   "artist": "James Mahony"
+  },
+  "itsukushima": {
+   "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/ef/Itsukushima_Shrine_Torii_Gate_%2813890465459%29.jpg/500px-Itsukushima_Shrine_Torii_Gate_%2813890465459%29.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "w": 480,
+   "h": 360,
+   "file": "Itsukushima_Shrine_Torii_Gate_(13890465459).jpg",
+   "page": "Itsukushima Shrine",
+   "license": "CC BY-SA 2.0",
+   "artist": "redlegsfan21"
+  },
+  "shinkansen": {
+   "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/a1/Shinkansen_map_202405_en.png/500px-Shinkansen_map_202405_en.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "w": 480,
+   "h": 495,
+   "file": "Shinkansen_map_202405_en.png",
+   "page": "Shinkansen",
+   "license": "CC BY-SA 4.0",
+   "artist": "Texent"
+  },
+  "jingdezhen": {
+   "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e1/%E6%99%AF%E5%BE%B7%E9%95%87%E5%B8%82%E6%98%8C%E6%B1%9F%E4%B8%9C%E5%B2%B8.JPG/500px-%E6%99%AF%E5%BE%B7%E9%95%87%E5%B8%82%E6%98%8C%E6%B1%9F%E4%B8%9C%E5%B2%B8.JPG?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "w": 480,
+   "h": 279,
+   "file": "景德镇市昌江东岸.JPG",
+   "page": "Jingdezhen",
+   "license": "CC BY-SA 3.0",
+   "artist": "JHH755"
+  },
+  "trans-siberian": {
+   "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/05/VL_85-022_container_train.jpg/500px-VL_85-022_container_train.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "w": 480,
+   "h": 343,
+   "file": "VL_85-022_container_train.jpg",
+   "page": "Trans-Siberian Railway",
+   "license": "CC BY-SA 3.0",
+   "artist": "Sorovas"
+  },
+  "indian-railways": {
+   "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/11/Kalaburagi_-_SMVT_Bengaluru_Vande_Bharat_Express.jpg/500px-Kalaburagi_-_SMVT_Bengaluru_Vande_Bharat_Express.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "w": 480,
+   "h": 270,
+   "file": "Kalaburagi_-_SMVT_Bengaluru_Vande_Bharat_Express.jpg",
+   "page": "Rail transport in India",
+   "license": "CC BY-SA 4.0",
+   "artist": "Sameer2905"
+  },
+  "darjeeling": {
+   "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/62/Darjeeling%2C_India%2C_Darjeeling_tea_in_variety%2C_Black_tea.jpg/500px-Darjeeling%2C_India%2C_Darjeeling_tea_in_variety%2C_Black_tea.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "w": 480,
+   "h": 320,
+   "file": "Darjeeling,_India,_Darjeeling_tea_in_variety,_Black_tea.jpg",
+   "page": "Darjeeling tea",
+   "license": "CC BY 4.0",
+   "artist": "Vyacheslav Argenberg"
+  },
+  "aztec-chocolate": {
+   "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/63/Ca%27_Rezzonico_-_La_cioccolata_del_mattino_-_Pietro_Longhi.jpg/500px-Ca%27_Rezzonico_-_La_cioccolata_del_mattino_-_Pietro_Longhi.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "w": 480,
+   "h": 640,
+   "file": "Ca'_Rezzonico_-_La_cioccolata_del_mattino_-_Pietro_Longhi.jpg",
+   "page": "History of chocolate",
+   "license": "Public domain",
+   "artist": "Didier Descouens"
+  },
+  "brazil-coffee": {
+   "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/20/Fazenda_Da_Lagoa.jpg/500px-Fazenda_Da_Lagoa.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "w": 480,
+   "h": 319,
+   "file": "Fazenda_Da_Lagoa.jpg",
+   "page": "Coffee production in Brazil",
+   "license": "CC BY 3.0 de",
+   "artist": "Knase"
+  },
+  "gauchos": {
+   "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/0b/Gaucho1868b.jpg/500px-Gaucho1868b.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "w": 480,
+   "h": 902,
+   "file": "Gaucho1868b.jpg",
+   "page": "Gaucho",
+   "license": "Public domain",
+   "artist": "Eugenio Courret"
+  },
+  "ballarat": {
+   "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/0d/Eureka_stockade_battle.jpg/500px-Eureka_stockade_battle.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "w": 480,
+   "h": 352,
+   "file": "Eureka_stockade_battle.jpg",
+   "page": "Victorian gold rush",
+   "license": "Public domain",
+   "artist": "John Black Henderson (1827-1918)"
+  },
+  "big-hole": {
+   "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/96/Open_pit_mine.jpg/500px-Open_pit_mine.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "w": 480,
+   "h": 361,
+   "file": "Open_pit_mine.jpg",
+   "page": "Big Hole",
+   "license": "CC BY 2.0",
+   "artist": "Irene2005"
+  },
+  "grand-canyon": {
+   "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/31/Canyon_River_Tree_%28165872763%29.jpeg/500px-Canyon_River_Tree_%28165872763%29.jpeg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "w": 480,
+   "h": 308,
+   "file": "Canyon_River_Tree_(165872763).jpeg",
+   "page": "Grand Canyon",
+   "license": "CC BY 3.0",
+   "artist": "Lennart Sikkema"
+  }
+ },
+ "eras": [
+  {
+   "from": -200000,
+   "caption": "Painted aurochs and horses, Lascaux cave, about 17,000 years ago",
+   "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/1e/Lascaux_painting.jpg/500px-Lascaux_painting.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "w": 480,
+   "h": 315,
+   "file": "Lascaux_painting.jpg",
+   "page": "Lascaux",
+   "license": "Public domain",
+   "artist": "EU"
+  },
+  {
+   "from": -3500,
+   "caption": "The Standard of Ur, Sumer, about 2500 BCE",
+   "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/38/Denis_Bourez_-_British_Museum%2C_London_%288747049029%29_%282%29.jpg/500px-Denis_Bourez_-_British_Museum%2C_London_%288747049029%29_%282%29.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "w": 480,
+   "h": 360,
+   "file": "Denis_Bourez_-_British_Museum,_London_(8747049029)_(2).jpg",
+   "page": "Standard of Ur",
+   "license": "CC BY 2.0",
+   "artist": "Denis Bourez from France"
+  },
+  {
+   "from": -1500,
+   "caption": "The funerary mask of Tutankhamun, Egypt, about 1323 BCE",
+   "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/27/CairoEgMuseumTaaMaskMostlyPhotographed.jpg/500px-CairoEgMuseumTaaMaskMostlyPhotographed.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "w": 480,
+   "h": 600,
+   "file": "CairoEgMuseumTaaMaskMostlyPhotographed.jpg",
+   "page": "Mask of Tutankhamun",
+   "license": "Public domain",
+   "artist": "Roland Unger"
+  },
+  {
+   "from": -700,
+   "caption": "The Ishtar Gate of Babylon, about 575 BCE",
+   "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/1f/Berl%C3%ADn%2C_Museo_de_P%C3%A9rgamo_05.jpg/500px-Berl%C3%ADn%2C_Museo_de_P%C3%A9rgamo_05.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "w": 480,
+   "h": 298,
+   "file": "Berlín,_Museo_de_Pérgamo_05.jpg",
+   "page": "Ishtar Gate",
+   "license": "CC BY-SA 4.0",
+   "artist": "LBM1948"
+  },
+  {
+   "from": -400,
+   "caption": "Alexander at the Battle of Issus, Roman mosaic after a Greek painting",
+   "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/69/Battle_of_Issus_mosaic_-_Museo_Archeologico_Nazionale_-_Naples_2013-05-16_16-25-06_BW.jpg/500px-Battle_of_Issus_mosaic_-_Museo_Archeologico_Nazionale_-_Naples_2013-05-16_16-25-06_BW.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "w": 480,
+   "h": 287,
+   "file": "Battle_of_Issus_mosaic_-_Museo_Archeologico_Nazionale_-_Naples_2013-05-16_16-25-06_BW.jpg",
+   "page": "Alexander Mosaic",
+   "license": "Public domain",
+   "artist": "Unknown authorUnknown author"
+  },
+  {
+   "from": -200,
+   "caption": "The Terracotta Army of the first Qin emperor, about 210 BCE",
+   "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/88/51714-Terracota-Army.jpg/500px-51714-Terracota-Army.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "w": 480,
+   "h": 318,
+   "file": "51714-Terracota-Army.jpg",
+   "page": "Terracotta Army",
+   "license": "CC BY 2.0",
+   "artist": "xiquinhosilva"
+  },
+  {
+   "from": 100,
+   "caption": "The Pantheon, Rome, rebuilt under Hadrian about 125 CE",
+   "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/7b/Pantheon_%28Rome%29_-_Right_side_and_front.jpg/500px-Pantheon_%28Rome%29_-_Right_side_and_front.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "w": 480,
+   "h": 386,
+   "file": "Pantheon_(Rome)_-_Right_side_and_front.jpg",
+   "page": "Pantheon, Rome",
+   "license": "CC BY-SA 4.0",
+   "artist": "NikonZ7II"
+  },
+  {
+   "from": 500,
+   "caption": "Hagia Sophia, Constantinople, completed 537 CE",
+   "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/4a/Hagia_Sophia_%28228968325%29.jpeg/500px-Hagia_Sophia_%28228968325%29.jpeg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "w": 480,
+   "h": 290,
+   "file": "Hagia_Sophia_(228968325).jpeg",
+   "page": "Hagia Sophia",
+   "license": "CC BY-SA 3.0",
+   "artist": "Adli Wahid"
+  },
+  {
+   "from": 700,
+   "caption": "The Book of Kells, an Irish gospel book, about 800 CE",
+   "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/b1/KellsFol032vChristEnthroned.jpg/500px-KellsFol032vChristEnthroned.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "w": 480,
+   "h": 626,
+   "file": "KellsFol032vChristEnthroned.jpg",
+   "page": "Book of Kells",
+   "license": "Public domain",
+   "artist": "Unattributed"
+  },
+  {
+   "from": 1000,
+   "caption": "The Bayeux Tapestry, embroidered in the 1070s",
+   "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/9c/Odo_bayeux_tapestry.png/500px-Odo_bayeux_tapestry.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "w": 480,
+   "h": 348,
+   "file": "Odo_bayeux_tapestry.png",
+   "page": "Bayeux Tapestry",
+   "license": "Public domain",
+   "artist": ""
+  },
+  {
+   "from": 1200,
+   "caption": "Along the River During the Qingming Festival, Song China, 12th century",
+   "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/d2/Bianjing_city_gate.JPG/500px-Bianjing_city_gate.JPG?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "w": 480,
+   "h": 344,
+   "file": "Bianjing_city_gate.JPG",
+   "page": "Along the River During the Qingming Festival",
+   "license": "Public domain",
+   "artist": "Zhang Zeduan"
+  },
+  {
+   "from": 1300,
+   "caption": "The compass rose of the Catalan Atlas, drawn in Majorca in 1375",
+   "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/d2/Compass_rose_from_Catalan_Atlas_%281375%29.jpg/500px-Compass_rose_from_Catalan_Atlas_%281375%29.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "w": 480,
+   "h": 520,
+   "file": "Compass_rose_from_Catalan_Atlas_(1375).jpg",
+   "page": "Catalan Atlas",
+   "license": "Public domain",
+   "artist": "Cresques Abraham"
+  },
+  {
+   "from": 1450,
+   "caption": "The Ambassadors, Hans Holbein the Younger, 1533",
+   "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/88/Hans_Holbein_the_Younger_-_The_Ambassadors_-_Google_Art_Project.jpg/500px-Hans_Holbein_the_Younger_-_The_Ambassadors_-_Google_Art_Project.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "w": 480,
+   "h": 473,
+   "file": "Hans_Holbein_the_Younger_-_The_Ambassadors_-_Google_Art_Project.jpg",
+   "page": "The Ambassadors (Holbein)",
+   "license": "Public domain",
+   "artist": "Hans Holbein the Younger"
+  },
+  {
+   "from": 1600,
+   "caption": "The Art of Painting, Johannes Vermeer, about 1666, with a map of the Low Countries",
+   "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/5e/Jan_Vermeer_-_The_Art_of_Painting_-_Google_Art_Project.jpg/500px-Jan_Vermeer_-_The_Art_of_Painting_-_Google_Art_Project.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "w": 480,
+   "h": 570,
+   "file": "Jan_Vermeer_-_The_Art_of_Painting_-_Google_Art_Project.jpg",
+   "page": "The Art of Painting",
+   "license": "Public domain",
+   "artist": "Johannes Vermeer"
+  },
+  {
+   "from": 1750,
+   "caption": "The Great Wave off Kanagawa, Katsushika Hokusai, about 1831",
+   "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/a5/Tsunami_by_hokusai_19th_century.jpg/500px-Tsunami_by_hokusai_19th_century.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "w": 480,
+   "h": 323,
+   "file": "Tsunami_by_hokusai_19th_century.jpg",
+   "page": "The Great Wave off Kanagawa",
+   "license": "Public domain",
+   "artist": "Katsushika Hokusai"
+  },
+  {
+   "from": 1840,
+   "caption": "Rain, Steam and Speed, J. M. W. Turner, 1844",
+   "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/5f/J._M._W._Turner_-_Rain%2C_Steam_and_Speed_%E2%80%93_The_Great_Western_Railway.jpg/500px-J._M._W._Turner_-_Rain%2C_Steam_and_Speed_%E2%80%93_The_Great_Western_Railway.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "w": 480,
+   "h": 360,
+   "file": "J._M._W._Turner_-_Rain,_Steam_and_Speed_–_The_Great_Western_Railway.jpg",
+   "page": "Rain, Steam and Speed – The Great Western Railway",
+   "license": "Public domain",
+   "artist": "J. M. W. Turner"
+  },
+  {
+   "from": 1914,
+   "caption": "Migrant Mother, Dorothea Lange, 1936",
+   "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/54/Lange-MigrantMother02.jpg/500px-Lange-MigrantMother02.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "w": 480,
+   "h": 624,
+   "file": "Lange-MigrantMother02.jpg",
+   "page": "Migrant Mother",
+   "license": "Public domain",
+   "artist": "Dorothea Lange"
+  },
+  {
+   "from": 1960,
+   "caption": "Earthrise, photographed from Apollo 8, 1968",
+   "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/a8/NASA-Apollo8-Dec24-Earthrise.jpg/500px-NASA-Apollo8-Dec24-Earthrise.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "w": 480,
+   "h": 480,
+   "file": "NASA-Apollo8-Dec24-Earthrise.jpg",
+   "page": "Earthrise",
+   "license": "Public domain",
+   "artist": "NASA/Bill Anders"
+  }
+ ]
+}

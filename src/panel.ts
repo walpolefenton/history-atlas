@@ -5,6 +5,7 @@ import { eventArticle, polityArticle, type WikiSummary } from "./wiki";
 import { eventIconSvg } from "./icons";
 import { drawingSvg } from "./drawings";
 import { currentTheme } from "./theme";
+import { creditHtml, drawingImage, eraImage, type AtlasImage } from "./images";
 
 /** The same pictogram the map uses for this event type, in the current theme. */
 function marker(type: EventType) {
@@ -134,9 +135,11 @@ export function renderOverview(ctx: PanelContext, focus = false) {
       </section>`
     : "";
 
+  const art = eraImage(data.year);
   render(
     ctx,
-    `<h2>The world in ${formatYear(data.year)}</h2>
+    `${art ? photoFigure(art, art.caption, "era-hero") : ""}
+    <h2>The world in ${formatYear(data.year)}</h2>
     <p class="muted">Snapshot ${idx + 1} of ${meta.years.length}. ${
       ctx.nextYear === null ? "This is the most recent map." : `The next map is ${formatYear(ctx.nextYear)}.`
     }</p>
@@ -161,7 +164,7 @@ export function renderOverview(ctx: PanelContext, focus = false) {
     ${lookCloser(ctx)}
     <section>
       <h3>Reading the map</h3>
-      <p class="muted small">Territories ruled by the same power share a colour. Dashed outlines mark approximate borders. Large markers are key events; small ones are other recorded events, and more appear as you zoom in. The tower marks a capital. Select anything to learn more.</p>
+      <p class="muted small">Territories ruled by the same power share a colour. Dashed outlines mark approximate borders. Large markers are key events; small ones are other recorded events, and more appear as you zoom in. ${currentTheme().modern ? "A ringed dot marks a capital; round photographs mark landmarks." : "The tower marks a capital."} Select anything to learn more.</p>
     </section>
     ${sourcesNote}`,
     focus,
@@ -434,6 +437,18 @@ function drawingImg(kind: string, cls = "drawing-thumb") {
   return `<img class="${cls}" alt="" src="data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}" />`;
 }
 
+/** A photograph or artwork with its caption and credit. */
+function photoFigure(img: AtlasImage, caption: string, cls: string) {
+  return `<figure class="${cls}"><img src="${esc(img.thumb)}" alt="" loading="lazy" width="${img.w}" height="${img.h}" />
+    <figcaption>${esc(caption)}<span class="credit">${creditHtml(img, esc)}</span></figcaption></figure>`;
+}
+
+/** A list thumbnail: the place's photograph where there is one, else its drawing. */
+function thumb(d: Drawing) {
+  const img = drawingImage(d.id);
+  return img ? `<img class="photo-thumb" alt="" loading="lazy" src="${esc(img.thumb)}" />` : drawingImg(d.kind);
+}
+
 function lookCloser(ctx: PanelContext) {
   const landmarks = ctx.drawings.filter((d) => d.cat === "landmark");
   const nature = ctx.drawings.filter((d) => d.cat === "nature");
@@ -441,7 +456,7 @@ function lookCloser(ctx: PanelContext) {
   const curiosities = ctx.drawings.filter((d) => d.cat === "curiosity").length;
   const list = (items: Drawing[]) =>
     `<ul class="drawing-list">${items
-      .map((d) => `<li><button type="button" class="drawing-row" data-action="drawing" data-id="${esc(d.id)}">${drawingImg(d.kind)}<span>${esc(d.name)}</span></button></li>`)
+      .map((d) => `<li><button type="button" class="drawing-row" data-action="drawing" data-id="${esc(d.id)}">${thumb(d)}<span>${esc(d.name)}</span></button></li>`)
       .join("")}</ul>`;
   const s = ctx.surveyor;
   const surveyorLine = !s.spot
@@ -451,7 +466,7 @@ function lookCloser(ctx: PanelContext) {
       : `<p class="small">The Surveyor is hiding somewhere on this map. <button type="button" class="link" data-action="hint">Give me a hint</button></p>`;
   return `<section>
     <h3>Look closer</h3>
-    <p class="small muted">Drawings appear as you zoom in.${
+    <p class="small muted">${currentTheme().modern ? "Places" : "Drawings"} appear as you zoom in.${
       curiosities ? ` ${curiosities} curiosit${curiosities === 1 ? "y is" : "ies are"} hidden somewhere on this map, unlisted.` : ""
     }</p>
     ${surveyorLine}
@@ -489,8 +504,11 @@ export function renderDrawing(ctx: PanelContext, d: Drawing, focus = false) {
   render(
     ctx,
     `${backButton}
-    <figure class="drawing-hero">${drawingImg(d.kind, "drawing-large")}
-      <figcaption>${esc(d.quip)}</figcaption></figure>
+    ${
+      drawingImage(d.id)
+        ? photoFigure(drawingImage(d.id)!, d.quip, "photo-hero")
+        : `<figure class="drawing-hero">${drawingImg(d.kind, "drawing-large")}<figcaption>${esc(d.quip)}</figcaption></figure>`
+    }
     <h2>${esc(d.name)}</h2>
     <p class="lede">${span}</p>
     <p>${esc(d.note)}</p>

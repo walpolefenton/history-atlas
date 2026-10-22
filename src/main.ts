@@ -6,6 +6,7 @@ import { initPanel, renderAdmin, renderCity, renderCompare, renderDrawing, rende
 import { initSearch } from "./search";
 import type { Admin1Data, City, Drawing, EventType, HistoryEvent, Meta, RouteInfo, Selection, SurveyorSpot, YearData } from "./types";
 import { applyTheme, loadThemeChoice, saveThemeChoice, type ThemeChoice } from "./theme";
+import { loadImages } from "./images";
 
 const TICK_YEARS = [-10000, -3000, -1000, -1, 500, 1000, 1500, 1800, 1914, 2010];
 /** The subset still labelled on narrow screens. */
@@ -19,8 +20,8 @@ const ERAS = [
   { name: "Early modern", from: 1500 },
   { name: "Modern", from: 1800 },
 ];
-const THEME_LABEL: Record<ThemeChoice, string> = { auto: "Auto", night: "Night", survey: "Survey", clay: "Clay" };
-const THEME_ORDER: ThemeChoice[] = ["night", "survey", "clay", "auto"];
+const THEME_LABEL: Record<ThemeChoice, string> = { auto: "Auto", atlas: "Atlas", night: "Night", survey: "Survey", clay: "Clay" };
+const THEME_ORDER: ThemeChoice[] = ["atlas", "night", "survey", "clay", "auto"];
 
 const $ = <T extends HTMLElement>(id: string) => document.getElementById(id) as T;
 
@@ -576,7 +577,8 @@ function parseHash(hash: string): { year?: number; compare?: number; selection: 
 async function boot() {
   applyTheme(loadThemeChoice());
   try {
-    const [meta, curated, land, drawings, spots] = await Promise.all([loadMeta(), loadEvents(), loadLand(), loadDrawings(), loadSurveyor()]);
+    // The image index is small; load it up front so the first panel has its artwork.
+    const [meta, curated, land, drawings, spots] = await Promise.all([loadMeta(), loadEvents(), loadLand(), loadDrawings(), loadSurveyor(), loadImages()]);
     let app: App;
     const atlas = await AtlasMap.create("map", land, {
       onPolityClick: (name) => app.selectPolity(name, undefined, false),

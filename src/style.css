@@ -86,6 +86,29 @@
     radial-gradient(ellipse 70% 80% at 42% 50%, #f1e5cf 0%, #e6d8c0 60%, #d9c7a8 100%);
   --backdrop-size: 100% 100%, 100% 100%;
 }
+/* Atlas: a modern reference atlas. Quiet white surfaces, hairlines, and a
+   brick-red accent; the photographs and the relief carry the colour. */
+:root[data-theme="atlas"] {
+  color-scheme: light;
+  --bg: #e7ebed;
+  --surface: rgba(255, 255, 255, 0.94);
+  --surface-solid: #ffffff;
+  --raised: rgba(20, 25, 35, 0.035);
+  --text: #1d2126;
+  --muted: #5f6670;
+  --line: rgba(20, 25, 35, 0.12);
+  --line-soft: rgba(20, 25, 35, 0.07);
+  --accent: #9c3d2a;
+  --accent-ink: #ffffff;
+  --accent-soft: rgba(156, 61, 42, 0.08);
+  --focus: #2c6a9e;
+  --up: #2c7a3f;
+  --down: #b0362a;
+  --shadow: 0 1px 2px rgba(20, 30, 40, 0.06), 0 12px 32px rgba(20, 30, 40, 0.12);
+  --backdrop: radial-gradient(ellipse 70% 80% at 42% 50%, #f7f8f8 0%, #e4e9eb 78%);
+  --backdrop-size: 100% 100%;
+}
+
 :root[data-theme="clay"] .tool[aria-pressed="true"],
 :root[data-theme="clay"] .chip.current,
 :root[data-theme="clay"] #btn-play {
@@ -629,6 +652,42 @@ body.comparing .maplibregl-map .maplibregl-ctrl-top-right { right: 0; }
   color: var(--text);
   text-wrap: balance;
 }
+/* Photographs and artworks: full-bleed at the top of the panel, with a caption
+   and a small credit line beneath. */
+.era-hero,
+.photo-hero { margin: -22px -24px 16px; }
+.era-hero img,
+.photo-hero img {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 16 / 10;
+  object-fit: cover;
+  border-radius: var(--r-lg) var(--r-lg) 0 0;
+  background: var(--raised);
+}
+.photo-hero img { aspect-ratio: 4 / 3; }
+.era-hero figcaption,
+.photo-hero figcaption {
+  padding: 10px 24px 0;
+  font: italic 400 14.5px/1.45 var(--font-display);
+  color: var(--text);
+  text-wrap: pretty;
+}
+.photo-hero figcaption { font-size: 16px; }
+.credit {
+  display: block;
+  margin-top: 4px;
+  font: 400 11px/1.4 var(--font-ui);
+  font-style: normal;
+  color: var(--muted);
+}
+.credit a { color: inherit; }
+/* With a back button above, the photograph sits below it rather than bleeding to the top. */
+.back + .photo-hero { margin-top: 10px; }
+.back + .photo-hero img { border-radius: 0; }
+.photo-thumb { width: 34px; height: 34px; flex: none; border-radius: 50%; object-fit: cover; box-shadow: 0 0 0 1.5px var(--surface-solid), 0 0 0 2.5px var(--line); }
+
 .hint { padding: 6px 10px; border-left: 2px solid var(--accent); background: var(--accent-soft); border-radius: 0 var(--r-sm) var(--r-sm) 0; }
 
 /* The year numeral follows the map's lettering era. */
@@ -672,3 +731,6 @@ body[data-lettering="printed"] #ym-num { font-family: "IM Fell English", var(--f
 @media (prefers-reduced-motion: reduce) {
   * { scroll-behavior: auto !important; transition: none !important; }
 }
+
+/* A landmark's photograph already heads the panel; don't repeat it beside the Wikipedia summary. */
+.photo-hero ~ #wiki .wiki-thumb { display: none; }
