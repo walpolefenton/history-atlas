@@ -1547,6 +1547,40 @@ export class AtlasMap {
       for (const id of ids) if (this.map.getLayer(id)) this.map.setLayoutProperty(id, "visibility", this.hiddenGroups.has(group) ? "none" : "visible");
   }
 
+  /**
+   * The map as it is on screen, as a PNG with a caption bar beneath: a title,
+   * and the sources the map is built from. The canvas is read inside a render
+   * frame, so no special drawing-buffer setting is needed.
+   */
+  snapshot(title: string): Promise<Blob> {
+    return new Promise((resolve, reject) => {
+      this.map.once("render", () => {
+        const src = this.map.getCanvas();
+        const t = currentTheme();
+        const ratio = src.width / src.clientWidth;
+        const bar = Math.round(54 * ratio);
+        // Leave out the strip of map hidden behind the side panel.
+        const crop = Math.round((this.map.getPadding().right ?? 0) * ratio);
+        const out = document.createElement("canvas");
+        out.width = src.width - crop;
+        out.height = src.height + bar;
+        const g = out.getContext("2d")!;
+        g.fillStyle = t.land;
+        g.fillRect(0, 0, out.width, out.height);
+        g.drawImage(src, 0, 0, out.width, src.height, 0, 0, out.width, src.height);
+        g.fillStyle = t.label;
+        g.font = `500 ${Math.round(20 * ratio)}px Georgia, serif`;
+        g.textBaseline = "middle";
+        g.fillText(title, 18 * ratio, src.height + bar * 0.38);
+        g.fillStyle = t.labelMuted;
+        g.font = `${Math.round(11 * ratio)}px system-ui, sans-serif`;
+        g.fillText("History Atlas · Borders: historical-basemaps (GPL-3.0) · Geography: Natural Earth · Relief: Mapzen terrain · Capitals & events: Wikidata", 18 * ratio, src.height + bar * 0.74);
+        out.toBlob((b) => (b ? resolve(b) : reject(new Error("Could not encode the map image"))), "image/png");
+      });
+      this.map.triggerRepaint();
+    });
+  }
+
   /** The camera as [lon, lat, zoom], rounded for a tidy URL. */
   view(): [number, number, number] {
     const c = this.map.getCenter();

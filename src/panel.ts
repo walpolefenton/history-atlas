@@ -44,6 +44,7 @@ export interface PanelContext {
     selectDrawing(id: string): void;
     showSurveyor(): void;
     toggleLayer(group: LayerGroup): void;
+    saveImage(): Promise<void>;
   };
 }
 
@@ -65,6 +66,18 @@ export function initPanel() {
     else if (action === "sheet") setSheetOpen(!document.body.classList.contains("sheet-open"));
     else if (action === "type") current.actions.toggleType(type as EventType);
     else if (action === "layer") current.actions.toggleLayer(el.dataset.layer as LayerGroup);
+    else if (action === "copy-link") {
+      navigator.clipboard
+        ?.writeText(location.href)
+        .then(() => (el.textContent = "Link copied"))
+        .catch(() => (el.textContent = "Copy the address bar instead"));
+    } else if (action === "save-image") {
+      el.textContent = "Preparing image…";
+      current.actions
+        .saveImage()
+        .then(() => (el.textContent = "Save map image"))
+        .catch(() => (el.textContent = "Couldn't save the image"));
+    }
     else if (action === "compare-year") current.actions.setCompareYear(Number(year));
     else if (action === "drawing") current.actions.selectDrawing(id!);
     else if (action === "drawing-surveyor") current.actions.showSurveyor();
@@ -213,6 +226,14 @@ export function renderOverview(ctx: PanelContext, focus = false) {
     </section>
     ${more}
     ${lookCloser(ctx)}
+    <section>
+      <h3>Share or save</h3>
+      <p class="small muted">The link holds this year, what's selected and the view, so others see exactly this map.</p>
+      <div class="share-row">
+        <button type="button" class="tool" data-action="copy-link">Copy link</button>
+        <button type="button" class="tool" data-action="save-image">Save map image</button>
+      </div>
+    </section>
     <section>
       <h3>Reading the map</h3>
       <p class="muted small">Territories ruled by the same power share a colour. Dashed outlines mark approximate borders. Large markers are key events; small ones are other recorded events, and more appear as you zoom in. ${currentTheme().modern ? "A ringed dot marks a capital; round photographs mark landmarks." : "The tower marks a capital."} Select anything to learn more.</p>

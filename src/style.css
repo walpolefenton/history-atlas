@@ -734,6 +734,9 @@ body[data-lettering="printed"] #ym-num { font-family: "IM Fell English", var(--f
 .hist-bar.current { fill: var(--accent); opacity: 1; }
 .hist figcaption { display: flex; justify-content: space-between; gap: 8px; margin-top: 6px; }
 
+.share-row { display: flex; flex-wrap: wrap; gap: 8px; }
+.share-row .tool { border: 1px solid var(--line); }
+
 /* Where a territory is today: country, a share bar, the percentage. */
 .today-list { list-style: none; margin: 0 0 6px; padding: 0; display: grid; gap: 6px; }
 .today-list li { display: grid; grid-template-columns: minmax(0, 1fr) 90px 38px; align-items: center; gap: 10px; font-size: 14px; }

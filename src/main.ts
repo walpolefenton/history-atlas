@@ -178,6 +178,7 @@ class App {
         selectDrawing: (id) => this.selectDrawing(id, true),
         showSurveyor: () => this.select({ kind: "surveyor" }, true),
         toggleLayer: (g) => this.toggleLayer(g),
+        saveImage: () => this.saveImage(),
       },
     };
   }
@@ -190,6 +191,8 @@ class App {
     // A shared link opens on the same view.
     if (s.view) this.atlas.setView(s.view);
     this.atlas.onViewChange(() => this.updateUrl());
+    // A link pasted into this same tab changes only the hash: follow it.
+    window.addEventListener("hashchange", () => this.followHash());
     if (s.selection.kind === "event") {
       const id = s.selection.id;
       if (!this.curated.some((e) => e.id === id)) this.pendingEvent = id;
@@ -364,6 +367,27 @@ class App {
   private updateUrl() {
     if (!this.data) return;
     history.replaceState(null, "", toHash(this.data.year, this.selection, this.compareIndex === null ? null : this.years[this.compareIndex], this.atlas.view()));
+  }
+
+  /** Applies the year, selection, comparison and view held in the URL. */
+  private async followHash() {
+    const s = parseHash(location.hash);
+    const idx = s.year !== undefined ? this.years.indexOf(s.year) : -1;
+    if (idx >= 0 && idx !== this.index) await this.setIndex(idx, s.selection);
+    else this.select(s.selection, false);
+    if (s.compare !== undefined && this.years.includes(s.compare)) await this.openCompare(this.years.indexOf(s.compare));
+    if (s.view) this.atlas.setView(s.view);
+  }
+
+  /** Downloads the map as on screen, captioned with the year. */
+  private async saveImage() {
+    const year = formatYear(this.data.year);
+    const blob = await this.atlas.snapshot(`The world in ${year}`);
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = `history-atlas-${this.data.year < 0 ? `${-this.data.year}bce` : this.data.year}.png`;
+    a.click();
+    setTimeout(() => URL.revokeObjectURL(a.href), 5000);
   }
 
   private toggleLayer(g: LayerGroup) {
